@@ -34,3 +34,4 @@ The screenshots can be found in the following directories for now (issue 9 will 
 # caveats
 * The `SystemTheme` configuration attempts to change the Windows theme while the application is running which doesn't always work correctly. The alternative is to manually change the Windows theme before a run and not including the `SystemTheme` set.
 * There is no attempt to reset the profile or system theme back to their original value after a run. The Windows theme can be re-set manually and runs shouldn't be performed on a user's default profile.
+* Private browsing mode cannot be toggled during a run at this time but you can take screenshots for a whole run in both permanent and temporary private browsing mode using the ```--app-arg``` argument. See [issue #2](https://github.com/mnoorenberghe/mozscreenshots/issues/2).
