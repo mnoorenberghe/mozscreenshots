@@ -19,7 +19,7 @@ def compare_images(before, after):
     after = trim_system_ui("after", after)
     outpath = tempdir + "/comparison_" + os.path.basename(before) + "-" + os.path.basename(after)
     subprocess.call(["compare", before, after, outpath])
-    subprocess.call(["compare", "-metric", "MAE", before, after, "null:", "2>&1"])
+    subprocess.call(["compare", "-metric", "MAE", before, after, "null:"])
     print()
 
 
