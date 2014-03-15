@@ -54,7 +54,7 @@ class CLI(MozRunnerCLI):
         # run in the foreground so we don't get screenshots of the console
         self.options.appArgs.append("--foreground")
 
-        self.options.prefs_files.append(module_path + '/prefs.js')
+        self.options.prefs_files.append(module_path + '/prefs.json')
 
         super(CLI, self).run()
 

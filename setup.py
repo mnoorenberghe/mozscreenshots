@@ -35,7 +35,8 @@ setup(name=PACKAGE_NAME,
       package_data={'mozscreenshots': [
             'extension/*.*',
             'extension/configurations/*.jsm',
-            'extension/lib/*.*'
+            'extension/lib/*.*',
+            'prefs.json'
             ]},
       zip_safe=False,
       install_requires = deps,
