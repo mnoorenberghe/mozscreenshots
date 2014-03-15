@@ -286,7 +286,11 @@ let Screenshot = {
   _screenshotLinux: function(filename, callback) {
     let file = Cc["@mozilla.org/file/local;1"]
                  .createInstance(Ci.nsIFile);
-    file.initWithPath("/bin/scrot");
+    try {
+      file.initWithPath("/usr/bin/scrot");
+    } catch (ex) {
+      file.initWithPath("/bin/scrot");
+    }
 
     let process = Cc["@mozilla.org/process/util;1"]
                     .createInstance(Ci.nsIProcess);
