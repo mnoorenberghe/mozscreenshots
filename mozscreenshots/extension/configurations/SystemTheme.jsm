@@ -13,8 +13,6 @@ Cu.import("resource://gre/modules/ctypes.jsm");
 Cu.import("resource://gre/modules/Timer.jsm");
 Cu.import("resource://gre/modules/devtools/Console.jsm");
 
-let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-
 let SystemTheme = {
   _libDir: null,
   configurations: [],
@@ -77,6 +75,7 @@ let SystemTheme = {
       setTimeout(this._closeWindowsPersonalizationWindow, 1000);
 
       setTimeout(function focusTab() {
+        let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
         browserWindow.gBrowser.selectedBrowser.focus();
         // TODO: poll registry for theme value to know when ready? or does it get set right away while the modal is up?
         deferred.resolve();
@@ -95,6 +94,7 @@ let SystemTheme = {
     let args = [];
     process.runAsync(args, args.length, function themeChangeComplete() {
       // TODO: doing nothing because this only returns upon close? If so, we should use this instead of setTimeout?
+      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
       // Focus the browser again (instead of the theme selector)
       browserWindow.gBrowser.selectedBrowser.focus();
       // Give the window controls and titlebar time to repaint.

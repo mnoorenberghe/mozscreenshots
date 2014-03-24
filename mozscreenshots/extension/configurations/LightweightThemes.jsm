@@ -8,8 +8,9 @@ this.EXPORTED_SYMBOLS = [ "LightweightThemes" ];
 
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 
-Cu.import("resource://gre/modules/Timer.jsm");
 Cu.import("resource://gre/modules/LightweightThemeManager.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/Timer.jsm");
 
 this.LightweightThemes = {
   init: function(libDir) {},
@@ -28,8 +29,16 @@ this.LightweightThemes = {
         textcolor:   "#ffffff",
         accentcolor: "#000000",
       };
+
       // Wait for LWT listener
-      setTimeout(deferred.resolve, 500);
+      setTimeout(() => {
+        let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+        if (browserWindow.document.documentElement.hasAttribute("lwtheme")) {
+          deferred.resolve();
+        } else {
+          deferred.reject("The @lwtheme attribute wasn't present so themes may not be available");
+        }
+      }, 500);
     },
     function lightLWT(deferred) {
       LightweightThemeManager.currentTheme = {
@@ -41,7 +50,14 @@ this.LightweightThemes = {
         accentcolor: "#ffffff",
       };
       // Wait for LWT listener
-      setTimeout(deferred.resolve, 500);
+      setTimeout(() => {
+        let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+        if (browserWindow.document.documentElement.hasAttribute("lwtheme")) {
+          deferred.resolve();
+        } else {
+          deferred.reject("The @lwtheme attribute wasn't present so themes may not be available");
+        }
+      }, 500);
     },
   ],
 };

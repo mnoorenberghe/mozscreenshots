@@ -11,8 +11,6 @@ const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Timer.jsm");
 
-let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-
 this.WindowSize = {
 
   init: function(libDir) {
@@ -21,6 +19,7 @@ this.WindowSize = {
 
   configurations: [
     function maximized(deferred) {
+      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
       browserWindow.fullScreen = false;
 
       // Wait for the Lion fullscreen transition to end as there doesn't seem to be an event
@@ -31,11 +30,13 @@ this.WindowSize = {
       }, Services.appinfo.OS == "Darwin" ? 1500 : 0);
     },
     function normal(deferred) {
+      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
       browserWindow.fullScreen = false;
       browserWindow.restore();
       deferred.resolve();
     },
     function fullScreen(deferred) {
+      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
       browserWindow.fullScreen = true;
       // OS X Lion fullscreen transition takes a while
       setTimeout(function waitAfterEnteringFS() {

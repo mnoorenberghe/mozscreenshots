@@ -10,14 +10,13 @@ const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 
 Cu.import("resource://gre/modules/Services.jsm");
 
-let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-
 this.CustomizeMode = {
 
   init: function(libDir) {},
 
   configurations: [
     function notCustomizing(deferred) {
+      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
       if (!browserWindow.document.documentElement.hasAttribute("customizing")) {
         deferred.resolve();
         return;
@@ -30,6 +29,7 @@ this.CustomizeMode = {
       browserWindow.gCustomizeMode.exit();
     },
     function customizing(deferred) {
+      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
       if (browserWindow.document.documentElement.hasAttribute("customizing")) {
         deferred.resolve();
         return;

@@ -10,19 +10,19 @@ const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 
 Cu.import("resource://gre/modules/Services.jsm");
 
-let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-
 this.Tabs = {
   init: function(libDir) {},
 
   configurations: [
     function fiveTabs(deferred) {
       fiveTabsHelper();
+      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
       hoverTab(browserWindow.gBrowser.tabs[3]);
       deferred.resolve();
     },
     function fourPinned(deferred) {
       fiveTabsHelper();
+      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
       let tab = browserWindow.gBrowser.addTab(TWITTER_FAVICON);
       browserWindow.gBrowser.pinTab(tab);
       tab = browserWindow.gBrowser.addTab(GOOGLE_FAVICON);
@@ -42,6 +42,7 @@ this.Tabs = {
     function twoPinnedWithOverflow(deferred) {
       fiveTabsHelper();
 
+      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
       browserWindow.gBrowser.loadTabs([
         "about:addons",
         "about:home",
@@ -89,6 +90,8 @@ this.Tabs = {
 function fiveTabsHelper() {
   // some with no favicon and some with. Selected tab in middle.
   closeAllButOneTab("about:addons");
+
+  let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
   browserWindow.gBrowser.loadTabs([
     "about:addons",
     "about:home",
@@ -100,6 +103,7 @@ function fiveTabsHelper() {
 }
 
 function closeAllButOneTab(url = "about:blank") {
+  let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
   let gBrowser = browserWindow.gBrowser;
   // Close all tabs except the last so we don't quit the browser.
   while (gBrowser.tabs.length > 1)
