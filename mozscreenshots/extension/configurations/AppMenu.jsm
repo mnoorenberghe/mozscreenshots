@@ -31,6 +31,10 @@ this.AppMenu = {
     function appMenuHistorySubview(deferred) {
       // History has a footer
       let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+      if (browserWindow.document.documentElement.hasAttribute("customizing")) {
+        deferred.reject("Can't show subviews while customizing");
+        return;
+      }
       let promise = browserWindow.PanelUI.show();
       promise.then(() => {
         browserWindow.PanelUI.showMainView();
@@ -42,6 +46,10 @@ this.AppMenu = {
 
     function appMenuHelpSubview(deferred) {
       let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+      if (browserWindow.document.documentElement.hasAttribute("customizing")) {
+        deferred.reject("Can't show subviews while customizing");
+        return;
+      }
       let promise = browserWindow.PanelUI.show();
       promise.then(() => {
         browserWindow.PanelUI.showMainView();
