@@ -270,17 +270,59 @@ let Screenshot = {
   },
 
   _screenshotOSX: function(filename, callback) {
-    let file = Cc["@mozilla.org/file/local;1"]
-                 .createInstance(Ci.nsIFile);
-    file.initWithPath("/usr/sbin/screencapture");
+    function readWindowID() {
+      Components.utils.import("resource://gre/modules/NetUtil.jsm");
+      let file = Cc["@mozilla.org/file/local;1"]
+                   .createInstance(Ci.nsIFile);
+      file.initWithPath("/tmp/mozscreenshots/windowid");
 
-    let process = Cc["@mozilla.org/process/util;1"]
-                    .createInstance(Ci.nsIProcess);
-    process.init(file);
+      NetUtil.asyncFetch(file, function(inputStream, status) {
+        if (!Components.isSuccessCode(status)) {
+          console.log("Error reading windowid");
+          return;
+        }
 
-    // Run the process.
-    let args = ['-C', '-x', '-t', 'png', filename];
-    process.runAsync(args, args.length, this._screenshotObserver(callback));
+        // The file data is contained within inputStream.
+        // You can read it into a string with
+        var windowID = NetUtil.readInputStreamToString(inputStream, inputStream.available());
+        screencapture(windowID);
+      });
+    }
+
+    let screencapture = function (windowID = null) {
+      // Get the screencapture executable
+      let file = Cc["@mozilla.org/file/local;1"]
+                   .createInstance(Ci.nsIFile);
+      file.initWithPath("/usr/sbin/screencapture");
+
+      let process = Cc["@mozilla.org/process/util;1"]
+                      .createInstance(Ci.nsIProcess);
+      process.init(file);
+
+      // Run the process.
+      let args = ['-x', '-t', 'png'];
+      if (windowID) {
+        // Capture only that window
+        args.push('-l');
+        args.push(windowID);
+      }
+      args.push(filename);
+      process.runAsync(args, args.length, this._screenshotObserver(callback));
+    }.bind(this);
+
+    // Get the window ID of the application (assuming its front-most)
+    // TODO: handle capturing unfocused windows by calculating "name_" once
+    let osascript = Cc["@mozilla.org/file/local;1"]
+                      .createInstance(Ci.nsIFile);
+    osascript.initWithPath("/bin/bash");
+
+    let osascriptP = Cc["@mozilla.org/process/util;1"]
+                       .createInstance(Ci.nsIProcess);
+    osascriptP.init(osascript);
+    // -e 'tell application (path to frontmost application as text) to set winID to id of window window_name'
+    // -e 'tell application \"System Events\" to set window_name to id of first window of (first application process whose frontmost is true)'
+    let osaArgs = ['-c', "/usr/bin/osascript -e 'tell application (path to frontmost application as text) to set winID to id of window 1'  > /tmp/mozscreenshots/windowid"];
+    osascriptP.runAsync(osaArgs, osaArgs.length, this._screenshotObserver(readWindowID));
   },
 
   _screenshotLinux: function(filename, callback) {
