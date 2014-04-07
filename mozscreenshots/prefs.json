@@ -1,4 +1,5 @@
 {
-"browser.aboutHomeSnippets.updateUrl": "data:"
+"browser.aboutHomeSnippets.updateUrl": "data:",
+"browser.rights.override": false
 }
 
