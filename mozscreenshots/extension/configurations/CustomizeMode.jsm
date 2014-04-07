@@ -9,6 +9,7 @@ this.EXPORTED_SYMBOLS = [ "CustomizeMode" ];
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/Timer.jsm");
 
 this.CustomizeMode = {
 
@@ -23,7 +24,7 @@ this.CustomizeMode = {
       }
       function onCustomizationEnds() {
         browserWindow.gNavToolbox.removeEventListener("aftercustomization", onCustomizationEnds);
-        deferred.resolve();
+        setTimeout(() => deferred.resolve(), 100); // Wait for final changes
       }
       browserWindow.gNavToolbox.addEventListener("aftercustomization", onCustomizationEnds);
       browserWindow.gCustomizeMode.exit();
@@ -36,7 +37,7 @@ this.CustomizeMode = {
       }
       function onCustomizing() {
         browserWindow.gNavToolbox.removeEventListener("customizationready", onCustomizing);
-        deferred.resolve();
+        setTimeout(() => deferred.resolve(), 100); // Wait for final changes
       }
       browserWindow.gNavToolbox.addEventListener("customizationready", onCustomizing);
       browserWindow.gCustomizeMode.enter();
