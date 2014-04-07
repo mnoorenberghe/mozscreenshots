@@ -9,7 +9,7 @@ Take screenshots of Mozilla applications in various UI configurations.
 * `scrot` for Linux screenshots
 
 # running mozscreenshots
-The tool will setup the browser in every possible combination of the specified configuration sets (e.g. `WindowSize`) and take a screenshot. Note that the order of the sets affects the order that the configurations are setup. If no sets are specified, the default is: `SystemTheme Tabs WindowSize Toolbars LightweightThemes`.
+The tool will setup the browser in every possible combination of the specified configuration sets (e.g. `WindowSize`) and take a screenshot. Note that the order of the sets affects the order that the configurations are setup. If no sets are specified, the default is: `SystemTheme Tabs WindowSize Toolbars LightweightThemes`. To output the list of valid sets, use `--list-sets`.
 
 ## Running from source:
 

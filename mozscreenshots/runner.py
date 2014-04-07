@@ -4,9 +4,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import sys
 import optparse
 import os
+import subprocess
+import sys
 
 from mozrunner import CLI as MozRunnerCLI, runners
 
@@ -32,6 +33,12 @@ class CLI(MozRunnerCLI):
         self.parser = optparse.OptionParser()
         self.add_options(self.parser)
         (self.options, self.args) = self.parser.parse_args(args)
+
+        if (self.options.list_sets):
+            subprocess.call(["ls " + os.path.dirname(os.path.abspath(__file__)) + "/extension/configurations/*.jsm | sed -e 's/.*\///' | sed -e 's/\.jsm//' | xargs"], shell=True)
+            sys.exit(0)
+            return
+
         os.environ["MOZSCREENSHOTS_SETS"] = ",".join(self.args)
         if self.options.interactive:
             os.environ["MOZSCREENSHOTS_INTERACTIVE"] = "1"
@@ -45,6 +52,10 @@ class CLI(MozRunnerCLI):
     def add_options(self, parser):
         # add profile options
         MozRunnerCLI.add_options(self, parser)
+
+        parser.add_option('--list-sets', dest='list_sets',
+                          action='store_true',
+                          help="List the available sets and exit.")
 
     def run(self):
         module_path = os.path.dirname(os.path.abspath(__file__))
