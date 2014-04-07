@@ -7,6 +7,7 @@ import re
 import subprocess
 import sys
 import tempfile
+from collections import defaultdict
 
 def get_suffixes(path):
     return [re.sub(r'^[^_]*_', '_', filename)
@@ -14,13 +15,23 @@ def get_suffixes(path):
              for filename in (files)]
 
 
-def compare_images(before, after):
+def compare_images(before, after, similar_dir):
     before = trim_system_ui("before", before)
     after = trim_system_ui("after", after)
-    outpath = tempdir + "/comparison_" + os.path.basename(before) + "-" + os.path.basename(after)
-    subprocess.call(["compare", before, after, outpath])
-    subprocess.call(["compare", "-metric", "MAE", before, after, "null:"])
-    print()
+    outname = "comparison_" + os.path.basename(before) + "-" + os.path.basename(after)
+    outpath = tempdir + "/" + outname
+    subprocess.call(["compare", "-quiet", before, after, outpath])
+    result = subprocess.call(["compare", "-quiet", "-fuzz", "1%", "-metric", "AE", before, after, "null:"], stderr=subprocess.STDOUT)
+    print("\t", end="")
+    if result == 0: # same
+        print()
+        os.rename(outpath, similar_dir + "/" + outname)
+    elif result == 1: # different
+        print()
+    else:
+        print("error")
+
+    return result
 
 
 def trim_system_ui(prefix, imagefile):
@@ -28,7 +39,7 @@ def trim_system_ui(prefix, imagefile):
         return imagefile
     outpath = imagefile
 
-    if platform.system() == "Darwin":
+    if False and platform.system() == "Darwin": # TODO: not necessary when using the new window capture on OS X
         titlebarHeight = 44
         try:
             import AppKit
@@ -43,7 +54,14 @@ def trim_system_ui(prefix, imagefile):
 
 
 def compare_dirs(before, after):
-    for f in set(get_suffixes(before) + get_suffixes(after)):
+    similar_dir = tempdir + "/similar"
+    os.mkdir(similar_dir)
+    sorted_suffixes = sorted(set(get_suffixes(before) + get_suffixes(after)))
+    maxFWidth = reduce(lambda x, y: max(x, len(y)), sorted_suffixes, 0)
+
+    print("SCREENSHOT SUFFIX".ljust(maxFWidth), "DIFFERING PIXELS (WITH FUZZ)")
+    resultDict = defaultdict(list)
+    for f in sorted_suffixes:
         image1 = glob.glob(sys.argv[1] + "/*" + f)
         image2 = glob.glob(sys.argv[2] + "/*" + f)
         if not image1:
@@ -52,9 +70,11 @@ def compare_dirs(before, after):
         if not image2:
             print("{0} exists in before but not in after".format(f))
             continue
-        print(f, end='\t')
+        print(f, "", end="".ljust(maxFWidth - len(f)))
         sys.stdout.flush()
-        compare_images(image1[0], image2[0])
+        result = compare_images(image1[0], image2[0], similar_dir)
+        resultDict[result].append(f)
+    print("{0} similar, {1} different, {2} errors".format(len(resultDict[0]), len(resultDict[1]), len(resultDict[2])))
 
 if len(sys.argv) < 3:
     print("Two files or two directories expected")
@@ -64,7 +84,8 @@ before = sys.argv[1]
 after = sys.argv[2]
 
 tempdir = tempfile.mkdtemp()
-print(tempdir)
+print("Image comparison results:", tempdir)
+print()
 
 if (os.path.isdir(before) and os.path.isdir(after)):
     compare_dirs(before, after)
