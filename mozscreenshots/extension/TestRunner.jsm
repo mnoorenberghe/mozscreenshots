@@ -47,7 +47,7 @@ this.TestRunner = {
     let screenshotPrefix = Services.appinfo.appBuildID;
     try {
       // Get the changeset/revision hash from Telemetry and use it instead if possible
-      const TelemetryPing = Cc["@mozilla.org/base/telemetry-ping;1"].getService(Ci.nsITelemetryPing);
+      Cu.import("resource://gre/modules/TelemetryPing.jsm");
       // Turn a changeset URI into just the repo name and revision then convert / to - for the filename.
       let changsetURI = Services.io.newURI(TelemetryPing.getPayload().info.revision, null, null);
       screenshotPrefix = changsetURI.path.replace(/\/(rev|projects|integration)\//g, "/")
