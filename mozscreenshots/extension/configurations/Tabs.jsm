@@ -13,75 +13,83 @@ Cu.import("resource://gre/modules/Services.jsm");
 this.Tabs = {
   init: function(libDir) {},
 
-  configurations: [
-    function fiveTabs(deferred) {
-      fiveTabsHelper();
-      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-      hoverTab(browserWindow.gBrowser.tabs[3]);
-      deferred.resolve();
+  configurations: {
+    fiveTabs: {
+      applyConfig: deferred => {
+        fiveTabsHelper();
+        let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+        hoverTab(browserWindow.gBrowser.tabs[3]);
+        deferred.resolve();
+      },
     },
-    function fourPinned(deferred) {
-      fiveTabsHelper();
-      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-      let tab = browserWindow.gBrowser.addTab(TWITTER_FAVICON);
-      browserWindow.gBrowser.pinTab(tab);
-      tab = browserWindow.gBrowser.addTab(GOOGLE_FAVICON);
-      browserWindow.gBrowser.pinTab(tab);
-      tab = browserWindow.gBrowser.addTab(SHORLANDER_FAVICON);
-      browserWindow.gBrowser.pinTab(tab);
-      tab = browserWindow.gBrowser.addTab("about:home");
-      browserWindow.gBrowser.pinTab(tab);
-      browserWindow.gBrowser.selectTabAtIndex(5);
-      hoverTab(browserWindow.gBrowser.tabs[2]);
-      // also hover the new tab button
-      let newTabButton = browserWindow.document.getAnonymousElementByAttribute(browserWindow.gBrowser.tabContainer, "class", "tabs-newtab-button");
-      hoverTab(newTabButton);
-      browserWindow.gBrowser.tabs[browserWindow.gBrowser.tabs.length - 1].setAttribute("beforehovered", true);
-      deferred.resolve();
-    },
-    function twoPinnedWithOverflow(deferred) {
-      fiveTabsHelper();
 
-      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-      browserWindow.gBrowser.loadTabs([
-        "about:addons",
-        "about:home",
-        FIREFOX_TAB,
-        "about:newtab",
-        "about:addons",
-        "about:home",
-        FIREFOX_TAB,
-        "about:newtab",
-        "about:addons",
-        "about:home",
-        FIREFOX_TAB,
-        "about:newtab",
-        "about:addons",
-        "about:home",
-        FIREFOX_TAB,
-        "about:newtab",
-        "about:addons",
-        "about:home",
-        FIREFOX_TAB,
-        "about:newtab",
-        "about:addons",
-        "about:home",
-        FIREFOX_TAB,
-        "about:newtab",
-        "about:addons",
-        "about:home",
-        FIREFOX_TAB,
-        "about:newtab",
-      ], true, true);
-      let tab = browserWindow.gBrowser.addTab(TWITTER_FAVICON);
-      browserWindow.gBrowser.pinTab(tab);
-      tab = browserWindow.gBrowser.addTab(GOOGLE_FAVICON);
-      browserWindow.gBrowser.pinTab(tab);
-      browserWindow.gBrowser.selectTabAtIndex(4);
-      hoverTab(browserWindow.gBrowser.tabs[6]);
-      deferred.resolve();
-    }
-  ],
+    fourPinned: {
+      applyConfig: deferred => {
+        fiveTabsHelper();
+        let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+        let tab = browserWindow.gBrowser.addTab(TWITTER_FAVICON);
+        browserWindow.gBrowser.pinTab(tab);
+        tab = browserWindow.gBrowser.addTab(GOOGLE_FAVICON);
+        browserWindow.gBrowser.pinTab(tab);
+        tab = browserWindow.gBrowser.addTab(SHORLANDER_FAVICON);
+        browserWindow.gBrowser.pinTab(tab);
+        tab = browserWindow.gBrowser.addTab("about:home");
+        browserWindow.gBrowser.pinTab(tab);
+        browserWindow.gBrowser.selectTabAtIndex(5);
+        hoverTab(browserWindow.gBrowser.tabs[2]);
+        // also hover the new tab button
+        let newTabButton = browserWindow.document.getAnonymousElementByAttribute(browserWindow.gBrowser.tabContainer, "class", "tabs-newtab-button");
+        hoverTab(newTabButton);
+        browserWindow.gBrowser.tabs[browserWindow.gBrowser.tabs.length - 1].setAttribute("beforehovered", true);
+        deferred.resolve();
+      },
+    },
+
+    twoPinnedWithOverflow: {
+      applyConfig: deferred => {
+        fiveTabsHelper();
+
+        let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+        browserWindow.gBrowser.loadTabs([
+          "about:addons",
+          "about:home",
+          FIREFOX_TAB,
+          "about:newtab",
+          "about:addons",
+          "about:home",
+          FIREFOX_TAB,
+          "about:newtab",
+          "about:addons",
+          "about:home",
+          FIREFOX_TAB,
+          "about:newtab",
+          "about:addons",
+          "about:home",
+          FIREFOX_TAB,
+          "about:newtab",
+          "about:addons",
+          "about:home",
+          FIREFOX_TAB,
+          "about:newtab",
+          "about:addons",
+          "about:home",
+          FIREFOX_TAB,
+          "about:newtab",
+          "about:addons",
+          "about:home",
+          FIREFOX_TAB,
+          "about:newtab",
+        ], true, true);
+        let tab = browserWindow.gBrowser.addTab(TWITTER_FAVICON);
+        browserWindow.gBrowser.pinTab(tab);
+        tab = browserWindow.gBrowser.addTab(GOOGLE_FAVICON);
+        browserWindow.gBrowser.pinTab(tab);
+        browserWindow.gBrowser.selectTabAtIndex(4);
+        hoverTab(browserWindow.gBrowser.tabs[6]);
+        deferred.resolve();
+      },
+    },
+  },
 };
 
 

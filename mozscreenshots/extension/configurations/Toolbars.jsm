@@ -15,26 +15,37 @@ Cu.import("resource://gre/modules/devtools/Console.jsm");
 this.Toolbars = {
   init: function(libDir) {},
 
-  configurations: [
-    function onlyNavBar(deferred) {
-      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-      var personalToolbar = browserWindow.document.getElementById("PersonalToolbar");
-      browserWindow.setToolbarVisibility(personalToolbar, false);
-      toggleMenubarIfNecessary(false);
-      deferred.resolve();
+  configurations: {
+    onlyNavBar: {
+      applyConfig: (deferred) => {
+        let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+        var personalToolbar = browserWindow.document.getElementById("PersonalToolbar");
+        browserWindow.setToolbarVisibility(personalToolbar, false);
+        toggleMenubarIfNecessary(false);
+        deferred.resolve();
+      },
     },
-    function allToolbars(deferred) { // Boookmarks and menubar
-      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-      if (browserWindow.fullScreen) {
-        deferred.reject("The bookmark toolbar and menubar are not shown in fullscreen.");
-        return;
-      }
-      var personalToolbar = browserWindow.document.getElementById("PersonalToolbar");
-      browserWindow.setToolbarVisibility(personalToolbar, true);
-      toggleMenubarIfNecessary(true);
-      deferred.resolve();
+
+    allToolbars: {
+      applyConfig: (deferred) => { // Boookmarks and menubar
+        let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+        var personalToolbar = browserWindow.document.getElementById("PersonalToolbar");
+        browserWindow.setToolbarVisibility(personalToolbar, true);
+        toggleMenubarIfNecessary(true);
+        deferred.resolve();
+      },
+
+      verifyConfig: deferred => {
+        let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+        if (browserWindow.fullScreen) {
+          deferred.reject("The bookmark toolbar and menubar are not shown in fullscreen.");
+          return;
+        }
+        deferred.resolve("allToolbars.verifyConfig");
+      },
     },
-  ],
+
+  },
 };
 
 
@@ -43,7 +54,7 @@ this.Toolbars = {
 function toggleMenubarIfNecessary(visible) {
   let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
   // The menubar is not shown on OS X or while in fullScreen
-  if (Services.appinfo.OS != "Darwin" && !browserWindow.fullScreen) {
+  if (Services.appinfo.OS != "Darwin" /*&& !browserWindow.fullScreen*/) {
     var menubar = browserWindow.document.getElementById("toolbar-menubar");
     browserWindow.setToolbarVisibility(menubar, visible);
   }

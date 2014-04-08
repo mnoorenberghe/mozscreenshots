@@ -15,16 +15,18 @@ this.PrivateBrowsing = {
 
   init: function(libDir) {},
 
-  configurations: [
-    function tempPB(deferred) {
-      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-      browserWindow.OpenBrowserWindow({private: true});
+  configurations: {
+    tempPB: {
+      applyConfig: deferred => {
+        let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+        browserWindow.OpenBrowserWindow({private: true});
 
-      // TODO: switch to observer notification
-      setTimeout(function waitToOpenPBWindow() {
-        browserWindow.close();
-        deferred.resolve();
-      }, 100);
+        // TODO: switch to observer notification
+        setTimeout(function waitToOpenPBWindow() {
+          browserWindow.close();
+          deferred.resolve();
+        }, 100);
+      },
     },
-  ],
+  },
 };

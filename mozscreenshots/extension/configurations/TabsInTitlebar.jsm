@@ -16,18 +16,24 @@ this.TabsInTitlebar = {
 
   init: function(libDir) {},
 
-  configurations: [
-    function tabsInTitlebar(deferred) {
-      if (Services.appinfo.OS == "Linux") {
-        deferred.reject("TabsInTitlebar isn't supported on Linux");
-        return;
-      }
-      Services.prefs.setBoolPref(PREF_TABS_IN_TITLEBAR, true);
-      deferred.resolve();
+  configurations: {
+    tabsInTitlebar: {
+      applyConfig: deferred => {
+        if (Services.appinfo.OS == "Linux") {
+          deferred.reject("TabsInTitlebar isn't supported on Linux");
+          return;
+        }
+        Services.prefs.setBoolPref(PREF_TABS_IN_TITLEBAR, true);
+        deferred.resolve();
+      },
     },
-    function tabsOutsideTitlebar(deferred) {
-      Services.prefs.setBoolPref(PREF_TABS_IN_TITLEBAR, false);
-      deferred.resolve();
+
+    tabsOutsideTitlebar: {
+      applyConfig: deferred => {
+        Services.prefs.setBoolPref(PREF_TABS_IN_TITLEBAR, false);
+        deferred.resolve();
+      },
     },
-  ],
+
+  },
 };

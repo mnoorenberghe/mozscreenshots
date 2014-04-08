@@ -15,32 +15,37 @@ this.CustomizeMode = {
 
   init: function(libDir) {},
 
-  configurations: [
-    function notCustomizing(deferred) {
-      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-      if (!browserWindow.document.documentElement.hasAttribute("customizing")) {
-        deferred.resolve();
-        return;
-      }
-      function onCustomizationEnds() {
-        browserWindow.gNavToolbox.removeEventListener("aftercustomization", onCustomizationEnds);
-        setTimeout(() => deferred.resolve(), 100); // Wait for final changes
-      }
-      browserWindow.gNavToolbox.addEventListener("aftercustomization", onCustomizationEnds);
-      browserWindow.gCustomizeMode.exit();
+  configurations: {
+    notCustomizing: {
+      applyConfig: (deferred) => {
+        let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+        if (!browserWindow.document.documentElement.hasAttribute("customizing")) {
+          deferred.resolve("notCustomizing: already not customizing");
+          return;
+        }
+        function onCustomizationEnds() {
+          browserWindow.gNavToolbox.removeEventListener("aftercustomization", onCustomizationEnds);
+          setTimeout(() => deferred.resolve("notCustomizing: onCustomizationEnds"), 500); // Wait for final changes
+        }
+        browserWindow.gNavToolbox.addEventListener("aftercustomization", onCustomizationEnds);
+        browserWindow.gCustomizeMode.exit();
+      },
     },
-    function customizing(deferred) {
-      let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
-      if (browserWindow.document.documentElement.hasAttribute("customizing")) {
-        deferred.resolve();
-        return;
-      }
-      function onCustomizing() {
-        browserWindow.gNavToolbox.removeEventListener("customizationready", onCustomizing);
-        setTimeout(() => deferred.resolve(), 100); // Wait for final changes
-      }
-      browserWindow.gNavToolbox.addEventListener("customizationready", onCustomizing);
-      browserWindow.gCustomizeMode.enter();
-    }
-  ],
+
+    customizing: {
+      applyConfig: (deferred) => {
+        let browserWindow = Services.wm.getMostRecentWindow("navigator:browser");
+        if (browserWindow.document.documentElement.hasAttribute("customizing")) {
+          deferred.resolve("customizing: already customizing");
+          return;
+        }
+        function onCustomizing() {
+          browserWindow.gNavToolbox.removeEventListener("customizationready", onCustomizing);
+          setTimeout(() => deferred.resolve("customizing: onCustomizing"), 500); // Wait for final changes
+        }
+        browserWindow.gNavToolbox.addEventListener("customizationready", onCustomizing);
+        browserWindow.gCustomizeMode.enter();
+      },
+    },
+  },
 };

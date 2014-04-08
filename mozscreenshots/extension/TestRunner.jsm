@@ -13,7 +13,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Timer.jsm");
 Cu.import("resource://gre/modules/devtools/Console.jsm");
-Cu.import("resource://gre/modules/commonjs/sdk/core/promise.js");
+Cu.import("resource://gre/modules/Promise.jsm");
 Cu.import("resource://gre/modules/osfile.jsm");
 
 
@@ -93,10 +93,19 @@ this.TestRunner = {
         let imported = {};
         Cu.import("chrome://mozscreenshots/content/configurations/" + setName + ".jsm", imported);
         imported[setName].init(this._libDir);
-        if (imported[setName].configurations.length)
-          sets.push(imported[setName].configurations);
+        let configurationNames = Object.keys(imported[setName].configurations);
+        if (!configurationNames.length) {
+          throw new Error(setName + " has no configurations for this environment");
+        }
+        for (let config of configurationNames) {
+          // Automatically set the name property of the configuration object to its name from the configuration object.
+          imported[setName].configurations[config].name = config;
+        }
+        sets.push(imported[setName].configurations);
       } catch (ex) {
         console.error("Error loading set: " + setName);
+        console.error(ex);
+        console.error("See --list-sets for a list of all sets");
         throw ex;
       }
     }
@@ -134,34 +143,73 @@ this.TestRunner = {
     console.log("Combination " + padLeft(++this.currentCombo, String(this.combos.length).length) + "/" + this.combos.length + ": " + this._comboName(combo).substring(1));
 
     function changeConfig(config, deferred) {
-      return function () {
-        DEBUG("calling " + config.name);
-        config(deferred);
+      return function (fullfillmentVal) {
+        DEBUG("calling " + config.name, "after receiving fullfillmentVal:", fullfillmentVal);
+        config.applyConfig(deferred);
         DEBUG("called " + config.name);
       };
     }
 
     let d = Promise.defer();
     let promise = d.promise;
+
+    // First go through and actually apply all of the configs
     combo.forEach(function(config, i) {
       if (!this._lastCombo || combo[i] !== this._lastCombo[i]) {
         let deferred = Promise.defer();
         DEBUG("promising", config.name);
-        promise.then(changeConfig(config, deferred), this._configurationRejected.bind(this));
+        promise.then(changeConfig(config, deferred),
+                     (reason) => {
+                       DEBUG("first rejection handler: ", reason);
+                       this._configurationRejected.bind(this)(reason);
+                     });
         promise = deferred.promise;
       }
     }.bind(this));
 
-    promise.then(this._configurationReady(combo), this._configurationRejected.bind(this));
-    d.resolve();
+    // Update the lastCombo since it's now been applied regardless of whether it's accepted below.
+    promise = promise.then((fullfillment) => {
+                             DEBUG("fulfilled all applyConfig so setting lastCombo. Ff: ", fullfillment);
+                             this._lastCombo = combo;
+                             return "set this._lastCombo";
+                           },
+                           (reason) => {
+                             DEBUG("second rejection handler: ", reason);
+                             this._configurationRejected.bind(this)(reason);
+                           });
+
+    // Then ask configs if the current setup is valid. We can't can do this in the applyConfig methods of the config since it doesn't know what configs later in the loop will do that may invalidate the combo.
+    combo.forEach(function(config, i) {
+      // A configuration can specify an optional verifyConfig method to indicate if the current config is valid for a screenshot.
+      // This gets called even if the this config was used in the lastCombo since another config may have invalidated it.
+      if (config.verifyConfig) {
+        DEBUG("checking if the combo is valid with", config.name);
+        let deferred = Promise.defer();
+        promise.then((fullfillment) => { DEBUG("fulfilled before verifyConfig", fullfillment); config.verifyConfig(deferred);},
+                                   (reason) => {
+                                     DEBUG("third rejection handler: ", reason);
+                                     this._configurationRejected.bind(this)(reason);
+                                   });
+        promise = deferred.promise;
+      }
+    }.bind(this));
+
+    promise = promise.then(this._configurationReady(combo),
+                           (reason) => {
+                             DEBUG("fourth rejection handler: ", reason);
+                             this._configurationRejected.bind(this)(reason);
+                           });
+    promise.catch((reason) => {console.error("Unhandled: " + reason);});
+    d.resolve("initial deferred to start the execution");
+    debugger;
   },
 
   _configurationReady: function(combo) {
-    return function configurationReadyInner() {
+    return function configurationReadyInner(fullfillment) {
+      DEBUG("_configurationReady received fullfillment: ", fullfillment);
       setTimeout(function delayedScreenshot() {
         Screenshot.captureExternal(padLeft(this.currentCombo, String(this.combos.length).length) + this._comboName(combo),
                                    function afterScreenshot() {
-                                     this._lastCombo = combo;
                                      this.completedCombos++;
                                      this._performCombo();
                                    }.bind(this));
@@ -189,13 +237,21 @@ this.TestRunner = {
  * Source: http://stackoverflow.com/a/9422496 by Phrogz. CC BY-SA 3.0
  **/
 function LazyProduct(sets) {
+  // Build the lookup table with an entry for each set with the value being:
+  // [the number of permutations of the sets with lower index, the number of items in the set at the index]
   for (var dm = [], f = 1, l, i = sets.length; i--; f *= l){
-    dm[i] = [f, l = sets[i].length];
+    dm[i] = [f, l = Object.keys(sets[i]).length];
   }
+
   this.length = f;
   this.item = function(n) {
-    for (var c = [], i = sets.length; i--; )
-      c[i] = sets[i][ (n / dm[i][0] << 0) % dm[i][1] ];
+    for (var c = [], i = sets.length; i--; ) {
+      // For set i, get the item from the set with the floored value of (n / the number of permutations of the sets already chosen from) modulo the length of set i
+      let keyIndex = ((n / dm[i][0]) << 0) % dm[i][1];
+      let keys = Object.keys(sets[i]);
+      c[i] = sets[i][keys[keyIndex]];
+    }
+    // The result is an array containing one from each set
     return c;
   };
 };
@@ -281,10 +337,11 @@ let Screenshot = {
           console.log("Error reading windowid");
           return;
         }
-
-        // The file data is contained within inputStream.
-        // You can read it into a string with
-        var windowID = NetUtil.readInputStreamToString(inputStream, inputStream.available());
+        try {
+          var windowID = NetUtil.readInputStreamToString(inputStream, inputStream.available());
+        } catch (ex) {
+          console.error(ex);
+        }
         screencapture(windowID);
       });
     }

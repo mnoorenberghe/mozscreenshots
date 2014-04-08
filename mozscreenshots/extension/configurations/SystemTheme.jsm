@@ -15,7 +15,7 @@ Cu.import("resource://gre/modules/devtools/Console.jsm");
 
 let SystemTheme = {
   _libDir: null,
-  configurations: [],
+  configurations: {},
 
   init: function(libDir) {
     this._libDir = libDir;
@@ -27,33 +27,45 @@ let SystemTheme = {
       let winVersion = getWindowsVersion();
 
       if (winVersion.majorVersion == 6) { // Windows Vista, 7 and 8
-        this.configurations = [
-          function aeroGlass(deferred) {
-            SystemTheme._changeWindowsTheme(resourcesDir + "\\Themes\\aero.theme",
-                                            deferred);
+        this.configurations = {
+          aeroGlass: {
+            applyConfig: deferred => {
+              SystemTheme._changeWindowsTheme(resourcesDir + "\\Themes\\aero.theme",
+                                              deferred);
+            },
+            aeroBasic: {
+              applyConfig: deferred => {
+                SystemTheme._changeWindowsTheme(resourcesDir + "\\Ease of Access Themes\\basic.theme",
+                                                deferred);
+              },
+            },
+            classic: {
+              applyConfig: deferred => {
+                SystemTheme._changeWindowsTheme(resourcesDir + "\\Ease of Access Themes\\classic.theme",
+                                                deferred);
+              },
+            },
+            HighContrast1: {
+              applyConfig: deferred => {
+                SystemTheme._changeWindowsTheme(resourcesDir + "\\Ease of Access Themes\\hc1.theme",
+                                                deferred);
+              },
+            },
           },
-          function aeroBasic(deferred) {
-            SystemTheme._changeWindowsTheme(resourcesDir + "\\Ease of Access Themes\\basic.theme",
-                                            deferred);
-          },
-          function classic(deferred) {
-            SystemTheme._changeWindowsTheme(resourcesDir + "\\Ease of Access Themes\\classic.theme",
-                                            deferred);
-          },
-          function HighContrast1(deferred) {
-            SystemTheme._changeWindowsTheme(resourcesDir + "\\Ease of Access Themes\\hc1.theme",
-                                            deferred);
-          },
-        ];
+        };
       } else if (winVersion.majorVersion == 5) { // Windows XP
-        this.configurations = [
-          function luna(deferred) {
-            SystemTheme._changeWindowsXPTheme(resourcesDir + "\\Themes\\Luna.theme", deferred);
+        this.configurations = {
+          luna: {
+            applyConfig: deferred => {
+              SystemTheme._changeWindowsXPTheme(resourcesDir + "\\Themes\\Luna.theme", deferred);
+            },
           },
-          function classic(deferred) {
-            SystemTheme._changeWindowsXPTheme(resourcesDir + "\\Themes\\Windows Classic.theme", deferred);
+          classic: {
+            applyConfig: deferred => {
+              SystemTheme._changeWindowsXPTheme(resourcesDir + "\\Themes\\Windows Classic.theme", deferred);
+            },
           },
-        ];
+        };
       }
     }
   },
