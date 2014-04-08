@@ -1,5 +1,7 @@
 {
 "browser.aboutHomeSnippets.updateUrl": "data:",
-"browser.rights.override": false
+"browser.rights.override": false,
+"devtools.chrome.enabled": true,
+"devtools.debugger.remote-enabled": true
 }
 
