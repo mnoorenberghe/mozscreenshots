@@ -201,7 +201,6 @@ this.TestRunner = {
                            });
     promise.catch((reason) => {console.error("Unhandled: " + reason);});
     d.resolve("initial deferred to start the execution");
-    debugger;
   },
 
   _configurationReady: function(combo) {
