@@ -23,7 +23,7 @@ this.LightweightThemes = {
         deferred.resolve("noLWT");
       },
     },
-/*
+
     darkLWT: {
       applyConfig: (deferred) => {
         LightweightThemeManager.currentTheme = {
@@ -43,7 +43,7 @@ this.LightweightThemes = {
 
       verifyConfig: verifyConfigHelper,
     },
-*/
+/*
     darkColourfulLWT: {
       applyConfig: (deferred) => {
         LightweightThemeManager.currentTheme = {
@@ -67,7 +67,7 @@ this.LightweightThemes = {
 
       verifyConfig: verifyConfigHelper,
     },
-/*
+
     lightLWT: {
       applyConfig: (deferred) => {
         LightweightThemeManager.currentTheme = {
