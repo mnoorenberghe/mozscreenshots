@@ -199,7 +199,7 @@ this.TestRunner = {
                              DEBUG("fourth rejection handler: ", reason);
                              this._configurationRejected.bind(this)(reason);
                            });
-    promise.catch((reason) => {console.error("Unhandled: " + reason);});
+    promise.then(undefined, (reason) => {console.error("Unhandled: " + reason);});
     d.resolve("initial deferred to start the execution");
   },
 
