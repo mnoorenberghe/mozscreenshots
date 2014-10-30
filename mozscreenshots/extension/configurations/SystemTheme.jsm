@@ -33,23 +33,23 @@ let SystemTheme = {
               SystemTheme._changeWindowsTheme(resourcesDir + "\\Themes\\aero.theme",
                                               deferred);
             },
-            aeroBasic: {
-              applyConfig: deferred => {
-                SystemTheme._changeWindowsTheme(resourcesDir + "\\Ease of Access Themes\\basic.theme",
-                                                deferred);
-              },
+          },
+          aeroBasic: {
+            applyConfig: deferred => {
+              SystemTheme._changeWindowsTheme(resourcesDir + "\\Ease of Access Themes\\basic.theme",
+                                              deferred);
             },
-            classic: {
-              applyConfig: deferred => {
-                SystemTheme._changeWindowsTheme(resourcesDir + "\\Ease of Access Themes\\classic.theme",
-                                                deferred);
-              },
+          },
+          classic: {
+            applyConfig: deferred => {
+              SystemTheme._changeWindowsTheme(resourcesDir + "\\Ease of Access Themes\\classic.theme",
+                                              deferred);
             },
-            HighContrast1: {
-              applyConfig: deferred => {
-                SystemTheme._changeWindowsTheme(resourcesDir + "\\Ease of Access Themes\\hc1.theme",
-                                                deferred);
-              },
+          },
+          HighContrast1: {
+            applyConfig: deferred => {
+              SystemTheme._changeWindowsTheme(resourcesDir + "\\Ease of Access Themes\\hc1.theme",
+                                              deferred);
             },
           },
         };
