@@ -18,10 +18,10 @@ def get_suffixes(path):
 def compare_images(before, after, similar_dir):
     before = trim_system_ui("before", before)
     after = trim_system_ui("after", after)
-    outname = "comparison_" + os.path.basename(before) + "-" + os.path.basename(after)
+    outname = "comparison_" + os.path.basename(before)
     outpath = tempdir + "/" + outname
     subprocess.call(["compare", "-quiet", before, after, outpath])
-    result = subprocess.call(["compare", "-quiet", "-fuzz", "1%", "-metric", "AE", before, after, "null:"], stderr=subprocess.STDOUT)
+    result = subprocess.call(["compare", "-quiet", "-fuzz", "3%", "-metric", "AE", before, after, "null:"], stderr=subprocess.STDOUT)
     print("\t", end="")
     if result == 0: # same
         print()
