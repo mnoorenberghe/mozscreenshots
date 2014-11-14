@@ -2,6 +2,8 @@
 "browser.aboutHomeSnippets.updateUrl": "data:",
 "browser.customizemode.tip0.shown": false,
 "browser.rights.override": false,
+"browser.tabs.remote.autostart": false,
+"browser.tabs.remote.autostart.1": false,
 "devtools.chrome.enabled": true,
 "devtools.debugger.remote-enabled": true
 }
