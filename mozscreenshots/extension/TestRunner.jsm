@@ -8,6 +8,8 @@ this.EXPORTED_SYMBOLS = [ "TestRunner" ];
 
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 const defaultSetNames = ["SystemTheme", "Tabs", "WindowSize", "Toolbars", "LightweightThemes"];
+const env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
+
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
@@ -15,6 +17,9 @@ Cu.import("resource://gre/modules/Timer.jsm");
 Cu.import("resource://gre/modules/devtools/Console.jsm");
 Cu.import("resource://gre/modules/Promise.jsm");
 Cu.import("resource://gre/modules/osfile.jsm");
+Cu.import("resource://gre/modules/FileUtils.jsm");
+
+Cu.importGlobalProperties(["btoa"]);
 
 
 function DEBUG(...args) {
@@ -32,6 +37,11 @@ this.TestRunner = {
     switch (Services.appinfo.OS) {
       case "WINNT":
         screenshotPath = "C:\\mozscreenshots\\";
+        try {
+          screenshotPath = FileUtils.getFile("TmpD", ["mozscreenshots"]).path;
+        } catch (ex) {
+          DEBUG("falling back to " + screenshotPath);
+        }
         break;
       case "Darwin":
       case "Linux":
@@ -61,6 +71,7 @@ this.TestRunner = {
     this._libDir.append("lib");
 
     // Setup some prefs
+    // TODO: move to prefs.json
     Services.prefs.setCharPref("extensions.ui.lastCategory", "addons://list/extension");
     Services.prefs.setBoolPref("browser.safebrowsing.enabled", false);
   },
@@ -119,8 +130,6 @@ this.TestRunner = {
       gBrowser.removeTab(gBrowser.selectedTab, {animate: false});
     gBrowser.selectedBrowser.loadURI("data:text/html,<h1>Done!");
     browserWindow.restore();
-    let env = Cc["@mozilla.org/process/environment;1"]
-                .getService(Ci.nsIEnvironment);
     if (!env.get("MOZSCREENSHOTS_INTERACTIVE")) {
       Services.startup.quit(Ci.nsIAppStartup.eForceQuit);
     }
@@ -301,10 +310,45 @@ let Screenshot = {
     return OS.Path.join(this._path, this._imagePrefix + baseName + this._imageExtension);
   },
 
+  convertImageToDataURI: function(imagePath) {
+    let deferred = Promise.defer();
+    Components.utils.import("resource://gre/modules/NetUtil.jsm");
+    var file = Components.classes["@mozilla.org/file/local;1"].
+               createInstance(Components.interfaces.nsILocalFile);
+    file.initWithPath(imagePath);
+
+    var channel = NetUtil.newChannel(file);
+    channel.contentType = "image/png";
+
+    NetUtil.asyncFetch(channel, function(inputStream, status) {
+      if (!Components.isSuccessCode(status)) {
+        // Handle error!
+        DEBUG("couldn't fetch the screenshot");
+        deferred.rejected("couldn't convertImageToDataURI");
+        return;
+      }
+      var data = NetUtil.readInputStreamToString(inputStream, inputStream.available());
+      deferred.resolve("data:image/png;base64," + btoa(data));
+    });
+    return deferred.promise;
+  },
+
   // Capture the whole screen using an external application.
   captureExternal: function(filename, callback) {
     setTimeout(function () {
-      this._screenshotFunction(this._buildImagePath(filename), callback);
+      let imagePath = this._buildImagePath(filename);
+      this._screenshotFunction(imagePath, function() {
+        if (!env.get("MOZSCREENSHOTS_DATAURIS")) {
+          callback();
+          return;
+        }
+        this.convertImageToDataURI(imagePath).then((dataURI) => {
+          dump("SCREENSHOT: " + filename + ": " + dataURI + "\n");
+        },
+        (error) => {
+          console.error(error);
+        }).then(callback, callback);
+      }.bind(this));
       DEBUG("saved screenshot: " + filename);
     }.bind(this), 1000); // TODO: test with lower
   },
