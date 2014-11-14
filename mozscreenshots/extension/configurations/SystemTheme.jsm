@@ -67,6 +67,14 @@ let SystemTheme = {
           },
         };
       }
+    } else {
+      this.configurations = {
+        defaultTheme: {
+          applyConfig: deferred => {
+            // Do nothing. This is here so the default set works on all OSs.
+          },
+        },
+      };
     }
   },
 
