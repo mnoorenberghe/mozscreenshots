@@ -71,6 +71,7 @@ let SystemTheme = {
       this.configurations = {
         defaultTheme: {
           applyConfig: deferred => {
+            deferred.resolve();
             // Do nothing. This is here so the default set works on all OSs.
           },
         },
