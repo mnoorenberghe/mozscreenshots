@@ -18,6 +18,7 @@ this.Preferences = {
 
     let panes = [
       ["paneGeneral", null],
+      ["paneSearch", null],
       ["paneContent", null],
       ["paneApplications", null],
       ["panePrivacy", null],
