@@ -1,5 +1,6 @@
 {
 "browser.aboutHomeSnippets.updateUrl": "data:",
+"browser.addon-watch.ignore": "[\"mozscreenshots@mozilla.org\"]",
 "browser.customizemode.tip0.shown": false,
 "browser.rights.override": false,
 "browser.tabs.remote.autostart": false,
@@ -7,4 +8,3 @@
 "devtools.chrome.enabled": true,
 "devtools.debugger.remote-enabled": true
 }
-
