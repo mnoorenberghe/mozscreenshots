@@ -410,7 +410,8 @@ let Screenshot = {
 
       // Run the process.
       let args = ['-x', '-t', 'png'];
-      if (windowID && Services.sysinfo.getProperty("version").indexOf("10.0") !== 0) {
+      // Darwin version number for OS X 10.6 is 10.x
+      if (windowID && Services.sysinfo.getProperty("version").indexOf("10.") !== 0) {
         // Capture only that window on 10.7+
         args.push('-l');
         args.push(windowID);
