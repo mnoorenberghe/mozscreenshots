@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 BUILD_DIR=build
-XPI=run-$(RUN).xpi
+XPI=mozscreenshots-$(RUN).xpi
 
 help:
 	@echo "Make targets:"
@@ -19,16 +19,16 @@ check_args:
 		exit 1; \
 	fi
 
-package: check_args | $(RUN)
+package: check_args
 	@echo "Packaging: $(RUN)"
 
-	mkdir -p "$(BUILD_DIR)/$(RUN)/content/"
-	cp -a $(RUN)/*.jsm "$(BUILD_DIR)/$(RUN)/content/"
+	mkdir -p "$(BUILD_DIR)/$(RUN)"
+	cp -r configurations "$(BUILD_DIR)/$(RUN)/configurations"
 	cp -r lib "$(BUILD_DIR)/$(RUN)/lib"
 	cp -a bootstrap.js "$(BUILD_DIR)/$(RUN)"
 	cp -a install.rdf "$(BUILD_DIR)/$(RUN)"
 	cp -a chrome.manifest "$(BUILD_DIR)/$(RUN)"
-	cp -a TestRunner.jsm "$(BUILD_DIR)/$(RUN)/content/"
+	cp -a TestRunner.jsm "$(BUILD_DIR)/$(RUN)"
 
 # 	Clean up unwanted files
 	find "$(BUILD_DIR)/$(RUN)" -depth -name '*~' -exec rm -rf "{}" \;
@@ -41,6 +41,6 @@ package: check_args | $(RUN)
 	cd $(BUILD_DIR)/$(RUN) && zip -qr9XD "../$(XPI)" * && cd ../..
 	@echo "Done: $(BUILD_DIR)/$(XPI)"
 
-clean: | $(RUN)
+clean:
 	rm -Rf "$(BUILD_DIR)/$(RUN)"
 	rm -f "$(BUILD_DIR)/$(XPI)"
