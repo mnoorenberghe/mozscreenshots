@@ -26,7 +26,9 @@ function install(data, reason) {
 
   AddonManager.getAddonByID(data.id, function(addon) {
     // Enable on install in case the user disabled a prior version
-    addon.userDisabled = false;
+    if (addon) {
+      addon.userDisabled = false;
+    }
   });
 }
 
