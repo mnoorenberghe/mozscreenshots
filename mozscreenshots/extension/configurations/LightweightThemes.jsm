@@ -14,7 +14,18 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Timer.jsm");
 
 this.LightweightThemes = {
-  init: function(libDir) {},
+  init: function(libDir) {
+    // convert -size 3000x200 canvas:black black_theme.png
+    let blackImage = libDir.clone();
+    blackImage.append("black_theme.png");
+    this._blackImageURL = Services.io.newFileURI(blackImage).spec;
+
+    // convert -size 3000x200 canvas:white white_theme.png
+    let whiteImage = libDir.clone();
+    whiteImage.append("white_theme.png");
+    this._whiteImageURL = Services.io.newFileURI(whiteImage).spec;
+
+  },
 
   configurations: {
     noLWT: {
@@ -26,14 +37,14 @@ this.LightweightThemes = {
 
     darkLWT: {
       applyConfig: (deferred) => {
-        LightweightThemeManager.currentTheme = {
+        LightweightThemeManager.setLocalTheme({
           id:          "black",
           name:        "black",
-          headerURL:   "https://addons.mozilla.org/_files/15433/BlackH.jpg?1236722683",
-          footerURL:   "https://addons.mozilla.org/_files/15433/BlackF.jpg?1236722683",
+          headerURL:   LightweightThemes._blackImageURL,
+          footerURL:   LightweightThemes._blackImageURL,
           textcolor:   "#ffffff",
-          accentcolor: "#000000",
-        };
+          accentcolor: "#111111",
+        });
 
         // Wait for LWT listener
         setTimeout(() => {
@@ -70,14 +81,14 @@ this.LightweightThemes = {
 
     lightLWT: {
       applyConfig: (deferred) => {
-        LightweightThemeManager.currentTheme = {
+        LightweightThemeManager.setLocalTheme({
           id:          "white",
           name:        "white",
-          headerURL:   "https://addons.mozilla.org/_files/308262/white-header.png?1303118483",
-          footerURL:   "https://addons.mozilla.org/_files/308262/white-footer.png?1303118483",
+          headerURL:   LightweightThemes._whiteImageURL,
+          footerURL:   LightweightThemes._whiteImageURL,
           textcolor:   "#000000",
-          accentcolor: "#ffffff",
-        };
+          accentcolor: "#eeeeee",
+        });
         // Wait for LWT listener
         setTimeout(() => {
           deferred.resolve("lightLWT");
