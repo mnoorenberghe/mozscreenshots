@@ -24,7 +24,6 @@ this.LightweightThemes = {
     let whiteImage = libDir.clone();
     whiteImage.append("white_theme.png");
     this._whiteImageURL = Services.io.newFileURI(whiteImage).spec;
-
   },
 
   configurations: {

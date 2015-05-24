@@ -5,6 +5,7 @@
 "use strict";
 
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
+const env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/AddonManager.jsm");
@@ -37,12 +38,20 @@ function startup(data, reason) {
 
   AddonManager.getAddonByID(data.id, function(addon) {
     extensionPath = addon.getResourceURI();
-    Services.obs.addObserver(observer, "sessionstore-windows-restored", false);
+
+    // Start immediately if the add-on was installed at runtime for mochitest-broswer-chrome.
+    if (env.get("MOZ_UPLOAD_DIR")) {
+      startRun();
+    } else {
+      Services.obs.addObserver(observer, "sessionstore-windows-restored", false);
+    }
   });
 }
 
 function shutdown(data, reason) {
-  Services.obs.removeObserver(observer, "sessionstore-windows-restored");
+  if (!env.get("MOZ_UPLOAD_DIR")) {
+    Services.obs.removeObserver(observer, "sessionstore-windows-restored");
+  }
 }
 
 function uninstall(data, reason) { }

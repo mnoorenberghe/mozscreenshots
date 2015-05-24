@@ -7,7 +7,7 @@
 this.EXPORTED_SYMBOLS = [ "TestRunner" ];
 
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
-const defaultSetNames = ["SystemTheme", "Tabs", "WindowSize", "Toolbars", "LightweightThemes"];
+const defaultSetNames = ["Tabs", "WindowSize", "Toolbars", "LightweightThemes"];
 const env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
 
 
@@ -52,6 +52,13 @@ this.TestRunner = {
         break;
     }
     screenshotPath += (new Date()).toISOString().replace(/:/g, "-") + "_" + Services.appinfo.OS;
+
+    const MOZ_UPLOAD_DIR = env.get("MOZ_UPLOAD_DIR");
+    if (MOZ_UPLOAD_DIR) {
+      screenshotPath = MOZ_UPLOAD_DIR;
+    }
+
+    console.log("Saving screenshots to:", screenshotPath);
     DEBUG("TestRunner.init");
 
     let screenshotPrefix = Services.appinfo.appBuildID;
@@ -128,9 +135,11 @@ this.TestRunner = {
     let gBrowser = browserWindow.gBrowser;
     while (gBrowser.tabs.length > 1)
       gBrowser.removeTab(gBrowser.selectedTab, {animate: false});
-    gBrowser.selectedBrowser.loadURI("data:text/html,<h1>Done!");
+    gBrowser.unpinTab(gBrowser.selectedTab);
+    gBrowser.selectedBrowser.loadURI("data:text/html;charset=utf-8,<h1>Done!");
     browserWindow.restore();
-    if (!env.get("MOZSCREENSHOTS_INTERACTIVE")) {
+    Services.obs.notifyObservers(null, "mozscreenshots-finished", null);
+    if (!env.get("MOZSCREENSHOTS_INTERACTIVE") && !env.get("MOZ_UPLOAD_DIR")) {
       Services.startup.quit(Ci.nsIAppStartup.eForceQuit);
     }
   },
@@ -373,7 +382,7 @@ let Screenshot = {
       Components.utils.import("resource://gre/modules/NetUtil.jsm");
       let file = Cc["@mozilla.org/file/local;1"]
                    .createInstance(Ci.nsIFile);
-      file.initWithPath("/tmp/mozscreenshots/windowid");
+      file.initWithPath("/tmp/mozscreenshots-windowid");
 
       NetUtil.asyncFetch(file, function(inputStream, status) {
         if (!Components.isSuccessCode(status)) {
@@ -421,7 +430,7 @@ let Screenshot = {
     osascriptP.init(osascript);
     // -e 'tell application (path to frontmost application as text) to set winID to id of window window_name'
     // -e 'tell application \"System Events\" to set window_name to id of first window of (first application process whose frontmost is true)'
-    let osaArgs = ['-c', "/usr/bin/osascript -e 'tell application (path to frontmost application as text) to set winID to id of window 1'  > /tmp/mozscreenshots/windowid"];
+    let osaArgs = ['-c', "/usr/bin/osascript -e 'tell application (path to frontmost application as text) to set winID to id of window 1'  > /tmp/mozscreenshots-windowid"];
     osascriptP.runAsync(osaArgs, osaArgs.length, this._screenshotObserver(readWindowID));
   },
 
