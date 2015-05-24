@@ -8,6 +8,7 @@ this.EXPORTED_SYMBOLS = [ "DevEdition" ];
 
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
 
+Cu.import("resource://gre/modules/LightweightThemeManager.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/devtools/Console.jsm");
 
@@ -18,7 +19,7 @@ this.DevEdition = {
     devEditionLight: {
       applyConfig: (deferred) => {
         Services.prefs.setCharPref("devtools.theme", "light");
-        Services.prefs.setBoolPref("browser.devedition.theme.enabled", true);
+        LightweightThemeManager.currentTheme = LightweightThemeManager.getUsedTheme("firefox-devedition@mozilla.org");
         Services.prefs.setBoolPref("browser.devedition.theme.showCustomizeButton", true);
         deferred.resolve("devEditionLight");
       }
@@ -26,7 +27,7 @@ this.DevEdition = {
     devEditionDark: {
       applyConfig: (deferred) => {
         Services.prefs.setCharPref("devtools.theme", "dark");
-        Services.prefs.setBoolPref("browser.devedition.theme.enabled", true);
+        LightweightThemeManager.currentTheme = LightweightThemeManager.getUsedTheme("firefox-devedition@mozilla.org");
         Services.prefs.setBoolPref("browser.devedition.theme.showCustomizeButton", true);
         deferred.resolve("devEditionDark");
       }
@@ -34,7 +35,7 @@ this.DevEdition = {
     devEditionOff: {
       applyConfig: (deferred) => {
         Services.prefs.clearUserPref("devtools.theme");
-        Services.prefs.clearUserPref("browser.devedition.theme.enabled");
+        LightweightThemeManager.currentTheme = null;
         Services.prefs.clearUserPref("browser.devedition.theme.showCustomizeButton");
         deferred.resolve("devEditionOff");
       }
