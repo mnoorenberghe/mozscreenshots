@@ -7,7 +7,7 @@
 this.EXPORTED_SYMBOLS = [ "TestRunner" ];
 
 const {classes: Cc, interfaces: Ci, utils: Cu} = Components;
-const defaultSetNames = ["Tabs", "WindowSize", "Toolbars", "LightweightThemes"];
+const defaultSetNames = ["TabsInTitlebar", "Tabs", "WindowSize", "Toolbars", "LightweightThemes"];
 const env = Cc["@mozilla.org/process/environment;1"].getService(Ci.nsIEnvironment);
 
 
@@ -439,9 +439,15 @@ let Screenshot = {
     let file = Cc["@mozilla.org/file/local;1"]
                  .createInstance(Ci.nsIFile);
     try {
-      file.initWithPath("/usr/bin/scrot");
+      file = this._extensionPath.QueryInterface(Ci.nsIFileURL).file;
+      file.append("lib");
+      file.append("scrot");
     } catch (ex) {
-      file.initWithPath("/bin/scrot");
+      try {
+        file.initWithPath("/usr/bin/scrot");
+      } catch (ex) {
+        file.initWithPath("/bin/scrot");
+      }
     }
 
     let process = Cc["@mozilla.org/process/util;1"]
