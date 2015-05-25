@@ -23,8 +23,8 @@ package: check_args
 	@echo "Packaging: $(RUN)"
 
 	mkdir -p "$(BUILD_DIR)/$(RUN)"
-	cp -r configurations "$(BUILD_DIR)/$(RUN)/configurations"
-	cp -r lib "$(BUILD_DIR)/$(RUN)/lib"
+	cp -r configurations/ "$(BUILD_DIR)/$(RUN)/configurations"
+	cp -r lib/ "$(BUILD_DIR)/$(RUN)/lib"
 	cp -a bootstrap.js "$(BUILD_DIR)/$(RUN)"
 	cp -a install.rdf "$(BUILD_DIR)/$(RUN)"
 	cp -a chrome.manifest "$(BUILD_DIR)/$(RUN)"
