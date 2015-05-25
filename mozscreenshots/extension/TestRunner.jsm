@@ -441,7 +441,7 @@ let Screenshot = {
     try {
       file = this._extensionPath.QueryInterface(Ci.nsIFileURL).file;
       file.append("lib");
-      file.append("scrot");
+      file.append("screentopng");
     } catch (ex) {
       try {
         file.initWithPath("/usr/bin/scrot");
@@ -455,7 +455,7 @@ let Screenshot = {
     process.init(file);
 
     // Run the process.
-    let args = ["--focused", filename];
+    let args = [filename];
     process.runAsync(args, args.length, this._screenshotObserver(callback));
   },
 
