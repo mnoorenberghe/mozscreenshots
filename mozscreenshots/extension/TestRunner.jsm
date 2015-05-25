@@ -455,7 +455,7 @@ let Screenshot = {
     process.init(file);
 
     // Run the process.
-    let args = [filename];
+    let args = ["--focused", filename];
     process.runAsync(args, args.length, this._screenshotObserver(callback));
   },
 
