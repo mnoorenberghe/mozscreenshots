@@ -6,7 +6,7 @@ import sys
 from setuptools import setup
 
 PACKAGE_NAME = "mozscreenshots"
-PACKAGE_VERSION = '0.1'
+PACKAGE_VERSION = '0.2'
 
 desc = """Takes screenshots of different states of an application"""
 
