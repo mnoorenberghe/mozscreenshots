@@ -9,7 +9,10 @@ PACKAGE_VERSION = '0.2'
 
 desc = """Takes screenshots of different states of a Mozilla application"""
 
-deps = ['mozrunner >= 5.0']
+deps = [
+    'mozrunner >= 5.0',
+    'requests == 2.7.0',
+]
 
 setup(name=PACKAGE_NAME,
       version=PACKAGE_VERSION,
