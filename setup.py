@@ -2,13 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import sys
 from setuptools import setup
 
-PACKAGE_NAME = "mozscreenshots"
+PACKAGE_NAME = 'mozscreenshots'
 PACKAGE_VERSION = '0.2'
 
-desc = """Takes screenshots of different states of an application"""
+desc = """Takes screenshots of different states of a Mozilla application"""
 
 deps = ['mozrunner >= 5.0']
 
@@ -25,10 +24,11 @@ setup(name=PACKAGE_NAME,
                    'Programming Language :: Python',
                    'Topic :: Software Development :: Libraries :: Python Modules',
                    ],
-      keywords='mozilla',
+      keywords=['mozilla', 'screenshots', 'Firefox'],
       author='Matthew Noorenberghe',
-      author_email='mnoorenberghe+mozscreenshots@mozilla.com',
+      author_email='MattN+mozscreenshots@mozilla.com',
       url='https://github.com/mnoorenberghe/mozscreenshots',
+      download_url='https://github.com/mnoorenberghe/mozscreenshots/tarball/' + PACKAGE_VERSION,
       license='MPL 2.0',
       packages=['mozscreenshots'],
       package_dir={'mozscreenshots': 'mozscreenshots'},
