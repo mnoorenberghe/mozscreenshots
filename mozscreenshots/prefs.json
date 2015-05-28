@@ -3,9 +3,11 @@
 "browser.addon-watch.ignore": "[\"mozscreenshots@mozilla.org\"]",
 "browser.customizemode.tip0.shown": false,
 "browser.rights.override": false,
+"browser.shell.checkDefaultBrowser": false,
 "browser.tabs.remote.autostart": false,
 "browser.tabs.remote.autostart.1": false,
 "browser.tabs.remote.autostart.2": false,
+"datareporting.policy.dataSubmissionPolicyBypassNotification": true,
 "devtools.chrome.enabled": true,
 "devtools.debugger.remote-enabled": true,
 "ui.caretBlinkTime": -1
