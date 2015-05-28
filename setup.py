@@ -44,5 +44,7 @@ setup(name=PACKAGE_NAME,
 # -*- Entry points: -*-
 [console_scripts]
 mozscreenshots = mozscreenshots:cli
+fetch_screenshots = mozscreenshots.fetch_screenshots:cli
+compare_screenshots = mozscreenshots.compare_screenshots:cli
 """,
     )
