@@ -9,7 +9,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>mozscreenshots@mozilla.org</em:id>
-    <em:version>20150525.01</em:version>
+    <em:version>20150528.01</em:version>
     <em:bootstrap>true</em:bootstrap>
 
     <!-- for binaries -->
