@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import argparse
 import glob
 import os
 import platform
@@ -15,11 +16,11 @@ def get_suffixes(path):
              for filename in (files)]
 
 
-def compare_images(before, after, similar_dir):
-    before = trim_system_ui("before", before)
-    after = trim_system_ui("after", after)
+def compare_images(before, after, outdir, similar_dir, args):
+    before = trim_system_ui("before", before, outdir, args)
+    after = trim_system_ui("after", after, outdir, args)
     outname = "comparison_" + os.path.basename(before)
-    outpath = tempdir + "/" + outname
+    outpath = outdir + "/" + outname
     subprocess.call(["compare", "-quiet", before, after, outpath])
     result = subprocess.call(["compare", "-quiet", "-fuzz", "3%", "-metric", "AE", before, after, "null:"], stderr=subprocess.STDOUT)
     print("\t", end="")
@@ -34,27 +35,22 @@ def compare_images(before, after, similar_dir):
     return result
 
 
-def trim_system_ui(prefix, imagefile):
+def trim_system_ui(prefix, imagefile, outdir, args):
     if "_fullScreen" in imagefile:
         return imagefile
     outpath = imagefile
 
-    if False and platform.system() == "Darwin": # TODO: not necessary when using the new window capture on OS X
-        titlebarHeight = 44
-        try:
-            import AppKit
-            titlebarHeight *= AppKit.NSScreen.mainScreen().backingScaleFactor()
-        except ImportError:
-            sys.stderr.write("Could not detect the DPI using AppKit")
+    if args.osversion == "10.6":
+        titlebarHeight = 22 * args.dppx
         chop = "0x%d" % titlebarHeight
-        outpath = tempdir + "/chop_" + prefix + "_" + os.path.basename(imagefile)
+        outpath = outdir + "/chop_" + prefix + "_" + os.path.basename(imagefile)
         subprocess.call(["convert", imagefile, "-chop", chop, outpath])
 
     return outpath
 
 
-def compare_dirs(before, after):
-    similar_dir = tempdir + "/similar"
+def compare_dirs(before, after, outdir, args):
+    similar_dir = outdir + "/similar"
     os.mkdir(similar_dir)
     sorted_suffixes = sorted(set(get_suffixes(before) + get_suffixes(after)))
     maxFWidth = reduce(lambda x, y: max(x, len(y)), sorted_suffixes, 0)
@@ -72,25 +68,34 @@ def compare_dirs(before, after):
             continue
         print(f, "", end="".ljust(maxFWidth - len(f)))
         sys.stdout.flush()
-        result = compare_images(image1[0], image2[0], similar_dir)
+        result = compare_images(image1[0], image2[0], outdir, similar_dir, args)
         resultDict[result].append(f)
     print("{0} similar, {1} different, {2} errors".format(len(resultDict[0]), len(resultDict[1]), len(resultDict[2])))
 
-if len(sys.argv) < 3:
-    print("Two files or two directories expected")
-    quit()
+def cli(args=sys.argv[1:]):
+    parser = argparse.ArgumentParser(description='Compare screenshot files or directories for differences')
+    parser.add_argument("before", help="Image file or directory of images")
+    parser.add_argument("after", help="Image file or directory of images")
+    parser.add_argument("--osversion", choices=["10.6"],
+                        help="Operating system the images are from so that OS UI"+
+                        " can be trimmed off. Not necessary for modern OS X.")
+    parser.add_argument("--dppx", type=float, default=1.0, help="Scale factor to use for cropping system UI")
 
-before = sys.argv[1]
-after = sys.argv[2]
+    args = parser.parse_args()
 
-tempdir = tempfile.mkdtemp()
-print("Image comparison results:", tempdir)
-print()
+    before = args.before
+    after = args.after
+    outdir = tempfile.mkdtemp()
+    print("Image comparison results:", outdir)
+    print()
 
-if (os.path.isdir(before) and os.path.isdir(after)):
-    compare_dirs(before, after)
-elif (os.path.isfile(before) and os.path.isfile(after)):
-    compare_images(before, after)
-else:
-    print("Two files or two directories expected")
-    quit()
+    if (os.path.isdir(before) and os.path.isdir(after)):
+        compare_dirs(before, after, outdir, args)
+    elif (os.path.isfile(before) and os.path.isfile(after)):
+        compare_images(before, after, outdir, outdir, args)
+    else:
+        print("Two files or two directories expected")
+        return
+
+if __name__ == "__main__":
+    cli()
