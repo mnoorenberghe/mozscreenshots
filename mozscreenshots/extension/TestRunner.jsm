@@ -38,7 +38,7 @@ this.TestRunner = {
       case "WINNT":
         screenshotPath = "C:\\mozscreenshots\\";
         try {
-          screenshotPath = FileUtils.getFile("TmpD", ["mozscreenshots"]).path;
+          screenshotPath = FileUtils.getFile("TmpD", ["mozscreenshots"]).path + "\\";
         } catch (ex) {
           DEBUG("falling back to " + screenshotPath);
         }
