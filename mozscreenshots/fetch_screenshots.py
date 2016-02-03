@@ -1,10 +1,14 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 import argparse
 import json
 import os
 import os.path
 import requests
 
-def fetch_screenshots(rev, project):
+def fetch_screenshots(rev, project, job_type_name):
     resultset_url = 'https://treeherder.mozilla.org/api/project/%s/resultset/?count=1&full=true&revision=%s' % (project, rev)
     resultset = requests.get(resultset_url).json()
 
@@ -13,13 +17,16 @@ def fetch_screenshots(rev, project):
         return
 
     result_set_id = resultset['results'][0]['id']
+    fetch_screenshots_for_result_set_id(rev, project, job_type_name, result_set_id)
+
+def fetch_screenshots_for_result_set_id(rev, project, job_type_name, result_set_id):
     print "Result Set ID: %d" % result_set_id
 
     jobs_url = 'https://treeherder.mozilla.org/api/project/%s/jobs/?count=2000&result_set_id=%d' % (project, result_set_id)
     jobs = requests.get(jobs_url).json()
 
     for job in jobs['results']:
-        if job['job_type_name'] != 'Mochitest Browser Chrome':
+        if job['job_type_name'] != job_type_name:
             continue
         job_id = job['id']
         fetch_artifacts_for_job(job_id, job['platform'], rev, project)
@@ -68,10 +75,12 @@ def cli():
     parser = argparse.ArgumentParser(description='Fetch screenshots from automation')
     parser.add_argument('-r', '--rev', required=True,
                         help="Revision to fetch screenshots from")
+    parser.add_argument('--job-type-name', default="Mochitest Browser Screenshots",
+                        help="Type of job to fetch from (aka. job_type_name) [Default='Mochitest Browser Screenshots']")
     parser.add_argument('--project', default="try",
                         help="Project that the revision is from. [Default=try]")
     args = parser.parse_args()
-    fetch_screenshots(args.rev, args.project)
+    fetch_screenshots(args.rev, args.project, args.job_type_name)
 
 
 if __name__ == "__main__":
