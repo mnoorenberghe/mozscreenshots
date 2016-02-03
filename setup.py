@@ -5,7 +5,7 @@
 from setuptools import setup
 
 PACKAGE_NAME = 'mozscreenshots'
-PACKAGE_VERSION = '0.2.1'
+PACKAGE_VERSION = '0.3'
 
 desc = """Takes screenshots of different states of a Mozilla application"""
 
