@@ -62,9 +62,11 @@ def compare_dirs(before, after, outdir, args):
         image2 = glob.glob(after + "/*" + f)
         if not image1:
             print("{0} exists in after but not in before".format(f))
+            resultDict[2].append(f)
             continue
         if not image2:
             print("{0} exists in before but not in after".format(f))
+            resultDict[2].append(f)
             continue
         print(f, "", end="".ljust(maxFWidth - len(f)))
         sys.stdout.flush()
