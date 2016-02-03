@@ -10,13 +10,15 @@ import pprint
 import requests
 import sys
 
+TH_API = 'https://treeherder.mozilla.org/api'
+
 log = logging.getLogger('fetch_screenshots')
 handler = logging.StreamHandler(sys.stdout)
 log.addHandler(handler)
 
 def resultset_response_for_push(project, rev):
     print 'Fetching result set for revision: %s' % rev
-    resultset_url = 'https://treeherder.mozilla.org/api/project/%s/resultset/?count=2&full=true&revision=%s' % (project, rev)
+    resultset_url = '%s/project/%s/resultset/?count=2&full=true&revision=%s' % (TH_API, project, rev)
     log.info(resultset_url)
     resultset = requests.get(resultset_url).json()
 
@@ -32,7 +34,7 @@ def resultset_response_for_push(project, rev):
 def jobs_for_resultset(project, resultset_id, job_type_name):
     print 'Fetching jobs for resultset: %d' % resultset_id
 
-    jobs_url = 'https://treeherder.mozilla.org/api/project/%s/jobs/?count=2000&result_set_id=%d&job_type_name=%s' % (project, resultset_id, job_type_name)
+    jobs_url = '%s/project/%s/jobs/?count=2000&result_set_id=%d&job_type_name=%s' % (TH_API, project, resultset_id, job_type_name)
     log.info(jobs_url)
     jobs = requests.get(jobs_url).json()
     if len(jobs['results']) == 0:
@@ -43,7 +45,7 @@ def jobs_for_resultset(project, resultset_id, job_type_name):
 
 def download_image_artifacts_for_job(project, job, dir_path):
     print 'Fetching artifact list for job: %d' % job['id']
-    artifacts_url = 'https://treeherder.mozilla.org/api/project/%s/artifact/?job_id=%d&name=Job+Info&type=json' % (project, job['id'])
+    artifacts_url = '%s/project/%s/artifact/?job_id=%d&name=Job+Info&type=json' % (TH_API, project, job['id'])
     log.debug(artifacts_url)
     artifacts = requests.get(artifacts_url).json()
 
@@ -112,7 +114,7 @@ def cli():
     parser.add_argument('-r', '--rev', required=True,
                         help='Revision to fetch screenshots from')
     parser.add_argument('--job-type-name', default='Mochitest Browser Screenshots',
-                        help='Type of job to fetch from (aka. job_type_name) [Default='Mochitest Browser Screenshots']')
+                        help='Type of job to fetch from (aka. job_type_name) [Default="Mochitest Browser Screenshots"]')
     parser.add_argument('--project', default='try',
                         help='Project that the revision is from. [Default=try]')
     parser.add_argument('--log-level', default='WARNING')
