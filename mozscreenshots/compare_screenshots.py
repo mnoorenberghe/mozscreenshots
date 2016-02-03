@@ -1,3 +1,7 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 from __future__ import print_function
 
 import argparse
@@ -40,17 +44,17 @@ def trim_system_ui(prefix, imagefile, outdir, args):
         return imagefile
     outpath = imagefile
 
-    if "-osx-10-6-" in imagefile:
+    if "osx-10-6-" in imagefile:
         titlebarHeight = 22 * args.dppx
         chop = "0x%d" % titlebarHeight
         outpath = outdir + "/chop_" + prefix + "_" + os.path.basename(imagefile)
         subprocess.call(["convert", imagefile, "-chop", chop, outpath])
-    elif "-windows7-" in imagefile or "-windows8-64-" in imagefile or "-windowsxp-" in imagefile:
-        taskbarHeight = (30 if ("-windowsxp-" in imagefile) else 40) * args.dppx
+    elif "windows7-" in imagefile or "windows8-64-" in imagefile or "windowsxp-" in imagefile:
+        taskbarHeight = (30 if ("windowsxp-" in imagefile) else 40) * args.dppx
         chop = "0x%d" % taskbarHeight
         outpath = outdir + "/chop_" + prefix + "_" + os.path.basename(imagefile)
         subprocess.call(["convert", imagefile, "-gravity", "South", "-chop", chop, outpath])
-    elif "-linux32-" in imagefile or "-linux64-" in imagefile:
+    elif "linux32-" in imagefile or "linux64-" in imagefile:
         titlebarHeight = 24 * args.dppx
         chop = "0x%d" % titlebarHeight
         outpath = outdir + "/chop_" + prefix + "_" + os.path.basename(imagefile)
