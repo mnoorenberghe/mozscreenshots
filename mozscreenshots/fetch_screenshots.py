@@ -10,26 +10,45 @@ import pprint
 import requests
 import sys
 
+from datetime import date
+
 TH_API = 'https://treeherder.mozilla.org/api'
 
 log = logging.getLogger('fetch_screenshots')
-handler = logging.StreamHandler(sys.stdout)
+handler = logging.StreamHandler(sys.stderr)
 log.addHandler(handler)
 
+def resultset_response_for_id(project, resultset_id):
+    print 'Fetching resultset for id: %d' % resultset_id
+    resultset_url = '%s/project/%s/resultset/%s/' % (TH_API, project, resultset_id)
+    log.info(resultset_url)
+    response = requests.get(resultset_url)
+    if response.status_code != 200:
+        log.error('Invalid resultset for id: %d' % resultset_id)
+        return None
+
+    json = response.json()
+
+    if not json['id']:
+        log.error('No resultset for id: %s' % resultset_id)
+        return None
+    log.debug('resultset_response_for_id: %s' % pprint.pformat(json, depth=1))
+    return json
+
 def resultset_response_for_push(project, rev):
-    print 'Fetching result set for revision: %s' % rev
+    print 'Fetching resultset for revision: %s' % rev
     resultset_url = '%s/project/%s/resultset/?count=2&full=true&revision=%s' % (TH_API, project, rev)
     log.info(resultset_url)
-    resultset = requests.get(resultset_url).json()
+    response = requests.get(resultset_url).json()
 
-    if len(resultset['results']) == 0:
-        log.error('No result set for revision: %s' % rev)
+    if len(response['results']) == 0:
+        log.error('No resultset for revision: %s' % rev)
         return None
-    elif len(resultset['results']) > 1:
-        log.error('Multiple result sets for revision: %s' % rev)
+    elif len(response['results']) > 1:
+        log.error('Multiple resultsets for revision: %s' % rev)
         return None
-    log.debug('resultset_for_push: %s' % pprint.pformat(resultset['results'][0]))
-    return resultset
+    log.debug('resultset_for_push: %s' % pprint.pformat(response['results'][0]))
+    return response
 
 def jobs_for_resultset(project, resultset_id, job_type_name):
     print 'Fetching jobs for resultset: %d' % resultset_id
@@ -88,17 +107,44 @@ def download_artifact(url, filepath):
     file.write(image.content)
     file.close()
 
-def run(args):
-    resultset_response = resultset_response_for_push(args.project, args.rev)
-    if not resultset_response:
-        sys.exit(1)
-    resultset = resultset_response['results'][0]
+def nightly_jobs_for_date(project, date):
+    job_type_name = 'Nightly'
+    jobs_url = '%s/project/%s/jobs/?count=100&last_modified__gte=%sT00:00:00.000&last_modified__lte=%sT23:59:59.999&job_type_name=%s' % (TH_API, project, date, date, job_type_name)
+    log.debug(jobs_url)
+    jobs = requests.get(jobs_url).json()
 
+    found_result_set_ids = set()
+    for job in jobs['results']:
+        if job['result_set_id'] not in found_result_set_ids:
+            found_result_set_ids.add(job['result_set_id']);
+            log.debug('Found Nightly: %s with resultset id: %d' % (job['ref_data_name'], job['result_set_id']))
+
+    return found_result_set_ids
+
+def run(args):
+    resultsets = []
+    if args.rev:
+        resultset_response = resultset_response_for_push(args.project, args.rev)
+        if not resultset_response:
+            sys.exit(1)
+        resultsets.append(resultset_response['results'][0])
+    else:
+        resultset_ids = nightly_jobs_for_date(args.project, args.nightly)
+        for resultset_id in resultset_ids:
+            resultset = resultset_response_for_id(args.project, resultset_id)
+            if not resultset:
+                continue
+            resultsets.append(resultset)
+
+    for resultset in resultsets:
+        run_for_resultset(args, resultset)
+
+def run_for_resultset(args, resultset):
     jobs = jobs_for_resultset(args.project, resultset['id'], args.job_type_name)
     if not jobs:
         sys.exit(1)
 
-    rev_dir = os.path.join(resultset_response['meta']['repository'], resultset['revision'])
+    rev_dir = os.path.join(args.project, resultset['revision'])
     try:
         os.makedirs(rev_dir)
     except OSError:
@@ -111,13 +157,21 @@ def run(args):
 
 def cli():
     parser = argparse.ArgumentParser(description='Fetch screenshots from automation')
-    parser.add_argument('-r', '--rev', required=True,
-                        help='Revision to fetch screenshots from')
+
+    required = parser.add_mutually_exclusive_group(required=True)
+    required.add_argument('-n', '--nightly', metavar='YYYY-MM-DD',
+                          help='Date to fetch nightly screenshots from')
+    required.add_argument('-r', '--rev',
+                          help='Revision to fetch screenshots from')
+
+
     parser.add_argument('--job-type-name', default='Mochitest Browser Screenshots',
                         help='Type of job to fetch from (aka. job_type_name) [Default="Mochitest Browser Screenshots"]')
+    parser.add_argument('--log-level', default='WARNING')
+
     parser.add_argument('--project', default='try',
                         help='Project that the revision is from. [Default=try]')
-    parser.add_argument('--log-level', default='WARNING')
+
     args = parser.parse_args()
     log.setLevel(getattr(logging, args.log_level))
 
