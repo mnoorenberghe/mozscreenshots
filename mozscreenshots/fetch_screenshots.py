@@ -169,10 +169,11 @@ def cli():
                         help='Type of job to fetch from (aka. job_type_name) [Default="Mochitest Browser Screenshots"]')
     parser.add_argument('--log-level', default='WARNING')
 
-    parser.add_argument('--project', default='try',
-                        help='Project that the revision is from. [Default=try]')
+    parser.add_argument('--project',
+                        help='Project that the revision is from. [Default="mozilla-central" for --nightly, "try" otherwise]')
 
     args = parser.parse_args()
+    args.project = "mozilla-central" if args.nightly else "try"
     log.setLevel(getattr(logging, args.log_level))
 
     run(args)
