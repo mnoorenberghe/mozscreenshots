@@ -100,9 +100,13 @@ def download_artifact(url, filepath):
     if os.path.isfile(filepath):
         print '- Not overwriting existing file'
         return
-    else:
-        print
     image = requests.get(url)
+    if image.status_code == 200:
+        print
+    else:
+        print '- FAILED'
+        log.error(image.content)
+        return
     file = open(filepath, 'wb')
     file.write(image.content)
     file.close()
