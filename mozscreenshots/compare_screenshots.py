@@ -58,8 +58,8 @@ def compare_dirs(before, after, outdir, args):
     print("SCREENSHOT SUFFIX".ljust(maxFWidth), "DIFFERING PIXELS (WITH FUZZ)")
     resultDict = defaultdict(list)
     for f in sorted_suffixes:
-        image1 = glob.glob(sys.argv[1] + "/*" + f)
-        image2 = glob.glob(sys.argv[2] + "/*" + f)
+        image1 = glob.glob(before + "/*" + f)
+        image2 = glob.glob(after + "/*" + f)
         if not image1:
             print("{0} exists in after but not in before".format(f))
             continue
