@@ -40,8 +40,18 @@ def trim_system_ui(prefix, imagefile, outdir, args):
         return imagefile
     outpath = imagefile
 
-    if args.osversion == "10.6":
+    if "-osx-10-6-" in imagefile:
         titlebarHeight = 22 * args.dppx
+        chop = "0x%d" % titlebarHeight
+        outpath = outdir + "/chop_" + prefix + "_" + os.path.basename(imagefile)
+        subprocess.call(["convert", imagefile, "-chop", chop, outpath])
+    elif "-windows7-" in imagefile or "-windows8-64-" in imagefile or "-windowsxp-" in imagefile:
+        taskbarHeight = (30 if ("-windowsxp-" in imagefile) else 40) * args.dppx
+        chop = "0x%d" % taskbarHeight
+        outpath = outdir + "/chop_" + prefix + "_" + os.path.basename(imagefile)
+        subprocess.call(["convert", imagefile, "-gravity", "South", "-chop", chop, outpath])
+    elif "-linux32-" in imagefile or "-linux64-" in imagefile:
+        titlebarHeight = 24 * args.dppx
         chop = "0x%d" % titlebarHeight
         outpath = outdir + "/chop_" + prefix + "_" + os.path.basename(imagefile)
         subprocess.call(["convert", imagefile, "-chop", chop, outpath])
@@ -78,9 +88,6 @@ def cli(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(description='Compare screenshot files or directories for differences')
     parser.add_argument("before", help="Image file or directory of images")
     parser.add_argument("after", help="Image file or directory of images")
-    parser.add_argument("--osversion", choices=["10.6"],
-                        help="Operating system the images are from so that OS UI"+
-                        " can be trimmed off. Not necessary for modern OS X.")
     parser.add_argument("--dppx", type=float, default=1.0, help="Scale factor to use for cropping system UI")
 
     args = parser.parse_args()
