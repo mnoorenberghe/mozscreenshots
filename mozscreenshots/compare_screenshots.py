@@ -79,11 +79,21 @@ def compare_dirs(before, after, outdir, args):
                 compare_dirs(os.path.join(before, before_dir), matches[0],
                              os.path.join(outdir, dir_prefix), args)
     print('\nComparing {0} and {1} in {2}'.format(before, after, outdir))
-    os.makedirs(outdir)
+    try:
+        os.makedirs(outdir)
+    except OSError:
+        if not os.path.isdir(outdir):
+            print('Error creating directory: %s' % outdir)
+
     similar_dir = os.path.join(outdir, "similar")
     if args.output_similar_composite:
         os.makedirs(similar_dir)
     sorted_suffixes = sorted(set(get_suffixes(before) + get_suffixes(after)))
+
+    if len(sorted_suffixes) == 0:
+        print("No images in the directory")
+        return
+
     maxFWidth = reduce(lambda x, y: max(x, len(y)), sorted_suffixes, 0)
 
     print("SCREENSHOT SUFFIX".ljust(maxFWidth), "DIFFERING PIXELS (WITH FUZZ)")
