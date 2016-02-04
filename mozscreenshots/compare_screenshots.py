@@ -24,9 +24,14 @@ def compare_images(before, after, outdir, similar_dir, args):
     after_trimmed = trim_system_ui("after", after, outdir, args)
     outname = "comparison_" + os.path.basename(before_trimmed)
     outpath = os.path.join(outdir, outname)
-    result = subprocess.call(["compare", "-quiet", "-fuzz", "3%", "-metric", "AE",
-                              before_trimmed, after_trimmed, "null:"],
-                             stderr=subprocess.STDOUT)
+    try:
+        result = subprocess.call(["compare", "-quiet", "-fuzz", "3%", "-metric", "AE",
+                                  before_trimmed, after_trimmed, "null:"],
+                                 stderr=subprocess.STDOUT)
+    except OSError:
+        print("\n\nEnsure that ImageMagick is installed and on your PATH, specifically `compare`.\n")
+        raise
+
     if (result != 0 or args.output_similar_composite):
         subprocess.call(["compare", "-quiet", before_trimmed, after_trimmed, outpath])
     print("\t", end="")
@@ -52,21 +57,30 @@ def trim_system_ui(prefix, imagefile, outdir, args):
         return imagefile
     outpath = imagefile
 
+    trim_args = []
     if "osx-10-6-" in imagefile:
         titlebarHeight = 22 * args.dppx
         chop = "0x%d" % titlebarHeight
         outpath = outdir + "/chop_" + prefix + "_" + os.path.basename(imagefile)
-        subprocess.call(["convert", imagefile, "-chop", chop, outpath])
+        trim_args = ["convert", imagefile, "-chop", chop, outpath]
     elif "windows7-" in imagefile or "windows8-64-" in imagefile or "windowsxp-" in imagefile:
         taskbarHeight = (30 if ("windowsxp-" in imagefile) else 40) * args.dppx
         chop = "0x%d" % taskbarHeight
         outpath = outdir + "/chop_" + prefix + "_" + os.path.basename(imagefile)
-        subprocess.call(["convert", imagefile, "-gravity", "South", "-chop", chop, outpath])
+        trim_args = ["convert", imagefile, "-gravity", "South", "-chop", chop, outpath]
     elif "linux32-" in imagefile or "linux64-" in imagefile:
         titlebarHeight = 24 * args.dppx
         chop = "0x%d" % titlebarHeight
         outpath = outdir + "/chop_" + prefix + "_" + os.path.basename(imagefile)
-        subprocess.call(["convert", imagefile, "-chop", chop, outpath])
+        trim_args = ["convert", imagefile, "-chop", chop, outpath]
+    else:
+        return outpath
+
+    try:
+        subprocess.call(trim_args)
+    except OSError:
+        print("\n\nEnsure that ImageMagick is installed and on your PATH, specifically `convert`.\n")
+        raise
 
     return outpath
 
