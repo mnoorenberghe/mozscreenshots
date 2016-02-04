@@ -16,8 +16,7 @@ from collections import defaultdict
 
 def get_suffixes(path):
     return [re.sub(r'^[^_]*_', '_', filename)
-             for (dirpath, dirs, files) in os.walk(path)
-             for filename in (files) if filename.endswith(".png")]
+             for filename in os.listdir(path) if filename.endswith(".png")]
 
 
 def compare_images(before, after, outdir, similar_dir, args):
@@ -80,6 +79,7 @@ def compare_dirs(before, after, outdir, args):
                 compare_dirs(os.path.join(before, before_dir), matches[0],
                              os.path.join(outdir, dir_prefix), args)
     print('\nComparing {0} and {1} in {2}'.format(before, after, outdir))
+    os.makedirs(outdir)
     similar_dir = os.path.join(outdir, "similar")
     if args.output_similar_composite:
         os.makedirs(similar_dir)
