@@ -16,6 +16,7 @@ TH_API = 'https://treeherder.mozilla.org/api'
 
 log = logging.getLogger('fetch_screenshots')
 handler = logging.StreamHandler(sys.stderr)
+handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 log.addHandler(handler)
 
 def resultset_response_for_id(project, resultset_id):
@@ -99,6 +100,7 @@ def download_image_artifacts_for_job(project, job, dir_path):
     try:
         os.rmdir(job_dir)
     except OSError:
+        return job_dir
         pass
 
 
@@ -163,8 +165,14 @@ def run_for_resultset(args, resultset):
             log.error('Error creating directory: %s' % rev_dir)
             sys.exit(1)
 
+    job_dirs = []
     for job in jobs:
-        download_image_artifacts_for_job(args.project, job, rev_dir)
+        job_dir = download_image_artifacts_for_job(args.project, job, rev_dir)
+        if not job_dir:
+            continue
+        job_dirs.append(job_dir)
+
+    return job_dirs
 
 def cli():
     parser = argparse.ArgumentParser(description='Fetch screenshots from automation')

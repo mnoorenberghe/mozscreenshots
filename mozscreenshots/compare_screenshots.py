@@ -17,7 +17,7 @@ from collections import defaultdict
 def get_suffixes(path):
     return [re.sub(r'^[^_]*_', '_', filename)
              for (dirpath, dirs, files) in os.walk(path)
-             for filename in (files)]
+             for filename in (files) if filename.endswith(".png")]
 
 
 def compare_images(before, after, outdir, similar_dir, args):
@@ -69,10 +69,17 @@ def trim_system_ui(prefix, imagefile, outdir, args):
 
     return outpath
 
-
 def compare_dirs(before, after, outdir, args):
-    similar_dir = outdir + "/similar"
-    os.mkdir(similar_dir)
+    for before_dirpath, before_dirs, before_files in os.walk(before):
+        for before_dir in before_dirs:
+            dir_prefix = re.sub(r'-\d{3,}$', '', before_dir)
+            matches = glob.glob(os.path.join(after, dir_prefix) + "*")
+            if matches and os.path.isdir(matches[0]):
+                compare_dirs(os.path.join(before, before_dir), matches[0],
+                             os.path.join(outdir, dir_prefix), args)
+    print('\nComparing {0} and {1} in {2}'.format(before, after, outdir))
+    similar_dir = os.path.join(outdir, "similar")
+    os.makedirs(similar_dir)
     sorted_suffixes = sorted(set(get_suffixes(before) + get_suffixes(after)))
     maxFWidth = reduce(lambda x, y: max(x, len(y)), sorted_suffixes, 0)
 
@@ -107,11 +114,11 @@ def cli(args=sys.argv[1:]):
     after = args.after
     outdir = tempfile.mkdtemp()
     print("Image comparison results:", outdir)
-    print()
 
     if (os.path.isdir(before) and os.path.isdir(after)):
         compare_dirs(before, after, outdir, args)
     elif (os.path.isfile(before) and os.path.isfile(after)):
+        print()
         compare_images(before, after, outdir, outdir, args)
     else:
         print("Two files or two directories expected")
