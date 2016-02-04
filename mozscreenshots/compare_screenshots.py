@@ -21,12 +21,14 @@ def get_suffixes(path):
 
 
 def compare_images(before, after, outdir, similar_dir, args):
-    before = trim_system_ui("before", before, outdir, args)
-    after = trim_system_ui("after", after, outdir, args)
-    outname = "comparison_" + os.path.basename(before)
+    before_trimmed = trim_system_ui("before", before, outdir, args)
+    after_trimmed = trim_system_ui("after", after, outdir, args)
+    outname = "comparison_" + os.path.basename(before_trimmed)
     outpath = outdir + "/" + outname
-    subprocess.call(["compare", "-quiet", before, after, outpath])
-    result = subprocess.call(["compare", "-quiet", "-fuzz", "3%", "-metric", "AE", before, after, "null:"], stderr=subprocess.STDOUT)
+    subprocess.call(["compare", "-quiet", before_trimmed, after_trimmed, outpath])
+    result = subprocess.call(["compare", "-quiet", "-fuzz", "3%", "-metric", "AE",
+                              before_trimmed, after_trimmed, "null:"],
+                             stderr=subprocess.STDOUT)
     print("\t", end="")
     if result == 0: # same
         print()
@@ -36,6 +38,11 @@ def compare_images(before, after, outdir, similar_dir, args):
     else:
         print("error")
 
+    # Cleanup intermediate trimmed images
+    if os.path.abspath(before) != os.path.abspath(before_trimmed):
+        os.remove(before_trimmed)
+    if os.path.abspath(after) != os.path.abspath(after_trimmed):
+        os.remove(after_trimmed)
     return result
 
 

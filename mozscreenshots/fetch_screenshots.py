@@ -105,7 +105,7 @@ def download_artifact(url, filepath):
         print
     else:
         print '- FAILED'
-        log.error(image.content)
+        log.error('%s: %s' % (filepath, image.content))
         return
     file = open(filepath, 'wb')
     file.write(image.content)
