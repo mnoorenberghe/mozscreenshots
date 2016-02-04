@@ -24,15 +24,17 @@ def compare_images(before, after, outdir, similar_dir, args):
     before_trimmed = trim_system_ui("before", before, outdir, args)
     after_trimmed = trim_system_ui("after", after, outdir, args)
     outname = "comparison_" + os.path.basename(before_trimmed)
-    outpath = outdir + "/" + outname
-    subprocess.call(["compare", "-quiet", before_trimmed, after_trimmed, outpath])
+    outpath = os.path.join(outdir, outname)
     result = subprocess.call(["compare", "-quiet", "-fuzz", "3%", "-metric", "AE",
                               before_trimmed, after_trimmed, "null:"],
                              stderr=subprocess.STDOUT)
+    if (result != 0 or args.output_similar_composite):
+        subprocess.call(["compare", "-quiet", before_trimmed, after_trimmed, outpath])
     print("\t", end="")
     if result == 0: # same
         print()
-        os.rename(outpath, similar_dir + "/" + outname)
+        if args.output_similar_composite:
+            os.rename(outpath, similar_dir + "/" + outname)
     elif result == 1: # different
         print()
     else:
@@ -79,7 +81,8 @@ def compare_dirs(before, after, outdir, args):
                              os.path.join(outdir, dir_prefix), args)
     print('\nComparing {0} and {1} in {2}'.format(before, after, outdir))
     similar_dir = os.path.join(outdir, "similar")
-    os.makedirs(similar_dir)
+    if args.output_similar_composite:
+        os.makedirs(similar_dir)
     sorted_suffixes = sorted(set(get_suffixes(before) + get_suffixes(after)))
     maxFWidth = reduce(lambda x, y: max(x, len(y)), sorted_suffixes, 0)
 
@@ -107,6 +110,7 @@ def cli(args=sys.argv[1:]):
     parser.add_argument("before", help="Image file or directory of images")
     parser.add_argument("after", help="Image file or directory of images")
     parser.add_argument("--dppx", type=float, default=1.0, help="Scale factor to use for cropping system UI")
+    parser.add_argument("--output-similar-composite", action="store_true", help="Output a composite image even when images are 'similar'")
 
     args = parser.parse_args()
 
