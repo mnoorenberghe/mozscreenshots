@@ -95,6 +95,13 @@ def download_image_artifacts_for_job(project, job, dir_path):
                 continue
             download_artifact(detail['url'], os.path.join(job_dir, detail['value']))
 
+    # Remove any empty directories that we created
+    try:
+        os.rmdir(job_dir)
+    except OSError:
+        pass
+
+
 def download_artifact(url, filepath):
     print 'Downloading %s' % filepath,
     if os.path.isfile(filepath):
