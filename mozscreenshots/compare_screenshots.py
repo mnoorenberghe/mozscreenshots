@@ -59,18 +59,20 @@ def trim_system_ui(prefix, imagefile, outdir, args):
 
     trim_args = []
     if "osx-10-6-" in imagefile:
-        titlebarHeight = 22 * args.dppx
-        chop = "0x%d" % titlebarHeight
+        titlebar_height = 22 * args.dppx
+        chop_top = "0x%d" % titlebar_height
+        dock_height = 90 * args.dppx
+        chop_bottom = "0x%d" % dock_height
         outpath = outdir + "/chop_" + prefix + "_" + os.path.basename(imagefile)
-        trim_args = ["convert", imagefile, "-chop", chop, outpath]
+        trim_args = ["convert", imagefile, "-chop", chop_top, "-gravity", "South", "-chop", chop_bottom, outpath]
     elif "windows7-" in imagefile or "windows8-64-" in imagefile or "windowsxp-" in imagefile:
-        taskbarHeight = (30 if ("windowsxp-" in imagefile) else 40) * args.dppx
-        chop = "0x%d" % taskbarHeight
+        taskbar_height = (30 if ("windowsxp-" in imagefile) else 40) * args.dppx
+        chop = "0x%d" % taskbar_height
         outpath = outdir + "/chop_" + prefix + "_" + os.path.basename(imagefile)
         trim_args = ["convert", imagefile, "-gravity", "South", "-chop", chop, outpath]
     elif "linux32-" in imagefile or "linux64-" in imagefile:
-        titlebarHeight = 24 * args.dppx
-        chop = "0x%d" % titlebarHeight
+        titlebar_height = 24 * args.dppx
+        chop = "0x%d" % titlebar_height
         outpath = outdir + "/chop_" + prefix + "_" + os.path.basename(imagefile)
         trim_args = ["convert", imagefile, "-chop", chop, outpath]
     else:
