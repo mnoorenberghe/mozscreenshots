@@ -61,10 +61,14 @@ def trim_system_ui(prefix, imagefile, outdir, args):
     if "osx-10-6-" in imagefile:
         titlebar_height = 22 * args.dppx
         chop_top = "0x%d" % titlebar_height
+        chop_right = "%dx0" % 316 # desktop icons
         dock_height = 90 * args.dppx
         chop_bottom = "0x%d" % dock_height
         outpath = outdir + "/chop_" + prefix + "_" + os.path.basename(imagefile)
-        trim_args = ["convert", imagefile, "-chop", chop_top, "-gravity", "South", "-chop", chop_bottom, outpath]
+        trim_args = ["convert", imagefile, "-chop", chop_top,
+                     "-gravity", "South", "-chop", chop_bottom,
+                     "-gravity", "East", "-chop", chop_right,
+                     outpath]
     elif "windows7-" in imagefile or "windows8-64-" in imagefile or "windowsxp-" in imagefile:
         taskbar_height = (30 if ("windowsxp-" in imagefile) else 40) * args.dppx
         chop = "0x%d" % taskbar_height
