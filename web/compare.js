@@ -14,11 +14,30 @@ var Compare = {
   init: function() {
     console.log("init");
     this.form = document.getElementById("chooser");
+    // Load from URL params
+    let params = new URLSearchParams(window.location.search.slice(1));
+    let missingParams = [];
+    for (let param of ["oldProject", "oldRev", "newProject", "newRev"]) {
+      let value = params.get(param);
+      console.log(param, value);
+      if (!value) {
+        missingParams.push(param);
+        continue;
+      }
+      this.form[param].value = value.trim();
+    }
+    if (missingParams.length) {
+      this.form[missingParams[0]].focus();
+    } else {
+      if (this.form.checkValidity()) {
+        this.form.submit();
+      }
+    }
   },
 
   compare: function(evt) {
     evt.preventDefault();
-
+    document.querySelector("progress").hidden = false;
     this.oldProject = this.form["oldProject"].value.trim();
     this.newProject = this.form["newProject"].value.trim();
     this.oldRev = this.form["oldRev"].value.trim();
@@ -42,8 +61,14 @@ var Compare = {
       }
       return Promise.all(promises);
     })
-      .then(() => this.updateDisplay())
-      .catch(console.error.bind(console));
+      .then(() => {
+        this.updateDisplay();
+        document.querySelector("progress").hidden = true;
+      })
+      .catch((error) => {
+        document.querySelector("progress").hidden = true;
+        console.error(error);
+      });
   },
 
 

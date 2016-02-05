@@ -40,7 +40,7 @@
           <tr>
             <th scope="row">Base</th>
             <!-- more validation -->
-            <td><input name="oldProject" required list="projects" size="16" autofocus /></td>
+            <td><input name="oldProject" required list="projects" size="16" /></td>
             <td><input name="oldRev" required size="12"/></td>
 
             <td id="oldDate"></td>
@@ -60,6 +60,7 @@
             <td colspan="2">
               <button type="submit" style="width:100%">Compare revisions</button>
             </td>
+            <td><progress indeterminate hidden/></td>
           </tr>
         </tfoot>
       </table>
