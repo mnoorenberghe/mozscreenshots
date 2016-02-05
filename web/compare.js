@@ -19,7 +19,6 @@ var Compare = {
     let missingParams = [];
     for (let param of ["oldProject", "oldRev", "newProject", "newRev"]) {
       let value = params.get(param);
-      console.log(param, value);
       if (!value) {
         missingParams.push(param);
         continue;
@@ -30,7 +29,7 @@ var Compare = {
       this.form[missingParams[0]].focus();
     } else {
       if (this.form.checkValidity()) {
-        this.form.submit();
+        document.querySelector("form button[type='submit']").click();
       }
     }
   },
@@ -45,6 +44,7 @@ var Compare = {
   },
 
   compare: function(evt) {
+    console.info("compare");
     evt.preventDefault();
 
     document.querySelector("progress").hidden = false;
