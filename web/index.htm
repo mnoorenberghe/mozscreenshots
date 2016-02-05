@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Screenshot comparison</title>
+    <style>
+      #chooser {
+      background: white;
+      font-size: 0.9em;
+      position: sticky;
+      top: 0;
+      }
+      #oldCommit, #newCommit {
+      max-width: 45vw;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      }
+    </style>
+  </head>
+  <body>
+    <datalist id="projects">
+      <option>try</option>
+      <option>mozilla-central</option>
+    </datalist>
+    <form id="chooser" onsubmit="Compare.compare(event)">
+      <table>
+        <thead>
+          <tr>
+            <td></td>
+            <th scope="col">Project</th>
+            <th scope="col">Revision</th>
+            <th scope="col">Date</th>
+            <th scope="col">Commit message</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Base</th>
+            <!-- more validation -->
+            <td><input name="oldProject" required list="projects" size="16" autofocus /></td>
+            <td><input name="oldRev" required size="12"/></td>
+
+            <td id="oldDate"></td>
+            <td id="oldCommit" style="text-overflow: ellipsis; white-space: nowrap"></td>
+          </tr>
+          <tr>
+            <th scope="row">New</th>
+            <td><input name="newProject" required list="projects" size="16"/></td>
+            <td><input name="newRev" required size="12"/></td>
+            <td id="newDate"></td>
+            <td id="newCommit"></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td></td>
+            <td colspan="2">
+              <button type="submit" style="width:100%">Compare revisions</button>
+            </td>
+            <td><button type="button" onclick="Compare.updateDisplay()">Update display</button><!-- TODO --></td>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+
+    <template id="osTableTemplate">
+      <details open>
+        <summary>OS Name</summary>
+        <table>
+          <thead>
+            <tr>
+              <th>Combination</th>
+              <th>Base</th>
+              <th>New</th>
+              <th>Difference</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4"><!-- counter pseudo element here --></td>
+            </tr>
+          </tfoot>
+        </table>
+      </details>
+    </template>
+
+    <template id="screenshotRowTemplate">
+      <tr>
+        <td></td>
+        <td><a class="oldImage" target="_blank">View</a></td>
+        <td><a class="newImage" target="_blank">View</a></td>
+        <td><a target="_blank">#</a></td>
+      </tr>
+    </template>
+
+    <div id="results">
+    </div>
+
+    <script src="compare.js"></script>
+  </body>
+</html>
