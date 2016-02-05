@@ -35,9 +35,21 @@ var Compare = {
     }
   },
 
+  generateURL: function() {
+    let url = new URL(window.location.href);
+    url.search = "";
+    for (let param of ["oldProject", "oldRev", "newProject", "newRev"]) {
+      url.searchParams.append(param, this.form[param].value.trim());
+    }
+    return url;
+  },
+
   compare: function(evt) {
     evt.preventDefault();
+
     document.querySelector("progress").hidden = false;
+    window.history.pushState({}, document.title, this.generateURL());
+
     this.oldProject = this.form["oldProject"].value.trim();
     this.newProject = this.form["newProject"].value.trim();
     this.oldRev = this.form["oldRev"].value.trim();
