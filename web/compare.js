@@ -32,15 +32,17 @@ var Compare = {
       this.fetchResultset(this.oldProject, this.oldRev),
       this.fetchResultset(this.newProject, this.newRev),
     ]).then((resultsets) => {
+      let promises = [];
       for (let rs of resultsets) {
         let response = rs.response;
         let type = response.meta.revision == this.oldRev
               && response.meta.repository == this.oldProject ? "old" : "new";
         this.handleResultset(type, response);
-        this.fetchJobsForResultset(response);
+        promises.push(this.fetchJobsForResultset(response));
       }
-      return resultsets;
+      return Promise.all(promises);
     })
+      .then(() => this.updateDisplay())
       .catch(console.error.bind(console));
   },
 
@@ -70,14 +72,17 @@ var Compare = {
 
       if (!xhr.response.results.length) {
         console.warn("No jobs found for resultset:", resultset.results[0]);
-        return;
+        return Promise.resolve("No jobs found for resultset:", resultset.results[0]);
       }
+      let promises = [];
       for (let job of xhr.response.results) {
-        this.fetchScreenshotsForJob(resultset.meta.repository, job)
+        let promise = this.fetchScreenshotsForJob(resultset.meta.repository, job)
           .then(function (job, screenshots) {
             this.screenshotsByJob.set(job, screenshots);
           }.bind(this, job));
+        promises.push(promise);
       }
+      return Promise.all(promises);
     });
   },
 
@@ -117,6 +122,7 @@ var Compare = {
   },
 
   updateDisplay: function() {
+    console.debug("updateDisplay");
     let jobsByPlatform = new Map();
     for (let job of this.screenshotsByJob.keys()) {
       let jobs = jobsByPlatform.get(job.platform) || [];
