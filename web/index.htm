@@ -20,6 +20,7 @@
       max-width: 45vw;
       overflow:hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
       }
       td.similar {
         background: green;
@@ -27,6 +28,9 @@
       td.error {
       background: red;
       color: white;
+      }
+      td.missing {
+        background: yellow;
       }
       td.different {
       background: orange;
@@ -58,14 +62,14 @@
             <td><input name="oldRev" required size="12"/></td>
 
             <td id="oldDate"></td>
-            <td id="oldCommit" style="text-overflow: ellipsis; white-space: nowrap"></td>
+            <td id="oldCommit"><a></a></td>
           </tr>
           <tr>
             <th scope="row">New</th>
             <td><input name="newProject" required list="projects" size="16"/></td>
             <td><input name="newRev" required size="12"/></td>
             <td id="newDate"></td>
-            <td id="newCommit"></td>
+            <td id="newCommit"><a></a></td>
           </tr>
         </tbody>
         <tfoot>

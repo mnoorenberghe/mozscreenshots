@@ -119,17 +119,20 @@ var Compare = {
   },
 
   handleResultset: function(type, response) {
-    var commitMsgEl = document.getElementById(type + "Commit");
+    let commitMsgEl = document.getElementById(type + "Commit");
+    let link = commitMsgEl.querySelector("a");
     if (!response.meta.count) {
       this.form[type + "Rev"].focus();
-      commitMsgEl.textContent = "No resultset found";
+      link.textContent = "No resultset found";
+      link.removeAttribute("href");
       return;
     }
     let result = response.results[0];
     this.resultsetsByID.set(result.id, result);
     document.getElementById(type + "Date").textContent = new Date(result.push_timestamp * 1000);
-    commitMsgEl.textContent = result.comments;
-    commitMsgEl.title = result.comments;
+    link.textContent = result.comments;
+    link.title = result.comments;
+    link.href = `https://treeherder.mozilla.org/#/jobs?repo=${response.meta.repository}&revision=${response.meta.revision}`;
   },
 
   fetchJobsForResultset: function(resultset) {
