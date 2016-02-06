@@ -202,8 +202,6 @@ def cli(args=sys.argv[1:]):
     else:
         outdir = tempfile.mkdtemp()
 
-    print("Image comparison results:", outdir)
-
     if (os.path.isdir(before) and os.path.isdir(after)):
         compare_dirs(before, after, outdir, args)
     elif (os.path.isfile(before) and os.path.isfile(after)):
@@ -212,6 +210,8 @@ def cli(args=sys.argv[1:]):
     else:
         print("Two files or two directories expected")
         return
+
+    print("Image comparison results:", outdir)
 
 if __name__ == "__main__":
     cli()
