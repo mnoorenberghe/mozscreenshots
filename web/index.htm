@@ -21,6 +21,17 @@
       overflow:hidden;
       text-overflow: ellipsis;
       }
+      td.similar {
+        background: green;
+      }
+      td.error {
+      background: red;
+      color: white;
+      }
+      td.different {
+      background: orange;
+      color: white;
+      }
     </style>
   </head>
   <body>
@@ -35,7 +46,7 @@
             <td></td>
             <th scope="col">Project</th>
             <th scope="col">Revision</th>
-            <th scope="col">Date</th>
+            <th scope="col">Push Date</th>
             <th scope="col">Commit message</th>
           </tr>
         </thead>
@@ -97,7 +108,7 @@
         <td></td>
         <td><a class="oldImage" target="_blank">View</a></td>
         <td><a class="newImage" target="_blank">View</a></td>
-        <td><a target="_blank">#</a></td>
+        <td><a class="diffLink" target="_blank">#</a></td>
       </tr>
     </template>
 

@@ -5,8 +5,16 @@
 "use strict";
 
 var Compare = {
+  RESULT: {
+    SIMILAR: 0,
+    DIFFERENT: 1,
+    ERROR: 2,
+    MISSING_BEFORE: 3,
+    MISSING_AFTER: 4,
+  },
   TREEHERDER_API: "https://treeherder.mozilla.org/api",
 
+  comparisonsByPlatform: new Map(),
   form: null,
   resultsetsByID: new Map(),
   screenshotsByJob: new Map(),
@@ -45,6 +53,7 @@ var Compare = {
 
   compare: function(evt) {
     console.info("compare");
+    // TODO: cancel pending work if submitted again. Simple way is to not preventDefault
     evt.preventDefault();
 
     document.querySelector("progress").hidden = false;
@@ -55,6 +64,7 @@ var Compare = {
     this.oldRev = this.form["oldRev"].value.trim();
     this.newRev = this.form["newRev"].value.trim();
 
+    this.comparisonsByPlatform = new Map();
     this.resultsetsByID = new Map();
     this.screenshotsByJob = new Map();
 
@@ -74,6 +84,9 @@ var Compare = {
       return Promise.all(promises);
     })
       .then(() => {
+        return this.fetchComparisons();
+      })
+      .then(() => {
         this.updateDisplay();
         document.querySelector("progress").hidden = true;
       })
@@ -83,6 +96,21 @@ var Compare = {
       });
   },
 
+  fetchComparisons: function() {
+    let promises = [];
+    let platforms = new Set([...this.screenshotsByJob.keys()].map((job) => {
+      return job.platform;
+    }));
+    for (let platform of platforms) {
+      let p = platform;
+      promises.push(this.getJSON(`http://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/` +
+                   `${this.newProject}/${this.newRev}/${platform}/comparison.json`)
+                    .then((xhr) => {
+                      this.comparisonsByPlatform.set(p, xhr.response);
+                    }));
+    }
+    return Promise.all(promises);
+  },
 
   fetchResultset: function(project, rev) {
     var url = this.TREEHERDER_API + "/project/" + project
@@ -158,6 +186,31 @@ var Compare = {
     });
   },
 
+  updateComparisonCell: function(td, image, platform, comparison) {
+    let diffLink = td.querySelector(".diffLink");
+    switch (comparison.result) {
+      case this.RESULT.SIMILAR:
+        td.classList.add("similar");
+        diffLink.textContent = comparison.difference;
+        break;
+      case this.RESULT.DIFFERENT:
+        td.classList.add("different");
+        diffLink.textContent = comparison.difference;
+        diffLink.href = `http://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/`
+          + `${this.newProject}/${this.newRev}/${platform}/${image}`;
+        break;
+      case this.RESULT.ERROR:
+        td.classList.add("error");
+        diffLink.textContent = "Error";
+        break;
+      case this.RESULT.MISSING_BEFORE:
+      case this.RESULT.MISSING_AFTER:
+        td.classList.add("missing");
+        diffLink.textContent = "Missing source image";
+        break;
+    }
+  },
+
   updateDisplay: function() {
     console.debug("updateDisplay");
     let jobsByPlatform = new Map();
@@ -173,7 +226,7 @@ var Compare = {
     results.innerHTML = "";
     for (let [platform, jobs] of jobsByPlatform) {
       osTableTemplate.content.querySelector("summary").textContent = platform;
-
+      let comparisons = this.comparisonsByPlatform.get(platform);
       let combinationNames = new Set();
       console.log(platform);
       for (let job of jobs) {
@@ -189,6 +242,14 @@ var Compare = {
       for (let combo of sortedCombos) {
         let rowClone = document.importNode(rowTemplate.content, true);
         let tds = rowClone.querySelectorAll("td");
+
+        if (comparisons) {
+          let comp = comparisons[combo];
+          if (comp) {
+            this.updateComparisonCell(tds[3], combo, platform, comp);
+          }
+        }
+
         tds[0].textContent = combo.replace(/\.png$/, "");
         for (let job of jobs) {
           let url = this.screenshotsByJob.get(job).get(combo);
