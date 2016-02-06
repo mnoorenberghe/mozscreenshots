@@ -225,7 +225,9 @@ var Compare = {
         break;
       case this.RESULT.MISSING_BEFORE:
       case this.RESULT.MISSING_AFTER:
-        row.classList.add("missing");
+        row.classList.add(Object.entries(this.RESULT).find((val) => {
+          return val[1] == comparison.result;
+        })[0].toLowerCase());
         diffCol1.colSpan = 2;
         diffCol1.textContent = "Missing source image";
         diffCol2.remove();
@@ -247,7 +249,6 @@ var Compare = {
     let results = document.getElementById("results");
     results.innerHTML = "";
     for (let [platform, jobs] of jobsByPlatform) {
-      osTableTemplate.content.querySelector("summary").textContent = platform;
       let comparisons = this.comparisonsByPlatform.get(platform);
       let combinationNames = new Set();
       console.log(platform);
@@ -285,6 +286,14 @@ var Compare = {
 
         osClone.querySelector("tbody").appendChild(rowClone);
       }
+      let counts = Object.keys(this.RESULT).map((result) => {
+        return osClone.querySelectorAll("tr." + result.toLowerCase()).length;
+      });
+      osClone.querySelector("summary").innerHTML = `<h2>${platform}</h2><span>
+(${counts[this.RESULT.SIMILAR]} similar,
+${counts[this.RESULT.DIFFERENT]} different,
+${counts[this.RESULT.MISSING_AFTER] + counts[this.RESULT.MISSING_BEFORE]} missing,
+${counts[this.RESULT.ERROR]} errors)</span>`;
       results.appendChild(osClone);
     }
   },

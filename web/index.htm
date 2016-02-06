@@ -34,6 +34,15 @@
       #results table {
       border-collapse: collapse;
       }
+      summary > h2 {
+      display: inline-block;
+      }
+      summary > span {
+      margin-left: 1em;
+      margin-right: 1em;
+      }
+      #oldDate, #oldCommit,
+      #newDate, #newCommit,
       #results td {
        padding: 1px 5px;
       }
@@ -46,7 +55,8 @@
       background: red;
       color: white;
       }
-      tr.missing > .diffCell {
+      tr.missing_after > .diffCell,
+      tr.missing_before > .diffCell {
         background: yellow;
       }
       tr.different > .diffCell {
@@ -133,7 +143,7 @@
         <td><a class="oldImage" target="_blank">Base</a></td>
         <td><a class="newImage" target="_blank">New</a></td>
         <td class="diffCell"><a class="diffLink" target="_blank"></a></td>
-        <td class="diffCell">#</td>
+        <td class="diffCell">?</td>
       </tr>
     </template>
 
