@@ -7,8 +7,17 @@
     <meta charset="utf-8">
     <title>Screenshot comparison</title>
     <style>
-      a:link, a:visited {
+      a {
         text-decoration: none;
+      }
+      a:hover, a:active {
+        text-decoration: underline;
+      }
+      body {
+        margin: 0;
+      }
+      #chooser, #results {
+        margin: 10px;
       }
       #chooser {
       background: white;
@@ -22,19 +31,30 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       }
-      td.similar {
-        background: green;
+      #results table {
+      border-collapse: collapse;
       }
-      td.error {
+      #results td {
+       padding: 1px 5px;
+      }
+      tr.similar > .diffCell {
+      background: green;
+      color: white;
+      text-align: right;
+      }
+      tr.error > .diffCell {
       background: red;
       color: white;
       }
-      td.missing {
+      tr.missing > .diffCell {
         background: yellow;
       }
-      td.different {
+      tr.different > .diffCell {
       background: orange;
-      color: white;
+      text-align: right;
+      }
+      .diffCell:last-child {
+        min-width: 5ex;
       }
     </style>
   </head>
@@ -87,13 +107,13 @@
     <template id="osTableTemplate">
       <details open>
         <summary>OS Name</summary>
-        <table>
+        <table width="100%">
           <thead>
             <tr>
               <th>Combination</th>
-              <th>Base</th>
-              <th>New</th>
-              <th>Difference</th>
+              <th>Base Image</th>
+              <th>New Image</th>
+              <th colspan="2">Difference (px)</th>
             </tr>
           </thead>
           <tbody>
@@ -110,9 +130,10 @@
     <template id="screenshotRowTemplate">
       <tr>
         <td></td>
-        <td><a class="oldImage" target="_blank">View</a></td>
-        <td><a class="newImage" target="_blank">View</a></td>
-        <td><a class="diffLink" target="_blank">#</a></td>
+        <td><a class="oldImage" target="_blank">Base</a></td>
+        <td><a class="newImage" target="_blank">New</a></td>
+        <td class="diffCell"><a class="diffLink" target="_blank"></a></td>
+        <td class="diffCell">#</td>
       </tr>
     </template>
 

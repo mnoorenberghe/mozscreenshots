@@ -129,7 +129,17 @@ var Compare = {
     }
     let result = response.results[0];
     this.resultsetsByID.set(result.id, result);
-    document.getElementById(type + "Date").textContent = new Date(result.push_timestamp * 1000);
+
+    let dateOptions = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric"
+    };
+    let pushDate = new Intl.DateTimeFormat(undefined, dateOptions).format(new Date(result.push_timestamp * 1000));
+
+    document.getElementById(type + "Date").textContent = pushDate;
     link.textContent = result.comments;
     link.title = result.comments;
     link.href = `https://treeherder.mozilla.org/#/jobs?repo=${response.meta.repository}&revision=${response.meta.revision}`;
@@ -183,33 +193,42 @@ var Compare = {
       xhr.addEventListener("error", reject);
       xhr.addEventListener("abort", reject);
       xhr.open("GET", url, true);
-      xhr.setRequestHeader('Accept', 'application/json');
+      xhr.setRequestHeader("Accept", "application/json");
       xhr.responseType = "json";
       xhr.send();
     });
   },
 
-  updateComparisonCell: function(td, image, platform, comparison) {
-    let diffLink = td.querySelector(".diffLink");
+  updateComparisonCell: function(diffCol2, image, platform, comparison) {
+    let row = diffCol2.parentElement;
+    let diffCol1 = diffCol2.previousElementSibling;
+    let diffLink = diffCol1.querySelector(".diffLink");
     switch (comparison.result) {
       case this.RESULT.SIMILAR:
-        td.classList.add("similar");
-        diffLink.textContent = comparison.difference;
+        row.classList.add("similar");
+        diffCol1.textContent = comparison.difference;
+        diffCol1.colSpan = 2;
+        diffCol2.remove();
         break;
       case this.RESULT.DIFFERENT:
-        td.classList.add("different");
-        diffLink.textContent = comparison.difference;
+        row.classList.add("different");
+        diffCol2.textContent = comparison.difference;
+        diffLink.textContent = "Compare";
         diffLink.href = `http://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/`
           + `${this.newProject}/${this.newRev}/${platform}/${image}`;
         break;
       case this.RESULT.ERROR:
-        td.classList.add("error");
-        diffLink.textContent = "Error";
+        row.classList.add("error");
+        diffCol1.colSpan = 2;
+        diffCol1.textContent = "Error";
+        diffCol2.remove();
         break;
       case this.RESULT.MISSING_BEFORE:
       case this.RESULT.MISSING_AFTER:
-        td.classList.add("missing");
-        diffLink.textContent = "Missing source image";
+        row.classList.add("missing");
+        diffCol1.colSpan = 2;
+        diffCol1.textContent = "Missing source image";
+        diffCol2.remove();
         break;
     }
   },
@@ -249,7 +268,7 @@ var Compare = {
         if (comparisons) {
           let comp = comparisons[combo];
           if (comp) {
-            this.updateComparisonCell(tds[3], combo, platform, comp);
+            this.updateComparisonCell(tds[4], combo, platform, comp);
           }
         }
 
