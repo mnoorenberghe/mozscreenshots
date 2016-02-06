@@ -134,6 +134,7 @@ def compare_dirs(before, after, outdir, args):
     except OSError:
         if not os.path.isdir(outdir):
             print('Error creating directory: %s' % outdir)
+            return
 
     similar_dir = os.path.join(outdir, "similar")
     if args.output_similar_composite:
@@ -183,13 +184,24 @@ def cli(args=sys.argv[1:]):
     parser.add_argument("before", help="Image file or directory of images")
     parser.add_argument("after", help="Image file or directory of images")
     parser.add_argument("--dppx", type=float, default=1.0, help="Scale factor to use for cropping system UI")
+    parser.add_argument("-o", "--output", default=None, metavar="DIRECTORY", help="Directory to output JSON and composite images to")
     parser.add_argument("--output-similar-composite", action="store_true", help="Output a composite image even when images are 'similar'")
 
     args = parser.parse_args()
 
     before = args.before
     after = args.after
-    outdir = tempfile.mkdtemp()
+    if args.output:
+        outdir = args.output
+        try:
+            os.makedirs(outdir)
+        except OSError:
+            if not os.path.isdir(outdir):
+                print('Error creating directory: %s' % outdir)
+                sys.exit(1)
+    else:
+        outdir = tempfile.mkdtemp()
+
     print("Image comparison results:", outdir)
 
     if (os.path.isdir(before) and os.path.isdir(after)):
