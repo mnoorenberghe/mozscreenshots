@@ -7,6 +7,7 @@ Take screenshots of Mozilla applications in various UI configurations.
 # dependencies
 * `mozrunner` (mozscreenshots subclasses mozrunner)
 * `compare` and `convert` from ImageMagick for `compare_screenshots`
+* `apngasm` to generate animated PNG comparison images
 * `scrot` may be used as a fallback for Linux screenshots
 
 # running mozscreenshots
