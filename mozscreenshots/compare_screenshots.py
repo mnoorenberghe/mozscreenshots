@@ -23,15 +23,18 @@ class ComparisonResult:
     MISSING_AFTER = 4
 
 
+def remove_prefix(filename):
+    return re.sub(r'^((before|after)_)?[^_]*_', '', filename)
+
 def get_suffixes(path):
-    return [re.sub(r'^[^_]*_', '', filename)
+    return [remove_prefix(filename)
              for filename in os.listdir(path) if filename.endswith(".png")]
 
 
 def compare_images(before, after, outdir, similar_dir, args):
     before_trimmed = trim_system_ui("before", before, outdir, args)
     after_trimmed = trim_system_ui("after", after, outdir, args)
-    outname = "comparison_" + os.path.basename(before_trimmed)
+    outname = remove_prefix(os.path.basename(before_trimmed))
     outpath = os.path.join(outdir, outname)
     result = 0
     diff = -1
@@ -48,7 +51,7 @@ def compare_images(before, after, outdir, similar_dir, args):
 
     print(diff)
 
-    if (result != ComparisonResult.SIMILAR or args.output_similar_composite):
+    if result != ComparisonResult.SIMILAR or args.output_similar_composite:
         subprocess.call(["compare", "-quiet", "-lowlight-color", "rgba(255,255,255,0)",
                          before_trimmed, after_trimmed, outpath])
         try:
@@ -146,7 +149,7 @@ def compare_dirs(before, after, outdir, args):
     print("SCREENSHOT SUFFIX".ljust(maxFWidth), "DIFFERING PIXELS (WITH FUZZ)")
     result_dict = defaultdict(list)
     file_output_dict = defaultdict(dict)
-    for f in sorted_suffixes[0:3]:
+    for f in sorted_suffixes:
         image1 = glob.glob(before + "/*_" + f)
         image2 = glob.glob(after + "/*_" + f)
         if not image1:
