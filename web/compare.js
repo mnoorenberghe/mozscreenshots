@@ -220,12 +220,6 @@ var Compare = {
         diffLink.href = `http://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/`
           + `${this.newProject}/${this.newRev}/${platform}/${image}`;
         break;
-      case this.RESULT.ERROR:
-        row.classList.add("error");
-        diffCol1.colSpan = 2;
-        diffCol1.textContent = "Error";
-        diffCol2.remove();
-        break;
       case this.RESULT.MISSING_BEFORE:
       case this.RESULT.MISSING_AFTER:
         row.classList.add(Object.entries(this.RESULT).find((val) => {
@@ -234,6 +228,17 @@ var Compare = {
         diffCol1.colSpan = 2;
         diffCol1.textContent = "Missing source image";
         diffCol2.remove();
+        break;
+      case this.RESULT.ERROR:
+        diffCol1.textContent = "Error";
+        // Fall through
+      default:
+        if (!("result" in comparison)) {
+          diffCol1.textContent = "No results";
+        }
+        diffCol1.colSpan = 2;
+        diffCol2.remove();
+        row.classList.add("error");
         break;
     }
   },
@@ -252,7 +257,7 @@ var Compare = {
     let results = document.getElementById("results");
     results.innerHTML = "";
     for (let [platform, jobs] of jobsByPlatform) {
-      let comparisons = this.comparisonsByPlatform.get(platform);
+      let comparisons = this.comparisonsByPlatform.get(platform) || {};
       let combinationNames = new Set();
       console.log(platform);
       for (let job of jobs) {
@@ -269,12 +274,8 @@ var Compare = {
         let rowClone = document.importNode(rowTemplate.content, true);
         let tds = rowClone.querySelectorAll("td");
 
-        if (comparisons) {
-          let comp = comparisons[combo];
-          if (comp) {
-            this.updateComparisonCell(tds[4], combo, platform, comp);
-          }
-        }
+        let comp = comparisons[combo] || {};
+        this.updateComparisonCell(tds[4], combo, platform, comp);
 
         tds[0].textContent = combo.replace(/\.png$/, "");
         for (let job of jobs) {
