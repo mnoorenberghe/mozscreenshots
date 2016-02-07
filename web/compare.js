@@ -250,7 +250,10 @@ var Compare = {
   updateDisplay: function() {
     console.debug("updateDisplay");
     let jobsByPlatform = new Map();
-    for (let job of this.screenshotsByJob.keys()) {
+    let jobsSortedByPlatform = [...this.screenshotsByJob.keys()].sort((a, b) => {
+      return a.platform.localeCompare(b.platform);
+    });
+    for (let job of jobsSortedByPlatform) {
       let jobs = jobsByPlatform.get(job.platform) || [];
       jobs.push(job);
       jobsByPlatform.set(job.platform, jobs);
