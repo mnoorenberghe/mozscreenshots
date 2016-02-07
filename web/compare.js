@@ -40,9 +40,13 @@ var Compare = {
         document.querySelector("form button[type='submit']").click();
       }
     }
-    this.form["hideSimilar"].addEventListener("change", (evt) => {
-      document.getElementById("results").classList.toggle("hideSimilar", this.checked);
-    });
+
+    this.filterChanged.call(this.form["hideSimilar"]);
+    this.form["hideSimilar"].addEventListener("change", this.filterChanged);
+  },
+
+  filterChanged: function() {
+    document.getElementById("results").classList.toggle(this.name, this.checked);
   },
 
   generateURL: function() {
