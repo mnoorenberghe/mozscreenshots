@@ -40,6 +40,9 @@ var Compare = {
         document.querySelector("form button[type='submit']").click();
       }
     }
+    this.form["hideSimilar"].addEventListener("change", (evt) => {
+      document.getElementById("results").classList.toggle("hideSimilar", this.checked);
+    });
   },
 
   generateURL: function() {

@@ -66,6 +66,10 @@
       .diffCell:last-child {
         min-width: 5ex;
       }
+
+      #results.hideSimilar tr.similar {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -108,7 +112,10 @@
             <td colspan="2">
               <button type="submit" style="width:100%">Compare revisions</button>
             </td>
-            <td><progress indeterminate hidden/></td>
+            <td><progress indeterminate hidden></progress></td>
+            <td>
+              <label><input type="checkbox" name="hideSimilar" value="1" checked />Hide similar</label>
+            </td>
           </tr>
         </tfoot>
       </table>
@@ -147,7 +154,7 @@
       </tr>
     </template>
 
-    <div id="results">
+    <div id="results" class="hideSimilar">
     </div>
 
     <script src="compare.js"></script>
