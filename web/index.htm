@@ -10,7 +10,8 @@
       a {
         text-decoration: none;
       }
-      a:hover, a:active {
+      /* Include :link with :hover so we don't underline with no @href */
+      a:link:hover, a:active {
         text-decoration: underline;
       }
       body {
