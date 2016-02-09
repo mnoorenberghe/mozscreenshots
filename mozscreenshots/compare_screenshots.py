@@ -94,7 +94,7 @@ def trim_system_ui(prefix, imagefile, outdir, args):
         titlebar_height = 22 * args.dppx
         chop_top = "0x%d" % titlebar_height
         # Check for max. & FS since the default is normal (e.g. devtools)
-        if "_maximized_" in imagefile or "_fullScreen_" in imagefile:
+        if "_maximized_" in imagefile:
             chop_right = "0x0"
         else:
             chop_right = "316x0" # desktop icons
@@ -106,9 +106,20 @@ def trim_system_ui(prefix, imagefile, outdir, args):
                      "-gravity", "East", "-chop", chop_right,
                      outpath]
     elif "windows7-" in imagefile or "windows8-64-" in imagefile or "windowsxp-" in imagefile:
+        chop_right = "0x0"
+        if "_maximized_" not in imagefile:
+            if "windows8-64-" in imagefile or "windowsxp-" in imagefile:
+                chop_right = "316x0"
+            if "windows7-" in imagefile and "_normal_" not in imagefile:
+                # We check for _normal_ since the default is maximized for the resolution of the Win7 machines.
+                chop_right = "124x0"
+
         taskbar_height = (30 if ("windowsxp-" in imagefile) else 40) * args.dppx
         chop = "0x%d" % taskbar_height
-        trim_args = ["convert", imagefile, "-gravity", "South", "-chop", chop, outpath]
+        trim_args = ["convert", imagefile,
+                     "-gravity", "South", "-chop", chop,
+                     "-gravity", "East", "-chop", chop_right,
+                     outpath]
     elif "linux32-" in imagefile or "linux64-" in imagefile:
         titlebar_height = 24 * args.dppx
         chop = "0x%d" % titlebar_height
