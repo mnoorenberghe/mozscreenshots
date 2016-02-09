@@ -93,7 +93,11 @@ def trim_system_ui(prefix, imagefile, outdir, args):
     if "osx-10-6-" in imagefile:
         titlebar_height = 22 * args.dppx
         chop_top = "0x%d" % titlebar_height
-        chop_right = "%dx0" % (316 if "_normal_" in imagefile else 0) # desktop icons
+        # Check for max. & FS since the default is normal (e.g. devtools)
+        if "_maximized_" in imagefile or "_fullScreen_" in imagefile:
+            chop_right = "0x0"
+        else:
+            chop_right = "316x0" # desktop icons
         dock_height = 90 * args.dppx
         chop_bottom = "0x%d" % dock_height
 
