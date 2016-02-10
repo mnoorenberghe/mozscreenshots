@@ -192,7 +192,8 @@ def cli():
                         help='Project that the revision is from. [Default="mozilla-central" for --nightly, "try" otherwise]')
 
     args = parser.parse_args()
-    args.project = "mozilla-central" if args.nightly else "try"
+    if not args.project:
+        args.project = "mozilla-central" if args.nightly else "try"
     log.setLevel(getattr(logging, args.log_level))
 
     run(args)
