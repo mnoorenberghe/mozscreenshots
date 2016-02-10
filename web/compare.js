@@ -149,7 +149,7 @@ var Compare = {
     document.getElementById(type + "Date").textContent = pushDate;
     link.textContent = result.comments;
     link.title = result.comments;
-    link.href = `https://treeherder.mozilla.org/#/jobs?repo=${response.meta.repository}&revision=${response.meta.revision}`;
+    link.href = `https://treeherder.mozilla.org/#/jobs?repo=${response.meta.repository}&revision=${response.meta.revision}&filter-tier=1&filter-tier=2&filter-tier=3&exclusion_profile=false`;
   },
 
   fetchJobsForResultset: function(resultset) {
