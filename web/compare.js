@@ -94,7 +94,6 @@ var Compare = {
         return this.fetchComparisons();
       })
       .then((xhrs) => {
-        console.debug(xhrs);
         // If an XHR returned null then the comparison likely hasn't been
         // performed yet so fire off a comparison for the revs.
         if (xhrs.some((xhr) => xhr.response === null)) {
@@ -295,7 +294,6 @@ var Compare = {
           combinationNames.add(name);
         }
       }
-      console.log(combinationNames);
 
       let osClone = document.importNode(osTableTemplate.content, true);
       let sortedCombos = [...combinationNames];
@@ -330,7 +328,6 @@ ${counts[this.RESULT.MISSING_AFTER] + counts[this.RESULT.MISSING_BEFORE]} missin
 ${counts[this.RESULT.ERROR]} errors)</span>`;
       osClone.querySelector("thead > tr").classList.toggle("similar",
                                                            Object.keys(this.RESULT).every((result) => {
-                                                             console.log(result);
                                                              if (result == "SIMILAR") {
                                                                return counts[this.RESULT[result]] > 0;
                                                              }
