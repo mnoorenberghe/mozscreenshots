@@ -328,6 +328,14 @@ var Compare = {
 ${counts[this.RESULT.DIFFERENT]} different,
 ${counts[this.RESULT.MISSING_AFTER] + counts[this.RESULT.MISSING_BEFORE]} missing,
 ${counts[this.RESULT.ERROR]} errors)</span>`;
+      osClone.querySelector("thead > tr").classList.toggle("similar",
+                                                           Object.keys(this.RESULT).every((result) => {
+                                                             console.log(result);
+                                                             if (result == "SIMILAR") {
+                                                               return counts[this.RESULT[result]] > 0;
+                                                             }
+                                                             return counts[this.RESULT[result]] == 0;
+      }));
       results.appendChild(osClone);
     }
   },
