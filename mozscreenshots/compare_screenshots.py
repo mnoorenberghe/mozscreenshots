@@ -5,6 +5,7 @@
 from __future__ import print_function
 
 import argparse
+import fcntl
 import glob
 import json
 import os
@@ -158,6 +159,13 @@ def compare_dirs(before, after, outdir, args):
         print("Comparison already completed");
         return
 
+    lock_fd = open(os.path.join(outdir, "comparison.lock"), 'w')
+    try:
+        fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB);
+    except IOError:
+        print("Comparison already in progress")
+        return
+
     similar_dir = os.path.join(outdir, "similar")
     if args.output_similar_composite:
         os.makedirs(similar_dir)
@@ -200,6 +208,8 @@ def compare_dirs(before, after, outdir, args):
     json_file = open(json_path, 'w')
     json.dump(file_output_dict, json_file, allow_nan=False, sort_keys=True)
     json_file.close()
+
+    fcntl.flock(lock_fd, fcntl.LOCK_UN);
 
 def cli(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(description='Compare screenshot files or directories for differences')
