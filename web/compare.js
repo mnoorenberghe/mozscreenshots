@@ -93,6 +93,19 @@ var Compare = {
       .then(() => {
         return this.fetchComparisons();
       })
+      .then((xhrs) => {
+        console.debug(xhrs);
+        // If an XHR returned null then the comparison likely hasn't been
+        // performed yet so fire off a comparison for the revs.
+        if (xhrs.some((xhr) => xhr.response === null)) {
+          this.updateDisplay();
+          return this.triggerComparisons()
+            .then(() => {
+              return this.fetchComparisons();
+            });
+        }
+        return null;
+      })
       .then(() => {
         this.updateDisplay();
         document.querySelector("progress").hidden = true;
@@ -101,6 +114,15 @@ var Compare = {
         document.querySelector("progress").hidden = true;
         console.error(error);
       });
+  },
+
+  triggerComparisons: function() {
+    console.debug("triggerComparisons");
+    let params = new URLSearchParams();
+    for (let param of ["oldProject", "oldRev", "newProject", "newRev"]) {
+      params.append(param, this.form[param].value.trim());
+    }
+    return this.getJSON("http://screenshots.mattn.ca/compare/cgi-bin/request_comparison.cgi?" + params.toString());
   },
 
   fetchComparisons: function() {
@@ -114,6 +136,7 @@ var Compare = {
                    `${this.newProject}/${this.newRev}/${platform}/comparison.json`)
                     .then((xhr) => {
                       this.comparisonsByPlatform.set(p, xhr.response);
+                      return xhr;
                     }));
     }
     return Promise.all(promises);
