@@ -153,6 +153,11 @@ def compare_dirs(before, after, outdir, args):
             print('Error creating directory: %s' % outdir)
             return
 
+    json_path = os.path.join(outdir, "comparison.json")
+    if os.path.isfile(json_path) and not args.overwrite:
+        print("Comparison already completed");
+        return
+
     similar_dir = os.path.join(outdir, "similar")
     if args.output_similar_composite:
         os.makedirs(similar_dir)
@@ -192,7 +197,7 @@ def compare_dirs(before, after, outdir, args):
                   + len(result_dict[ComparisonResult.MISSING_AFTER]),
                   len(result_dict[ComparisonResult.ERROR])))
 
-    json_file = open(os.path.join(outdir, "comparison.json"), 'w')
+    json_file = open(json_path, 'w')
     json.dump(file_output_dict, json_file, allow_nan=False, sort_keys=True)
     json_file.close()
 
@@ -203,6 +208,7 @@ def cli(args=sys.argv[1:]):
     parser.add_argument("--dppx", type=float, default=1.0, help="Scale factor to use for cropping system UI")
     parser.add_argument("-o", "--output", default=None, metavar="DIRECTORY", help="Directory to output JSON and composite images to")
     parser.add_argument("--output-similar-composite", action="store_true", help="Output a composite image even when images are 'similar'")
+    parser.add_argument("--overwrite", action="store_true", default=False, help="Whether to overwrite an existing directory comparison")
 
     args = parser.parse_args()
 
