@@ -110,18 +110,23 @@ def trim_system_ui(prefix, imagefile, outdir, args):
         taskbar_height = (30 if ("windowsxp-" in imagefile) else 40) * args.dppx
         chop_bottom = taskbar_height
         chop_right = 0
+        chop_top = 0
+        chop_left = 0
         if "_maximized_" not in imagefile:
             if "windows8-64-" in imagefile or "windowsxp-" in imagefile:
                 chop_right = 316
                 chop_bottom = 156
+                chop_top = chop_left = 4
             if "windows7-" in imagefile and "_normal_" not in imagefile:
                 # We check for _normal_ since the default is maximized for the resolution of the Win7 machines.
                 chop_right = 124
                 chop_bottom = 135
 
         trim_args = ["convert", imagefile,
+                     "-gravity", "North", "-chop", "0x%d" % chop_top,
                      "-gravity", "South", "-chop", "0x%d" % chop_bottom,
                      "-gravity", "East", "-chop", "%dx0" % chop_right,
+                     "-gravity", "West", "-chop", "%dx0" % chop_left,
                      outpath]
     elif "linux32-" in imagefile or "linux64-" in imagefile:
         titlebar_height = 24 * args.dppx
