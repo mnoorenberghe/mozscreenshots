@@ -243,9 +243,13 @@ var Compare = {
         diffCol2.remove();
         break;
       case this.RESULT.DIFFERENT:
-        if (platform == "windows7-32" && image.includes("_normal_")) {
+        if (platform == "windows7-32") {
+          if (image.includes("_normal_") || image.includes("_tabsOutsideTitlebar")) {
           // Desktop icons, bug 1245719.
-          row.classList.add("known_inconsistency");
+            row.classList.add("known_inconsistency");
+          } else if (image.includes("_noLWT") && !image.includes("_fullScreen")) {
+            row.classList.add("known_inconsistency");
+          }
         }
         row.classList.add("different");
         diffCol2.textContent = comparison.difference;
