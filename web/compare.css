@@ -29,9 +29,13 @@ body {
 
 #oldCommit, #newCommit {
   max-width: 45vw;
-  overflow:hidden;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+progress:not([hidden]) + span {
+  display: none;
 }
 
 #results table {
@@ -41,7 +45,7 @@ body {
 summary {
   background: white;
   position: sticky;
-  top: 60px; /* TODO */
+  top: 70px; /* TODO */
 }
 
 summary > h2 {
@@ -76,6 +80,11 @@ tr.error > .diffCell {
   color: white;
 }
 
+tr.known_inconsistency > .diffCell {
+  background: lightblue;
+  text-align: right;
+}
+
 tr.missing_after > .diffCell,
 tr.missing_before > .diffCell {
   background: yellow;
@@ -90,6 +99,8 @@ tr.different > .diffCell {
   min-width: 5ex;
 }
 
-#results.hideSimilar tr.similar {
+#results.hideKnownInconsistencies.hideSimilar tr.known_inconsistency.similar,
+#results.hideKnownInconsistencies tr.known_inconsistency:not(.similar),
+#results.hideSimilar tr.similar:not(.known_inconsistency) {
   display: none;
 }

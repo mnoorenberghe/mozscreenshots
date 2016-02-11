@@ -11,6 +11,7 @@ var Compare = {
     ERROR: 2,
     MISSING_BEFORE: 3,
     MISSING_AFTER: 4,
+    KNOWN_INCONSISTENCY: 5,
   },
   TREEHERDER_API: "https://treeherder.mozilla.org/api",
 
@@ -42,7 +43,9 @@ var Compare = {
     }
 
     this.filterChanged.call(this.form["hideSimilar"]);
+    this.filterChanged.call(this.form["hideKnownInconsistencies"]);
     this.form["hideSimilar"].addEventListener("change", this.filterChanged);
+    this.form["hideKnownInconsistencies"].addEventListener("change", this.filterChanged);
   },
 
   filterChanged: function() {
@@ -240,6 +243,10 @@ var Compare = {
         diffCol2.remove();
         break;
       case this.RESULT.DIFFERENT:
+        if (platform == "windows7-32" && image.includes("_normal_")) {
+          // Desktop icons, bug 1245719.
+          row.classList.add("known_inconsistency");
+        }
         row.classList.add("different");
         diffCol2.textContent = comparison.difference;
         diffLink.textContent = "Compare";
@@ -332,7 +339,10 @@ ${counts[this.RESULT.ERROR]} errors)</span>`;
                                                                return counts[this.RESULT[result]] > 0;
                                                              }
                                                              return counts[this.RESULT[result]] == 0;
-      }));
+                                                           }));
+      console.log(counts);
+      osClone.querySelector("thead > tr").classList.toggle("known_inconsistency", counts[this.RESULT.DIFFERENT] > 0 &&
+                                                           counts[this.RESULT.KNOWN_INCONSISTENCY] == counts[this.RESULT.DIFFERENT]);
       results.appendChild(osClone);
     }
   },
