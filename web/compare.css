@@ -59,6 +59,15 @@ summary > span {
   margin-right: 1em;
 }
 
+summary .different {
+  color: red;
+}
+
+/* only similar for the platform */
+summary .similar:first-child:last-child {
+  color: green;
+}
+
 #oldDate, #oldCommit,
 #newDate, #newCommit,
 #results td {

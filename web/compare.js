@@ -328,11 +328,21 @@ var Compare = {
       let counts = Object.keys(this.RESULT).map((result) => {
         return osClone.querySelectorAll("tr." + result.toLowerCase()).length;
       });
-      osClone.querySelector("summary").innerHTML = `<h2>${platform}</h2><span>
-(${counts[this.RESULT.SIMILAR]} similar,
-${counts[this.RESULT.DIFFERENT]} different,
-${counts[this.RESULT.MISSING_AFTER] + counts[this.RESULT.MISSING_BEFORE]} missing,
-${counts[this.RESULT.ERROR]} errors)</span>`;
+      let summaryCategories = [
+        [counts[this.RESULT.SIMILAR], "similar"],
+        [counts[this.RESULT.DIFFERENT] - counts[this.RESULT.KNOWN_INCONSISTENCY], "different"],
+        [counts[this.RESULT.KNOWN_INCONSISTENCY], "known inconsistencies"],
+        [counts[this.RESULT.MISSING_AFTER] + counts[this.RESULT.MISSING_BEFORE], "missing"],
+        [counts[this.RESULT.ERROR], "errors"]
+      ];
+      let summaryCounts = [];
+      for (let [count, category] of summaryCategories) {
+        if (count == 0) {
+          continue;
+        }
+        summaryCounts.push(`<span class="${category}">${count} ${category}</span>`);
+      }
+      osClone.querySelector("summary").innerHTML = `<h2>${platform}</h2><span>(` + summaryCounts.join(", ") + ")</span>";
       osClone.querySelector("thead > tr").classList.toggle("similar",
                                                            Object.keys(this.RESULT).every((result) => {
                                                              if (result == "SIMILAR") {
