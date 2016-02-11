@@ -89,11 +89,6 @@ tr.error > .diffCell {
   color: white;
 }
 
-tr.known_inconsistency > .diffCell {
-  background: lightblue;
-  text-align: right;
-}
-
 tr.missing_after > .diffCell,
 tr.missing_before > .diffCell {
   background: yellow;
@@ -101,6 +96,12 @@ tr.missing_before > .diffCell {
 
 tr.different > .diffCell {
   background: rgba(255, 165, 0, 0.7);
+  text-align: right;
+}
+
+/* Must be below the equivalent tr.different since they are both applied */
+tr.known_inconsistency > .diffCell {
+  background: lightblue;
   text-align: right;
 }
 
