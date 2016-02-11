@@ -352,7 +352,8 @@ var Compare = {
                                                            }));
       console.log(counts);
       osClone.querySelector("thead > tr").classList.toggle("known_inconsistency", counts[this.RESULT.DIFFERENT] > 0 &&
-                                                           counts[this.RESULT.KNOWN_INCONSISTENCY] == counts[this.RESULT.DIFFERENT]);
+                                                           counts[this.RESULT.KNOWN_INCONSISTENCY] == counts[this.RESULT.DIFFERENT] &&
+                                                          counts[this.RESULT.MISSING_AFTER] + counts[this.RESULT.MISSING_BEFORE] + counts[this.RESULT.ERROR] == 0);
       results.appendChild(osClone);
     }
   },
