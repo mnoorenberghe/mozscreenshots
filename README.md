@@ -58,3 +58,7 @@ image comparisons and generate false positives.
 
     pip install -U mozscreenshots
     compare_screenshots  mozilla-central/08138045c38c/ try/5f6ca9194dd9/
+
+# web UI
+
+http://screenshots.mattn.ca/compare/
