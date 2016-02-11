@@ -35,7 +35,7 @@ To output the list of valid sets, use `--list-sets`.
 # output
 The screenshots can be found in the following directories for now (issue 9 will make them configurable):
 
-* In MOZ_UPLOAD_DIR if the environment variables is defined
+* In `MOZ_UPLOAD_DIR` if the environment variables is defined
 * `/%TmpD%/mozscreenshots/` (a temporary directory which is output at the before capturing begins)
 
 # caveats
@@ -46,6 +46,7 @@ The screenshots can be found in the following directories for now (issue 9 will 
 # fetching images from automation
 
 Use `fetch_screenshots` to fetch screenshots from Mozilla automation (e.g. Try server):
+
     pip install -U mozscreenshots
     fetch_screenshots -r 9f4d4ce255a1
 
