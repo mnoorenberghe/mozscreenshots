@@ -117,7 +117,7 @@ def trim_system_ui(prefix, imagefile, outdir, args):
                 chop_right = 316
                 chop_bottom = 156
                 chop_top = chop_left = 4
-            if "windows7-" in imagefile and "_normal_" not in imagefile:
+            if "windows7-" in imagefile and "_normal_" in imagefile:
                 # We check for _normal_ since the default is maximized for the resolution of the Win7 machines.
                 chop_right = 124
                 chop_bottom = 135
