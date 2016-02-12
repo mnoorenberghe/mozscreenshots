@@ -6,6 +6,8 @@ The tool will setup the browser in every possible combination of the specified c
 
 Note that the extension (XPI) code has mostly moved to https://mxr.mozilla.org/mozilla-central/source/browser/tools/mozscreenshots/mozscreenshots/extension/
 
+[Documentation on MDN](https://developer.mozilla.org/en-US/docs/Mozilla/QA/Browser_screenshots)
+
 # dependencies
 * `mozrunner` (mozscreenshots subclasses mozrunner for standalone execution only)
 * `compare` and `convert` from ImageMagick for `compare_screenshots`
