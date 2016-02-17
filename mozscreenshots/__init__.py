@@ -3,3 +3,5 @@
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from runner import *
+
+__version__ = '0.3.1'

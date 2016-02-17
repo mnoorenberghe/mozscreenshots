@@ -11,7 +11,13 @@ import requests
 import sys
 
 from datetime import date
+from mozscreenshots import __version__
 
+
+DEFAULT_REQUEST_HEADERS = {
+    'Accept': 'application/json',
+    'User-Agent': 'mozscreenshots/%s' % __version__,
+}
 TH_API = 'https://treeherder.mozilla.org/api'
 
 log = logging.getLogger('fetch_screenshots')
@@ -23,12 +29,11 @@ def resultset_response_for_id(project, resultset_id):
     print 'Fetching resultset for id: %d' % resultset_id
     resultset_url = '%s/project/%s/resultset/%s/' % (TH_API, project, resultset_id)
     log.info(resultset_url)
-    response = requests.get(resultset_url)
-    if response.status_code != 200:
+    try:
+        json = fetch_json(resultset_url)
+    except requests.exceptions.HTTPError:
         log.error('Invalid resultset for id: %d' % resultset_id)
         return None
-
-    json = response.json()
 
     if not json['id']:
         log.error('No resultset for id: %s' % resultset_id)
@@ -40,7 +45,7 @@ def resultset_response_for_push(project, rev):
     print 'Fetching resultset for revision: %s' % rev
     resultset_url = '%s/project/%s/resultset/?count=2&full=true&revision=%s' % (TH_API, project, rev)
     log.info(resultset_url)
-    response = requests.get(resultset_url).json()
+    response = fetch_json(resultset_url)
 
     if len(response['results']) == 0:
         log.error('No resultset for revision: %s' % rev)
@@ -56,7 +61,7 @@ def jobs_for_resultset(project, resultset_id, job_type_name):
 
     jobs_url = '%s/project/%s/jobs/?count=2000&result_set_id=%d&job_type_name=%s&exclusion_profile=false' % (TH_API, project, resultset_id, job_type_name)
     log.info(jobs_url)
-    jobs = requests.get(jobs_url).json()
+    jobs = fetch_json(jobs_url)
     if len(jobs['results']) == 0:
         log.error('No jobs found for resultset: %d' % resultset_id)
         return None
@@ -67,7 +72,7 @@ def download_image_artifacts_for_job(project, job, dir_path):
     print 'Fetching artifact list for job: %d' % job['id']
     artifacts_url = '%s/project/%s/artifact/?job_id=%d&name=Job+Info&type=json' % (TH_API, project, job['id'])
     log.info(artifacts_url)
-    artifacts = requests.get(artifacts_url).json()
+    artifacts = fetch_json(artifacts_url)
 
     job_dir = os.path.join(dir_path, '%s-%s' % (job['platform'], job['id']))
     try:
@@ -124,7 +129,7 @@ def nightly_jobs_for_date(project, date):
     job_type_name = 'Nightly'
     jobs_url = '%s/project/%s/jobs/?count=100&last_modified__gte=%sT00:00:00.000&last_modified__lte=%sT23:59:59.999&job_type_name=%s&exclusion_profile=false' % (TH_API, project, date, date, job_type_name)
     log.debug(jobs_url)
-    jobs = requests.get(jobs_url).json()
+    jobs = fetch_json(jobs_url)
 
     found_result_set_ids = set()
     for job in jobs['results']:
@@ -133,6 +138,11 @@ def nightly_jobs_for_date(project, date):
             log.debug('Found Nightly: %s with resultset id: %d' % (job['ref_data_name'], job['result_set_id']))
 
     return found_result_set_ids
+
+def fetch_json(url):
+    response = requests.get(url, headers=DEFAULT_REQUEST_HEADERS, timeout=30)
+    response.raise_for_status()
+    return response.json()
 
 def run(args):
     resultsets = []
