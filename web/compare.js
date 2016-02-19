@@ -136,7 +136,12 @@ var Compare = {
     evt.preventDefault();
 
     document.querySelector("progress").hidden = false;
-    window.history.pushState({}, document.title, this.generateURL());
+    try {
+      window.history.pushState({}, document.title, this.generateURL());
+    } catch (ex) {
+      alert("The page URL couldn't be updated likely because your browser doesn't support URL.searchParams :(");
+      console.error(ex);
+    }
 
     this.oldProject = this.form["oldProject"].value.trim();
     this.newProject = this.form["newProject"].value.trim();
@@ -327,9 +332,18 @@ var Compare = {
         break;
       case this.RESULT.MISSING_BEFORE:
       case this.RESULT.MISSING_AFTER:
-        row.classList.add(Object.entries(this.RESULT).find((val) => {
-          return val[1] == comparison.result;
-        })[0].toLowerCase());
+        let className;
+        for (let resultName of Object.keys(this.RESULT)) {
+          let resultNum = this.RESULT[resultName];
+          console.log(resultNum, resultName);
+          if (resultNum == comparison.result) {
+            className = resultName.toLowerCase();
+            break;
+          }
+        }
+        if (className) {
+          row.classList.add(className);
+        }
         diffCol1.colSpan = 2;
         diffCol1.textContent = "Missing source image";
         diffCol2.remove();
