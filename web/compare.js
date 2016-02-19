@@ -46,6 +46,8 @@ var Compare = {
     this.filterChanged.call(this.form["hideKnownInconsistencies"]);
     this.form["hideSimilar"].addEventListener("change", this.filterChanged);
     this.form["hideKnownInconsistencies"].addEventListener("change", this.filterChanged);
+
+    this.populateSuggestedRevisions();
   },
 
   filterChanged: function() {
@@ -59,6 +61,73 @@ var Compare = {
       url.searchParams.append(param, this.form[param].value.trim());
     }
     return url;
+  },
+
+  populateSuggestedRevisions: function() {
+    let dateOptions = {
+      hour12: false,
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric"
+    };
+    let dateFormat = new Intl.DateTimeFormat(undefined, dateOptions);
+
+    this.fetchRecentScreenshotJobsWithScreenshots().then((resultsets) => {
+      let mcRevs = document.getElementById("mcRevs");
+      for (let resultset of resultsets) {
+        let pushDate = new Date(resultset.push_timestamp * 1000);
+        let option = new Option(dateFormat.format(pushDate) + " (m-c: " + resultset.revision + ")",
+                                resultset.revision);
+        mcRevs.appendChild(option);
+      }
+    });
+  },
+
+  fetchRecentScreenshotJobsWithScreenshots: function(project = "mozilla-central") {
+    let date = new Date();
+    // Subtract 6 days from now
+    date.setDate(date.getDate() - 6);
+    let isoEarliestDate = date.toISOString();
+    let jobs = [];
+    return this.getJSON(this.TREEHERDER_API + `/project/${project}/jobs/?count=5000&exclusion_profile=false` +
+                 `&job_type_name=Mochitest%20Browser%20Screenshots&result=success&last_modified__gte=${isoEarliestDate}`)
+      .then((jobsXHR) => {
+        jobs = jobsXHR.response.results;
+        let jobIDSet = new Set(jobs.map((job) => {
+          return job.id;
+        }));
+        return this.getJSON(this.TREEHERDER_API + `/project/${project}/artifact/?job_id__in=${[...jobIDSet].join(",")}&name=Job+Info&type=json&count=1000`);
+      }).then((artifactsXHR) => {
+        console.log(artifactsXHR);
+        let jobIDsWithScreenshots = [];
+        for (let artifacts of artifactsXHR.response) {
+          let hasScreenshots = artifacts.blob.job_details.some((artifact) => {
+            return artifact.content_type == "link"
+              && artifact.value.endsWith(".png")
+              && !artifact.value.startsWith("mozilla-test-fail-");
+          });
+          if (!hasScreenshots) {
+            continue;
+          }
+          jobIDsWithScreenshots.push(artifacts.job_id);
+        }
+
+        let resultsetIDsWithScreenshots = new Set();
+        for (let job of jobs) {
+          if (jobIDsWithScreenshots.indexOf(job.id) == -1) {
+            continue;
+          }
+          resultsetIDsWithScreenshots.add(job.result_set_id);
+        }
+
+        return resultsetIDsWithScreenshots;
+      }).then((resultSetIDs) => {
+        return this.getJSON(this.TREEHERDER_API + `/project/${project}/resultset/?id__in=${[...resultSetIDs].join(",")}`);
+      }).then((resultsetsXHR) => {
+        console.log(resultsetsXHR);
+        return resultsetsXHR.response.results;
+      });
   },
 
   compare: function(evt) {
@@ -78,7 +147,6 @@ var Compare = {
     this.resultsetsByID = new Map();
     this.screenshotsByJob = new Map();
 
-    // TODO: update query params
     Promise.all([
       this.fetchResultset(this.oldProject, this.oldRev),
       this.fetchResultset(this.newProject, this.newRev),
@@ -299,7 +367,6 @@ var Compare = {
     for (let [platform, jobs] of jobsByPlatform) {
       let comparisons = this.comparisonsByPlatform.get(platform) || {};
       let combinationNames = new Set();
-      console.log(platform);
       for (let job of jobs) {
         for (let [name, URL] of this.screenshotsByJob.get(job)) {
           combinationNames.add(name);
@@ -354,7 +421,6 @@ var Compare = {
                                                              }
                                                              return counts[this.RESULT[result]] == 0;
                                                            }));
-      console.log(counts);
       osClone.querySelector("thead > tr").classList.toggle("known_inconsistency", counts[this.RESULT.DIFFERENT] > 0 &&
                                                            counts[this.RESULT.KNOWN_INCONSISTENCY] == counts[this.RESULT.DIFFERENT] &&
                                                           counts[this.RESULT.MISSING_AFTER] + counts[this.RESULT.MISSING_BEFORE] + counts[this.RESULT.ERROR] == 0);
