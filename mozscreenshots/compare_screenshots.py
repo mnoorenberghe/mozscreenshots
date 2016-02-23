@@ -98,7 +98,10 @@ def trim_system_ui(prefix, imagefile, outdir, args):
         if "_maximized_" in imagefile:
             chop_right = 0
         else:
-            chop_right = 316 # desktop icons
+            # desktop icons and other windows
+            chop_right = 316
+            chop_bottom = 110
+            chop_left = 4
         dock_height = 90 * args.dppx
         chop_bottom = dock_height
 
