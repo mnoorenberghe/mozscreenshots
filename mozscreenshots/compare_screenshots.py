@@ -100,10 +100,9 @@ def trim_system_ui(prefix, imagefile, outdir, args):
         else:
             # desktop icons and other windows
             chop_right = 316
-            chop_bottom = 110
             chop_left = 4
-        dock_height = 90 * args.dppx
-        chop_bottom = dock_height
+        dock_height = 90 * args.dppx # no longer used
+        chop_bottom = 110
 
     elif "windows7-" in imagefile or "windows8-64-" in imagefile or "windowsxp-" in imagefile:
         taskbar_height = (30 if ("windowsxp-" in imagefile) else 40) * args.dppx
