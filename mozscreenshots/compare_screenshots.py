@@ -90,28 +90,21 @@ def trim_system_ui(prefix, imagefile, outdir, args):
         return imagefile
     outpath = os.path.join(outdir, prefix + "_" + os.path.basename(imagefile))
 
-    trim_args = []
+    chop_top = chop_right = chop_bottom = chop_left = 0
     if "osx-10-6-" in imagefile:
         titlebar_height = 22 * args.dppx
-        chop_top = "0x%d" % titlebar_height
-        # Check for max. & FS since the default is normal (e.g. devtools)
+        chop_top = titlebar_height
+        # Check for maximized since the default is normal (e.g. devtools)
         if "_maximized_" in imagefile:
-            chop_right = "0x0"
+            chop_right = 0
         else:
-            chop_right = "316x0" # desktop icons
+            chop_right = 316 # desktop icons
         dock_height = 90 * args.dppx
-        chop_bottom = "0x%d" % dock_height
+        chop_bottom = dock_height
 
-        trim_args = ["convert", imagefile, "-chop", chop_top,
-                     "-gravity", "South", "-chop", chop_bottom,
-                     "-gravity", "East", "-chop", chop_right,
-                     outpath]
     elif "windows7-" in imagefile or "windows8-64-" in imagefile or "windowsxp-" in imagefile:
         taskbar_height = (30 if ("windowsxp-" in imagefile) else 40) * args.dppx
         chop_bottom = taskbar_height
-        chop_right = 0
-        chop_top = 0
-        chop_left = 0
         if "_maximized_" not in imagefile:
             if "windows8-64-" in imagefile or "windowsxp-" in imagefile:
                 chop_right = 316
@@ -122,18 +115,18 @@ def trim_system_ui(prefix, imagefile, outdir, args):
                 chop_right = 124
                 chop_bottom = 135
 
-        trim_args = ["convert", imagefile,
-                     "-gravity", "North", "-chop", "0x%d" % chop_top,
-                     "-gravity", "South", "-chop", "0x%d" % chop_bottom,
-                     "-gravity", "East", "-chop", "%dx0" % chop_right,
-                     "-gravity", "West", "-chop", "%dx0" % chop_left,
-                     outpath]
     elif "linux32-" in imagefile or "linux64-" in imagefile:
         titlebar_height = 24 * args.dppx
-        chop = "0x%d" % titlebar_height
-        trim_args = ["convert", imagefile, "-chop", chop, outpath]
+        chop_top = titlebar_height
     else:
         return imagefile
+
+    trim_args = ["convert", imagefile,
+                 "-gravity", "North", "-chop", "0x%d" % chop_top,
+                 "-gravity", "South", "-chop", "0x%d" % chop_bottom,
+                 "-gravity", "East", "-chop", "%dx0" % chop_right,
+                 "-gravity", "West", "-chop", "%dx0" % chop_left,
+                 outpath]
 
     try:
         subprocess.call(trim_args)
