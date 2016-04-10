@@ -63,4 +63,4 @@ image comparisons and generate false positives.
 
 # web UI
 
-http://screenshots.mattn.ca/compare/
+https://screenshots.mattn.ca/compare/

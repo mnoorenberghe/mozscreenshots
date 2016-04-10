@@ -197,7 +197,7 @@ var Compare = {
     for (let param of ["oldProject", "oldRev", "newProject", "newRev"]) {
       params.append(param, this.form[param].value.trim());
     }
-    return this.getJSON("http://screenshots.mattn.ca/compare/cgi-bin/request_comparison.cgi?" + params.toString());
+    return this.getJSON("https://screenshots.mattn.ca/compare/cgi-bin/request_comparison.cgi?" + params.toString());
   },
 
   fetchComparisons: function() {
@@ -207,7 +207,7 @@ var Compare = {
     }));
     for (let platform of platforms) {
       let p = platform;
-      promises.push(this.getJSON(`http://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/` +
+      promises.push(this.getJSON(`https://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/` +
                    `${this.newProject}/${this.newRev}/${platform}/comparison.json`)
                     .then((xhr) => {
                       this.comparisonsByPlatform.set(p, xhr.response);
@@ -327,7 +327,7 @@ var Compare = {
         row.classList.add("different");
         diffCol2.textContent = comparison.difference;
         diffLink.textContent = "Compare";
-        diffLink.href = `http://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/`
+        diffLink.href = `https://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/`
           + `${this.newProject}/${this.newRev}/${platform}/${image}`;
         break;
       case this.RESULT.MISSING_BEFORE:
