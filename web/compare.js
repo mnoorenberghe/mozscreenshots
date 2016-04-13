@@ -54,6 +54,19 @@ var Compare = {
     document.getElementById("results").classList.toggle(this.name, this.checked);
   },
 
+  updatePushlogLink: function() {
+    var pushlog = document.getElementById("pushlog");
+    if (this.oldProject == this.newProject) {
+      pushlog.querySelector("a").href = `https://hg.mozilla.org/` +
+        `${this.form.oldProject.value.trim()}` +
+        `/pushloghtml?fromchange=${this.form.oldRev.value.trim()}` +
+        `&tochange=${this.form.newRev.value.trim()}`;
+      pushlog.hidden = false;
+    } else {
+      pushlog.hidden = true;
+    }
+  },
+
   generateURL: function() {
     let url = new URL(window.location.href);
     url.search = "";
@@ -147,6 +160,8 @@ var Compare = {
     this.newProject = this.form["newProject"].value.trim();
     this.oldRev = this.form["oldRev"].value.trim();
     this.newRev = this.form["newRev"].value.trim();
+
+    this.updatePushlogLink();
 
     this.comparisonsByPlatform = new Map();
     this.resultsetsByID = new Map();

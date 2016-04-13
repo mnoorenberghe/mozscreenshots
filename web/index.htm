@@ -30,16 +30,21 @@
           <tr>
             <th scope="row">Base</th>
             <!-- more validation -->
-            <td><input name="oldProject" required list="projects" size="16" /></td>
-            <td><input name="oldRev" required size="16" list="mcRevs"/></td>
+            <td><input name="oldProject" required list="projects" size="16"
+                       pattern="[ ]*[a-z0-9][-.a-z0-9]+[ ]*"
+                       title="Old project name (e.g. mozilla-central, try, etc.)"/></td>
+            <td><input name="oldRev" required size="16" list="mcRevs" pattern="[ ]*[0-9a-f]{6,}[ ]*" title="Hexadecimal commit hash"/></td>
 
             <td id="oldDate"></td>
             <td id="oldCommit"><a></a></td>
+            <td id="pushlog" rowspan="2" hidden><a target="_blank">Pushlog</a></td>
           </tr>
           <tr>
             <th scope="row">New</th>
-            <td><input name="newProject" required list="projects" size="16"/></td>
-            <td><input name="newRev" required size="16" list="mcRevs"/></td>
+            <td><input name="newProject" required list="projects" size="16"
+                       pattern="[ ]*[a-z0-9][-.a-z0-9]+[ ]*"
+                       title="Old project name (e.g. mozilla-central, try, etc.)"/></td>
+            <td><input name="newRev" required size="16" list="mcRevs" pattern="[ ]*[0-9a-f]{6,}[ ]*" title="Hexadecimal commit hash"/></td>
             <td id="newDate"></td>
             <td id="newCommit"><a></a></td>
           </tr>
