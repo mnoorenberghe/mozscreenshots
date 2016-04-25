@@ -251,6 +251,7 @@ var Compare = {
     this.resultsetsByID.set(result.id, result);
 
     let dateOptions = {
+      hour12: false,
       year: "numeric",
       month: "short",
       day: "numeric",
