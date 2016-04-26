@@ -87,9 +87,9 @@ var Compare = {
     return url;
   },
 
-  updateURL: function({ replace = false } = {}) {
+  updateURL: function(args = {}) {
     try {
-      window.history[replace ? "replaceState" : "pushState"]({}, document.title, this.generateURL());
+      window.history[args.replace ? "replaceState" : "pushState"]({}, document.title, this.generateURL());
     } catch (ex) {
       alert("The page URL couldn't be updated likely because your browser doesn't support URL.searchParams :(");
       console.error(ex);
