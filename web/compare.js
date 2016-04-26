@@ -46,12 +46,19 @@ var Compare = {
     this.filterChanged.call(this.form["hideKnownInconsistencies"]);
     this.form["hideSimilar"].addEventListener("change", this.filterChanged);
     this.form["hideKnownInconsistencies"].addEventListener("change", this.filterChanged);
+    this.form["filter"].value = params.has("filter") ? params.get("filter") : "";
+    this.form["filter"].addEventListener("input", this.filterChanged);
 
     this.populateSuggestedRevisions();
   },
 
   filterChanged: function() {
     document.getElementById("results").classList.toggle(this.name, this.checked);
+    let filterText = this.form["filter"].value;
+    for (var row of document.querySelectorAll("#results > details > table > tbody > tr")) {
+      row.classList.toggle("textMismatch", row.id.search(filterText) == -1);
+    }
+    Compare.updateURL({ replace: true });
   },
 
   updatePushlogLink: function() {
@@ -70,10 +77,23 @@ var Compare = {
   generateURL: function() {
     let url = new URL(window.location.href);
     url.search = "";
-    for (let param of ["oldProject", "oldRev", "newProject", "newRev"]) {
-      url.searchParams.append(param, this.form[param].value.trim());
+    for (let param of ["oldProject", "oldRev", "newProject", "newRev", "filter"]) {
+      let trimmed = this.form[param].value.trim();
+      if (!trimmed) {
+        continue;
+      }
+      url.searchParams.append(param, trimmed);
     }
     return url;
+  },
+
+  updateURL: function({ replace = false } = {}) {
+    try {
+      window.history[replace ? "replaceState" : "pushState"]({}, document.title, this.generateURL());
+    } catch (ex) {
+      alert("The page URL couldn't be updated likely because your browser doesn't support URL.searchParams :(");
+      console.error(ex);
+    }
   },
 
   populateSuggestedRevisions: function() {
@@ -149,12 +169,7 @@ var Compare = {
     evt.preventDefault();
 
     document.querySelector("progress").hidden = false;
-    try {
-      window.history.pushState({}, document.title, this.generateURL());
-    } catch (ex) {
-      alert("The page URL couldn't be updated likely because your browser doesn't support URL.searchParams :(");
-      console.error(ex);
-    }
+    this.updateURL();
 
     this.oldProject = this.form["oldProject"].value.trim();
     this.newProject = this.form["newProject"].value.trim();
@@ -413,7 +428,10 @@ var Compare = {
         let comp = comparisons[combo] || {};
         this.updateComparisonCell(tds[4], combo, platform, comp);
 
-        tds[0].textContent = combo.replace(/\.png$/, "");
+        var comboName = combo.replace(/\.png$/, "");
+        tds[0].textContent = comboName;
+
+        rowClone.querySelector("tr").id = platform + "_" + comboName;
         for (let job of jobs) {
           let url = this.screenshotsByJob.get(job).get(combo);
           if (!url) {

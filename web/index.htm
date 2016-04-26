@@ -31,7 +31,7 @@
           <tr>
             <th scope="row">Base</th>
             <!-- more validation -->
-            <td><input name="oldProject" required list="projects" size="16"
+            <td><input name="oldProject" required list="projects" size="12"
                        pattern="[ ]*[a-z0-9][-.a-z0-9]+[ ]*"
                        title="Old project name (e.g. mozilla-central, try, etc.)"/></td>
             <td><input name="oldRev" required size="16" list="mcRevs" pattern="[ ]*[0-9a-f]{6,}[ ]*" title="Hexadecimal commit hash"/></td>
@@ -42,7 +42,7 @@
           </tr>
           <tr>
             <th scope="row">New</th>
-            <td><input name="newProject" required list="projects" size="16"
+            <td><input name="newProject" required list="projects" size="12"
                        pattern="[ ]*[a-z0-9][-.a-z0-9]+[ ]*"
                        title="Old project name (e.g. mozilla-central, try, etc.)"/></td>
             <td><input name="newRev" required size="16" list="mcRevs" pattern="[ ]*[0-9a-f]{6,}[ ]*" title="Hexadecimal commit hash"/></td>
@@ -58,11 +58,12 @@
             </td>
             <td>
               <progress indeterminate hidden></progress>
-              <span>Comparisons may take several minutes.</span>
+              <span>(may take several minutes)</span>
             </td>
-            <td>
+            <td colspan="2">
+              <label>Filter: <input name="filter" title="Regular expression filter matching on combination names e.g. linux32_06_prefsSecurity"/></label>
               <label><input type="checkbox" name="hideSimilar" value="1" checked />Hide similar</label>
-              <label><input type="checkbox" name="hideKnownInconsistencies" value="1" checked />Hide known inconsistencies (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1245719" target="_blank">bug&nbsp;1245719</a>)</label>
+              <label><input type="checkbox" name="hideKnownInconsistencies" value="1" checked />Hide <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1245719" target="_blank">known inconsistencies</a></label>
             </td>
           </tr>
         </tfoot>
