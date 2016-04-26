@@ -54,9 +54,9 @@ var Compare = {
 
   filterChanged: function() {
     document.getElementById("results").classList.toggle(this.name, this.checked);
-    let filterText = this.form["filter"].value;
+    let filterRegexp = new RegExp((this.form["filter"].value), "i");
     for (var row of document.querySelectorAll("#results > details > table > tbody > tr")) {
-      row.classList.toggle("textMismatch", row.id.search(filterText) == -1);
+      row.classList.toggle("textMismatch", row.id.search(filterRegexp) == -1);
     }
     Compare.updateURL({ replace: true });
   },
