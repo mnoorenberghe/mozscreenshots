@@ -34,6 +34,9 @@ var Compare = {
       }
       this.form[param].value = value.trim();
     }
+
+    this.form["filter"].value = params.has("filter") ? params.get("filter") : "";
+
     if (missingParams.length) {
       this.form[missingParams[0]].focus();
     } else {
@@ -46,7 +49,7 @@ var Compare = {
     this.filterChanged.call(this.form["hideKnownInconsistencies"]);
     this.form["hideSimilar"].addEventListener("change", this.filterChanged);
     this.form["hideKnownInconsistencies"].addEventListener("change", this.filterChanged);
-    this.form["filter"].value = params.has("filter") ? params.get("filter") : "";
+
     this.form["filter"].addEventListener("input", this.filterChanged);
 
     this.populateSuggestedRevisions();
@@ -54,11 +57,15 @@ var Compare = {
 
   filterChanged: function() {
     document.getElementById("results").classList.toggle(this.name, this.checked);
+    Compare.applyRegexFilter();
+    Compare.updateURL({ replace: true });
+  },
+
+  applyRegexFilter: function() {
     let filterRegexp = new RegExp((this.form["filter"].value), "i");
     for (var row of document.querySelectorAll("#results > details > table > tbody > tr")) {
       row.classList.toggle("textMismatch", row.id.search(filterRegexp) == -1);
     }
-    Compare.updateURL({ replace: true });
   },
 
   updatePushlogLink: function() {
@@ -475,6 +482,7 @@ var Compare = {
                                                           counts[this.RESULT.MISSING_AFTER] + counts[this.RESULT.MISSING_BEFORE] + counts[this.RESULT.ERROR] == 0);
       results.appendChild(osClone);
     }
+    this.applyRegexFilter();
   },
 
 };
