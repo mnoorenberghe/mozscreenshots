@@ -33,6 +33,11 @@ def get_suffixes(path):
 
 
 def compare_images(before, after, outdir, similar_dir, args):
+    # https://medium.com/@rhuber/imagemagick-is-on-fire-cve-2016-3714-379faf762247#.ftia8t3qs
+    if not is_png_file(before) or not is_png_file(after):
+        print("No PNG magic number")
+        return (ComparisonResult.ERROR, -1)
+
     before_trimmed = trim_system_ui("before", before, outdir, args)
     after_trimmed = trim_system_ui("after", after, outdir, args)
     outname = remove_prefix(os.path.basename(before_trimmed))
@@ -137,6 +142,12 @@ def trim_system_ui(prefix, imagefile, outdir, args):
         raise
 
     return outpath
+
+def is_png_file(path):
+    f = open(path, "r")
+    data = f.read(8)
+    f.close()
+    return data[:8] == '\x89PNG\x0d\x0a\x1a\x0a'
 
 def compare_dirs(before, after, outdir, args):
     for before_dirpath, before_dirs, before_files in os.walk(before):
