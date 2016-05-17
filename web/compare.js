@@ -355,7 +355,8 @@ var Compare = {
         break;
       case this.RESULT.DIFFERENT:
         if (platform == "windows7-32") {
-          if (image.includes("_normal_") || image.includes("_tabsOutsideTitlebar")) {
+          if (image.includes("_normal_") || image.includes("_tabsOutsideTitlebar") ||
+              image.search(/^\d\d_prefs[^_]+\.png$/) === 0) {
           // Desktop icons, bug 1245719.
             row.classList.add("known_inconsistency");
           } else if (image.includes("_noLWT") && !image.includes("_fullScreen")) {
