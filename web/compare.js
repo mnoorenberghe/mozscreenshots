@@ -324,7 +324,7 @@ var Compare = {
       if (artifact.content_type != "link" || !artifact.value.endsWith(".png")) {
         continue;
       }
-      screenshots.set(artifact.value.replace(/^[^_]+_/, ""), artifact.url);
+      screenshots.set(artifact.value.replace(/^[^-_]+[-_]/, ""), artifact.url);
     }
     return screenshots;
   },
