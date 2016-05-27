@@ -25,7 +25,7 @@ class ComparisonResult:
 
 
 def remove_prefix(filename):
-    return re.sub(r'^((before|after)_)?[^_]*_', '', filename)
+    return re.sub(r'^((before|after)_)?[^-_]*[-_]', '', filename)
 
 def get_suffixes(path):
     return [remove_prefix(filename)
@@ -192,8 +192,8 @@ def compare_dirs(before, after, outdir, args):
     result_dict = defaultdict(list)
     file_output_dict = defaultdict(dict)
     for f in sorted_suffixes:
-        image1 = glob.glob(before + "/*_" + f)
-        image2 = glob.glob(after + "/*_" + f)
+        image1 = glob.glob(before + "/*[-_]" + f)
+        image2 = glob.glob(after + "/*[-_]" + f)
         if not image1:
             print("{0} exists in after but not in before".format(f))
             result_dict[ComparisonResult.MISSING_BEFORE].append(f)
