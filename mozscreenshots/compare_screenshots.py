@@ -154,8 +154,8 @@ def compare_dirs(before, after, outdir, args):
         for before_dir in before_dirs:
             dir_prefix = re.sub(r'-\d{3,}$', '', before_dir)
             matches = glob.glob(os.path.join(after, dir_prefix) + "*")
-            if matches and os.path.isdir(matches[0]):
-                compare_dirs(os.path.join(before, before_dir), matches[0],
+            if matches and os.path.isdir(matches[-1]):
+                compare_dirs(os.path.join(before, before_dir), matches[-1],
                              os.path.join(outdir, dir_prefix), args)
     print('\nComparing {0} and {1} in {2}'.format(before, after, outdir))
     try:
