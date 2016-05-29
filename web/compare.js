@@ -165,7 +165,6 @@ var Compare = {
       }).then((resultSetIDs) => {
         return this.getJSON(this.TREEHERDER_API + `/project/${project}/resultset/?id__in=${[...resultSetIDs].join(",")}`);
       }).then((resultsetsXHR) => {
-        console.log(resultsetsXHR);
         return resultsetsXHR.response.results;
       });
   },
@@ -374,7 +373,6 @@ var Compare = {
         let className;
         for (let resultName of Object.keys(this.RESULT)) {
           let resultNum = this.RESULT[resultName];
-          console.log(resultNum, resultName);
           if (resultNum == comparison.result) {
             className = resultName.toLowerCase();
             break;
