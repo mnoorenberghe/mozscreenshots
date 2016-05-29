@@ -46,8 +46,10 @@ var Compare = {
     }
 
     this.filterChanged.call(this.form["hideSimilar"]);
+    this.filterChanged.call(this.form["hideMissing"]);
     this.filterChanged.call(this.form["hideKnownInconsistencies"]);
     this.form["hideSimilar"].addEventListener("change", this.filterChanged);
+    this.form["hideMissing"].addEventListener("change", this.filterChanged);
     this.form["hideKnownInconsistencies"].addEventListener("change", this.filterChanged);
 
     this.form["filter"].addEventListener("input", this.filterChanged);

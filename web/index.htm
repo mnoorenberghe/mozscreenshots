@@ -62,8 +62,12 @@
             </td>
             <td colspan="2">
               <label>Filter: <input name="filter" title="Case-insensitive regular expression filter matching on combination names (e.g. linux32_preferences_06_prefsSecurity)"/></label>
-              <label><input type="checkbox" name="hideSimilar" value="1" checked />Hide similar</label>
-              <label><input type="checkbox" name="hideKnownInconsistencies" value="1" checked />Hide <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1245719" target="_blank">known inconsistencies</a></label>
+              <fieldset>
+                <legend>Hide:</legend>
+                <label><input type="checkbox" name="hideSimilar" value="1" checked />similar</label>
+                <label><input type="checkbox" name="hideMissing" value="1"/>missing</label>
+                <label><input type="checkbox" name="hideKnownInconsistencies" value="1" checked /><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1245719" target="_blank">known inconsistencies</a></label>
+              </fieldset>
             </td>
           </tr>
         </tfoot>

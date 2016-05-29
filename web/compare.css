@@ -38,6 +38,16 @@ progress:not([hidden]) + span {
   display: none;
 }
 
+fieldset, legend {
+  all: unset;
+}
+
+legend {
+  display: inline;
+  /* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=653870 */
+  float: left;
+}
+
 #results table {
   border-collapse: collapse;
 }
@@ -111,6 +121,8 @@ tr.known_inconsistency > .diffCell {
 }
 
 .textMismatch,
+#results.hideMissing tr.missing_after,
+#results.hideMissing tr.missing_before,
 #results.hideKnownInconsistencies.hideSimilar tr.known_inconsistency.similar,
 #results.hideKnownInconsistencies tr.known_inconsistency:not(.similar),
 #results.hideSimilar tr.similar:not(.known_inconsistency) {
