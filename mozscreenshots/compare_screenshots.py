@@ -40,7 +40,15 @@ def compare_images(before, after, outdir, similar_dir, args):
 
     before_trimmed = trim_system_ui("before", before, outdir, args)
     after_trimmed = trim_system_ui("after", after, outdir, args)
-    outname = remove_prefix(os.path.basename(before_trimmed))
+    before_name_unprefixed = remove_prefix(os.path.basename(before_trimmed))
+    after_name_unprefixed = remove_prefix(os.path.basename(after_trimmed))
+
+    outname = None
+    # Use the shorter of the two names so the name is the common subset
+    if len(after_name_unprefixed) > len(before_name_unprefixed):
+        outname = before_name_unprefixed
+    else:
+        outname = after_name_unprefixed
     outpath = os.path.join(outdir, outname)
     result = 0
     diff = -1

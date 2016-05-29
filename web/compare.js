@@ -245,7 +245,21 @@ var Compare = {
       promises.push(this.getJSON(`https://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/` +
                    `${this.newProject}/${this.newRev}/${platform}/comparison.json`)
                     .then((xhr) => {
-                      this.comparisonsByPlatform.set(p, xhr.response);
+                      if (!xhr.response) {
+                        this.comparisonsByPlatform.set(p, xhr.response);
+                        return xhr;
+                      }
+                      let response = xhr.response;
+                      for (let comboName of Object.keys(response)) {
+                        let displayName = this.calculateCombinationDisplayName(comboName);
+                        if (comboName == displayName || (displayName in response)) {
+                          continue;
+                        }
+
+                        response[displayName] = response[comboName];
+                        delete response[comboName];
+                      }
+                      this.comparisonsByPlatform.set(p, response);
                       return xhr;
                     }));
     }
@@ -322,7 +336,8 @@ var Compare = {
       if (artifact.content_type != "link" || !artifact.value.endsWith(".png")) {
         continue;
       }
-      screenshots.set(artifact.value.replace(/^[^-_]+[-_]/, ""), artifact.url);
+      screenshots.set(this.calculateCombinationDisplayName(artifact.value.replace(/^[^-_]+[-_]/, "")),
+                      artifact.url);
     }
     return screenshots;
   },
@@ -396,6 +411,17 @@ var Compare = {
         row.classList.add("error");
         break;
     }
+  },
+
+  calculateCombinationDisplayName: function(comboName) {
+    // We want to be able to to compare the following:
+    // "primaryUI_101_tabsOutsideTitlebar_twoPinnedWithOverflow_normal_allToolbars_darkLWT"
+    // "101_tabsOutsideTitlebar_twoPinnedWithOverflow_normal_allToolbars_darkLWT" (try)
+    if (this.oldProject == "try" || this.newProject == "try") {
+      return comboName.replace(/^.*?_(\d+_)/, "$1");
+    }
+
+    return comboName;
   },
 
   updateDisplay: function() {
