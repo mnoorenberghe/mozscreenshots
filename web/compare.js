@@ -139,7 +139,6 @@ var Compare = {
         }));
         return this.getJSON(this.TREEHERDER_API + `/project/${project}/artifact/?job_id__in=${[...jobIDSet].join(",")}&name=Job+Info&type=json&count=1000`);
       }).then((artifactsXHR) => {
-        console.log(artifactsXHR);
         let jobIDsWithScreenshots = [];
         for (let artifacts of artifactsXHR.response) {
           let hasScreenshots = artifacts.blob.job_details.some((artifact) => {
@@ -195,7 +194,7 @@ var Compare = {
       let promises = [];
       for (let rs of resultsets) {
         let response = rs.response;
-        let type = response.meta.revision == this.oldRev
+        let type = response.meta.revision.startsWith(this.oldRev)
               && response.meta.repository == this.oldProject ? "old" : "new";
         this.handleResultset(type, response);
         promises.push(this.fetchJobsForResultset(response));
@@ -443,7 +442,7 @@ var Compare = {
           if (!url) {
             continue;
           }
-          let type = this.resultsetsByID.get(job.result_set_id).revision == this.oldRev
+          let type = this.resultsetsByID.get(job.result_set_id).revision.startsWith(this.oldRev)
                 ? "old" : "new";
           rowClone.querySelector("." + type + "Image").href = url;
         }
