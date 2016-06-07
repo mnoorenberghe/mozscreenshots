@@ -139,24 +139,21 @@ var Compare = {
         let jobIDSet = new Set(jobs.map((job) => {
           return job.id;
         }));
-        return this.getJSON(this.TREEHERDER_API + `/project/${project}/artifact/?job_id__in=${[...jobIDSet].join(",")}&name=Job+Info&type=json&count=1000`);
-      }).then((artifactsXHR) => {
-        let jobIDsWithScreenshots = [];
-        for (let artifacts of artifactsXHR.response) {
-          let hasScreenshots = artifacts.blob.job_details.some((artifact) => {
-            return artifact.content_type == "link"
-              && artifact.value.endsWith(".png")
-              && !artifact.value.startsWith("mozilla-test-fail-");
-          });
+
+        return this.getJSON(this.TREEHERDER_API + `/jobdetail/?repository=${project}&job_id__in=${[...jobIDSet].join(",")}`);
+      }).then((jobDetailsXHR) => {
+        let jobIDsWithScreenshots = new Set();
+        for (let jobDetail of jobDetailsXHR.response.results) {
+          let hasScreenshots = this.isJobDetailAScreenshot(jobDetail);
           if (!hasScreenshots) {
             continue;
           }
-          jobIDsWithScreenshots.push(artifacts.job_id);
+          jobIDsWithScreenshots.add(jobDetail.job_id);
         }
 
         let resultsetIDsWithScreenshots = new Set();
         for (let job of jobs) {
-          if (jobIDsWithScreenshots.indexOf(job.id) == -1) {
+          if (!jobIDsWithScreenshots.has(job.id)) {
             continue;
           }
           resultsetIDsWithScreenshots.add(job.result_set_id);
@@ -322,24 +319,28 @@ var Compare = {
   },
 
   fetchScreenshotsForJob: function(repository, job) {
-    return this.getJSON(this.TREEHERDER_API + "/project/" + repository + "/artifact/?job_id="
-                        + job.id + "&name=Job+Info&type=json")
+    return this.getJSON(this.TREEHERDER_API + "/jobdetail/?job__guid=" + job.job_guid)
       .then((xhr) => {
-        return this.extractScreenshotArtifacts(xhr.response);
+        return this.extractScreenshotArtifacts(xhr.response.results);
       });
   },
 
-  extractScreenshotArtifacts: function(result) {
+  isJobDetailAScreenshot: function(jobDetail) {
+    return jobDetail.url && jobDetail.value.endsWith(".png") &&
+      !jobDetail.value.startsWith("mozilla-test-fail-");
+  },
+
+  extractScreenshotArtifacts: function(results) {
     let screenshots = new Map();
-    if (!result.length) {
+    if (!results.length) {
       return screenshots;
     }
-    for (let artifact of result[0].blob.job_details) {
-      if (artifact.content_type != "link" || !artifact.value.endsWith(".png")) {
+    for (let jobDetail of results) {
+      if (!this.isJobDetailAScreenshot(jobDetail)) {
         continue;
       }
-      screenshots.set(this.calculateCombinationDisplayName(artifact.value.replace(/^[^-_]+[-_]/, "")),
-                      artifact.url);
+      screenshots.set(this.calculateCombinationDisplayName(jobDetail.value.replace(/^[^-_]+[-_]/, "")),
+                      jobDetail.url);
     }
     return screenshots;
   },
