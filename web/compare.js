@@ -139,34 +139,38 @@ var Compare = {
         let jobIDSet = new Set(jobs.map((job) => {
           return job.id;
         }));
-        return this.getJSON(this.TREEHERDER_API + `/project/${project}/artifact/?job_id__in=${[...jobIDSet].join(",")}&name=Job+Info&type=json&count=1000`);
-      }).then((artifactsXHR) => {
-        let jobIDsWithScreenshots = [];
-        for (let artifacts of artifactsXHR.response) {
-          let hasScreenshots = artifacts.blob.job_details.some((artifact) => {
-            return artifact.content_type == "link"
-              && artifact.value.endsWith(".png")
-              && !artifact.value.startsWith("mozilla-test-fail-");
+        let jobIDsWithScreenshots = new Set();
+        var getJSON = this.getJSON;
+        function getJobDetails(url) {
+          return getJSON(url).then((jobDetailsXHR) => {
+            for (let jobDetail of jobDetailsXHR.response.results) {
+              if (jobDetail.url
+                  && jobDetail.value.endsWith(".png")
+                  && !jobDetail.value.startsWith("mozilla-test-fail-")) {
+                  jobIDsWithScreenshots.add(jobDetail.job_id);
+              }
+            }
+            if (jobDetailsXHR.response.next) {
+              return getJobDetails(jobDetailsXHR.response.next);
+            }
           });
-          if (!hasScreenshots) {
-            continue;
-          }
-          jobIDsWithScreenshots.push(artifacts.job_id);
         }
 
-        let resultsetIDsWithScreenshots = new Set();
-        for (let job of jobs) {
-          if (jobIDsWithScreenshots.indexOf(job.id) == -1) {
-            continue;
+        return getJobDetails(this.TREEHERDER_API + `/jobdetail/?repository=${project}&job_id__in=${[...jobIDSet].join(",")}`).then(() => {
+          let resultsetIDsWithScreenshots = new Set();
+          for (let job of jobs) {
+            if (!jobIDsWithScreenshots.has(job.id)) {
+              continue;
+            }
+            resultsetIDsWithScreenshots.add(job.result_set_id);
           }
-          resultsetIDsWithScreenshots.add(job.result_set_id);
-        }
 
-        return resultsetIDsWithScreenshots;
-      }).then((resultSetIDs) => {
-        return this.getJSON(this.TREEHERDER_API + `/project/${project}/resultset/?id__in=${[...resultSetIDs].join(",")}`);
-      }).then((resultsetsXHR) => {
-        return resultsetsXHR.response.results;
+          return resultsetIDsWithScreenshots;
+        }).then((resultSetIDs) => {
+          return this.getJSON(this.TREEHERDER_API + `/project/${project}/resultset/?id__in=${[...resultSetIDs].join(",")}`);
+        }).then((resultsetsXHR) => {
+          return resultsetsXHR.response.results;
+        });
       });
   },
 
@@ -322,24 +326,24 @@ var Compare = {
   },
 
   fetchScreenshotsForJob: function(repository, job) {
-    return this.getJSON(this.TREEHERDER_API + "/project/" + repository + "/artifact/?job_id="
-                        + job.id + "&name=Job+Info&type=json")
+    return this.getJSON(this.TREEHERDER_API + "/jobdetail/?repository=" + repository + "&job_id__in="
+                        + job.id)
       .then((xhr) => {
-        return this.extractScreenshotArtifacts(xhr.response);
+        return this.extractScreenshotArtifacts(xhr.response.results);
       });
   },
 
-  extractScreenshotArtifacts: function(result) {
+  extractScreenshotArtifacts: function(results) {
     let screenshots = new Map();
-    if (!result.length) {
+    if (!results.length) {
       return screenshots;
     }
-    for (let artifact of result[0].blob.job_details) {
-      if (artifact.content_type != "link" || !artifact.value.endsWith(".png")) {
+    for (let jobDetail of results) {
+      if (!jobDetail.url || !jobDetail.value.endsWith(".png")) {
         continue;
       }
-      screenshots.set(this.calculateCombinationDisplayName(artifact.value.replace(/^[^-_]+[-_]/, "")),
-                      artifact.url);
+      screenshots.set(this.calculateCombinationDisplayName(jobDetail.value.replace(/^[^-_]+[-_]/, "")),
+                      jobDetail.url);
     }
     return screenshots;
   },
