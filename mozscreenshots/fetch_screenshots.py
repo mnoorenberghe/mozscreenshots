@@ -69,10 +69,10 @@ def jobs_for_resultset(project, resultset_id, job_type_name):
     return jobs['results']
 
 def download_image_artifacts_for_job(project, job, dir_path):
-    print 'Fetching artifact list for job: %d' % job['id']
-    artifacts_url = '%s/project/%s/artifact/?job_id=%d&name=Job+Info&type=json' % (TH_API, project, job['id'])
+    print 'Fetching artifact list for job: %d (%s)' % (job['id'], job['job_guid'])
+    artifacts_url = '%s/jobdetail/?job__guid=%s' % (TH_API, job['job_guid'])
     log.info(artifacts_url)
-    artifacts = fetch_json(artifacts_url)
+    details = fetch_json(artifacts_url)
 
     job_dir = os.path.join(dir_path, '%s-%s' % (job['platform'], job['id']))
     try:
@@ -82,24 +82,11 @@ def download_image_artifacts_for_job(project, job, dir_path):
             log.error('Error creating directory: %s' % job_dir)
             return
 
-    for artifact in artifacts:
-        if 'blob' not in artifact:
-            log.debug('No blob in artifact: %d' % artifact['id'])
+    for detail in details['results']:
+        log.debug('artifact blob job detail: %s' % pprint.pformat(detail))
+        if not detail['value'].endswith('.png'):
             continue
-
-        blob = artifact['blob']
-
-        if 'job_details' not in blob:
-            log.debug('No job_details in artifact blob: %d' % artifact['id'])
-            continue
-
-        job_details = blob['job_details']
-
-        for detail in job_details:
-            log.debug('artifact blob job detail: %s' % pprint.pformat(detail))
-            if not detail['value'].endswith('.png'):
-                continue
-            download_artifact(detail['url'], os.path.join(job_dir, detail['value']))
+        download_artifact(detail['url'], os.path.join(job_dir, detail['value']))
 
     # Remove any empty directories that we created
     try:
