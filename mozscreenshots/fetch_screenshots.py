@@ -16,8 +16,10 @@ from mozscreenshots import __version__
 
 DEFAULT_REQUEST_HEADERS = {
     'Accept': 'application/json',
+    'Content-Type': 'application/json',
     'User-Agent': 'mozscreenshots/%s' % __version__,
 }
+TC_API = 'https://index.taskcluster.net/v1'
 TH_API = 'https://treeherder.mozilla.org/api'
 
 log = logging.getLogger('fetch_screenshots')
@@ -112,22 +114,21 @@ def download_artifact(url, filepath):
     file.write(image.content)
     file.close()
 
-def nightly_jobs_for_date(project, date):
-    job_type_name = 'Nightly'
-    jobs_url = '%s/project/%s/jobs/?count=100&last_modified__gte=%sT00:00:00.000&last_modified__lte=%sT23:59:59.999&job_type_name=%s&exclusion_profile=false' % (TH_API, project, date, date, job_type_name)
-    log.debug(jobs_url)
-    jobs = fetch_json(jobs_url)
+def nightly_revs_for_date(project, date):
+    revs_url = '%s/namespaces/gecko.v2.%s.nightly.%s.revision' % (TC_API, project, date.replace('-', '.'))
+    log.debug(revs_url)
+    result = fetch_json(revs_url, "post")
 
-    found_result_set_ids = set()
-    for job in jobs['results']:
-        if job['result_set_id'] not in found_result_set_ids:
-            found_result_set_ids.add(job['result_set_id']);
-            log.debug('Found Nightly: %s with resultset id: %d' % (job['ref_data_name'], job['result_set_id']))
+    found_revs = set()
+    for namespace in result['namespaces']:
+        if namespace['name'] not in found_revs:
+            found_revs.add(namespace['name']);
+            log.debug('Found Nightly: %s' % (namespace['name'],))
 
-    return found_result_set_ids
+    return found_revs
 
-def fetch_json(url):
-    response = requests.get(url, headers=DEFAULT_REQUEST_HEADERS, timeout=30)
+def fetch_json(url, method = "get"):
+    response = getattr(requests, method)(url, headers=DEFAULT_REQUEST_HEADERS, timeout=30)
     response.raise_for_status()
     return response.json()
 
@@ -139,12 +140,12 @@ def run(args):
             sys.exit(1)
         resultsets.append(resultset_response['results'][0])
     else:
-        resultset_ids = nightly_jobs_for_date(args.project, args.nightly)
-        for resultset_id in resultset_ids:
-            resultset = resultset_response_for_id(args.project, resultset_id)
+        nightly_revs = nightly_revs_for_date(args.project, args.nightly)
+        for rev in nightly_revs:
+            resultset = resultset_response_for_push(args.project, rev)
             if not resultset:
                 continue
-            resultsets.append(resultset)
+            resultsets.append(resultset['results'][0])
 
     for resultset in resultsets:
         run_for_resultset(args, resultset)
