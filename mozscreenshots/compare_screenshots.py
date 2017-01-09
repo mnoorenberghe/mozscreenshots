@@ -70,7 +70,7 @@ def compare_images(before, after, outdir, similar_dir, args):
                          before_trimmed, after_trimmed, outpath])
         try:
             FNULL = open(os.devnull, 'w')
-            subprocess.call(["apngasm", "--delay", "400", outpath,
+            subprocess.call(["apngasm", "--force", "--delay", "400", outpath,
                              before_trimmed, after_trimmed,
                              "--output", outpath + ".animated"],
                             stdout=FNULL, close_fds=True)
@@ -239,7 +239,7 @@ def cli(args=sys.argv[1:]):
     parser.add_argument("--output-similar-composite", action="store_true", help="Output a composite image even when images are 'similar'")
     parser.add_argument("--overwrite", action="store_true", default=False, help="Whether to overwrite an existing directory comparison")
 
-    args = parser.parse_args()
+    args = parser.parse_args(args)
 
     before = args.before
     after = args.after
