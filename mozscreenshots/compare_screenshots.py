@@ -14,18 +14,15 @@ import re
 import subprocess
 import sys
 import tempfile
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 
-class ComparisonResult:
-    SIMILAR = 0
-    DIFFERENT = 1
-    ERROR = 2
-    MISSING_BEFORE = 3
-    MISSING_AFTER = 4
+comparisonResultNames = ["SIMILAR", "DIFFERENT", "ERROR", "MISSING_BEFORE", "MISSING_AFTER"]
+ComparisonResult = namedtuple("ComparisonResult", comparisonResultNames)._make(range(0, len(comparisonResultNames)))
 
 
 def remove_prefix(filename):
     return re.sub(r'^((before|after)_)?[^-_]*[-_]', '', filename)
+
 
 def get_suffixes(path):
     return [remove_prefix(filename)
@@ -38,6 +35,7 @@ def compare_images(before, after, outdir, similar_dir, args):
         print("No PNG magic number")
         return (ComparisonResult.ERROR, -1)
 
+    output_similar_composite = getattr(args, "output_similar_composite", False)
     before_trimmed = trim_system_ui("before", before, outdir, args)
     after_trimmed = trim_system_ui("after", after, outdir, args)
     before_name_unprefixed = remove_prefix(os.path.basename(before_trimmed))
@@ -65,7 +63,7 @@ def compare_images(before, after, outdir, similar_dir, args):
 
     print(diff)
 
-    if result != ComparisonResult.SIMILAR or args.output_similar_composite:
+    if result != ComparisonResult.SIMILAR or output_similar_composite:
         subprocess.call(["compare", "-quiet", "-lowlight-color", "rgba(255,255,255,0)",
                          before_trimmed, after_trimmed, outpath])
         try:
@@ -82,7 +80,7 @@ def compare_images(before, after, outdir, similar_dir, args):
             pass
 
     if result == ComparisonResult.SIMILAR:
-        if args.output_similar_composite:
+        if output_similar_composite:
             os.rename(outpath, similar_dir + "/" + outname)
     elif result == ComparisonResult.DIFFERENT:
         pass
@@ -158,41 +156,43 @@ def is_png_file(path):
     return data[:8] == '\x89PNG\x0d\x0a\x1a\x0a'
 
 def compare_dirs(before, after, outdir, args):
+    rv = {}
     for before_dirpath, before_dirs, before_files in os.walk(before):
         for before_dir in before_dirs:
             dir_prefix = re.sub(r'-\d{3,}$', '', before_dir)
             matches = glob.glob(os.path.join(after, dir_prefix) + "*")
             if matches and os.path.isdir(matches[-1]):
-                compare_dirs(os.path.join(before, before_dir), matches[-1],
-                             os.path.join(outdir, dir_prefix), args)
+                rv.update(compare_dirs(os.path.join(before, before_dir), matches[-1],
+                                              os.path.join(outdir, dir_prefix), args))
+
     print('\nComparing {0} and {1} in {2}'.format(before, after, outdir))
     try:
         os.makedirs(outdir)
     except OSError:
         if not os.path.isdir(outdir):
             print('Error creating directory: %s' % outdir)
-            return
+            return rv
 
     json_path = os.path.join(outdir, "comparison.json")
-    if os.path.isfile(json_path) and not args.overwrite:
+    if os.path.isfile(json_path) and not getattr(args, "overwrite", False):
         print("Comparison already completed");
-        return
+        return rv
 
     lock_fd = open(os.path.join(outdir, "comparison.lock"), 'w')
     try:
         fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB);
     except IOError:
         print("Comparison already in progress")
-        return
+        return rv
 
     similar_dir = os.path.join(outdir, "similar")
-    if args.output_similar_composite:
+    if getattr(args, "output_similar_composite", False):
         os.makedirs(similar_dir)
     sorted_suffixes = sorted(set(get_suffixes(before) + get_suffixes(after)))
 
     if len(sorted_suffixes) == 0:
         print("No images in the directory")
-        return
+        return rv
 
     maxFWidth = reduce(lambda x, y: max(x, len(y)), sorted_suffixes, 0)
 
@@ -229,6 +229,10 @@ def compare_dirs(before, after, outdir, args):
     json_file.close()
 
     fcntl.flock(lock_fd, fcntl.LOCK_UN);
+
+    rv[outdir] = file_output_dict;
+    return rv
+
 
 def cli(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(description='Compare screenshot files or directories for differences')
