@@ -132,7 +132,7 @@ var Compare = {
     date.setDate(date.getDate() - 6);
     let isoEarliestDate = date.toISOString();
     let jobs = [];
-    return this.getJSON(this.TREEHERDER_API + `/project/${project}/jobs/?count=5000&exclusion_profile=false` +
+    return this.getJSON(this.TREEHERDER_API + `/project/${project}/jobs/?count=2000&exclusion_profile=false` +
                  `&job_type_name=Mochitest%20Browser%20Screenshots&result=success&last_modified__gte=${isoEarliestDate}`)
       .then((jobsXHR) => {
         jobs = jobsXHR.response.results;
@@ -294,8 +294,8 @@ var Compare = {
     let pushDate = new Intl.DateTimeFormat(undefined, dateOptions).format(new Date(result.push_timestamp * 1000));
 
     document.getElementById(type + "Date").textContent = pushDate;
-    link.textContent = result.comments;
-    link.title = result.comments;
+    link.textContent = result.revisions[0].comments;
+    link.title = result.revisions[0].comments;
     link.href = `https://treeherder.mozilla.org/#/jobs?repo=${response.meta.repository}&revision=${response.meta.revision}&filter-tier=1&filter-tier=2&filter-tier=3&exclusion_profile=false`;
   },
 
