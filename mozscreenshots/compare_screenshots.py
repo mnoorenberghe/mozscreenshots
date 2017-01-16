@@ -52,8 +52,8 @@ def compare_images(before, after, outdir, similar_dir, args):
     diff = -1
     try:
         diff = subprocess.check_output(["compare", "-quiet", "-fuzz", "3%", "-metric", "AE",
-                                          before_trimmed, after_trimmed, "null:"],
-                                         stderr=subprocess.STDOUT)
+                                        before_trimmed, after_trimmed, "null:"],
+                                       stderr=subprocess.STDOUT)
     except OSError:
         print("\n\nEnsure that ImageMagick is installed and on your PATH, specifically `compare`.\n")
         raise
@@ -89,9 +89,9 @@ def compare_images(before, after, outdir, similar_dir, args):
         print("error")
 
     # Cleanup intermediate trimmed images
-    if os.path.abspath(before) != os.path.abspath(before_trimmed):
+    if os.path.exists(before_trimmed) and os.path.abspath(before) != os.path.abspath(before_trimmed):
         os.remove(before_trimmed)
-    if os.path.abspath(after) != os.path.abspath(after_trimmed):
+    if os.path.exists(after_trimmed) and os.path.abspath(after) != os.path.abspath(after_trimmed):
         os.remove(after_trimmed)
     return (result, diff)
 
