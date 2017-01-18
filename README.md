@@ -50,7 +50,9 @@ The screenshots can be found in the following directories for now (issue 9 will 
 Use `fetch_screenshots` to fetch screenshots from Mozilla automation (e.g. Try server):
 
     pip install -U mozscreenshots
-    fetch_screenshots -r 9f4d4ce255a1
+    fetch_screenshots -n 2017-01-17
+    fetch_screenshots --project mozilla-central -r 3e275d37a06236981bff399b7d7aa0646be3fee7
+    fetch_screenshots -r <try_rev>
 
 # comparing images for changes
 
