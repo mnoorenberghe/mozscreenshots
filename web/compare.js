@@ -19,6 +19,7 @@ var Compare = {
   form: null,
   resultsetsByID: new Map(),
   screenshotsByJob: new Map(),
+  knownInconsistencies: {},
 
   init: function() {
     console.log("init");
@@ -54,6 +55,7 @@ var Compare = {
 
     this.form["filter"].addEventListener("input", this.filterChanged);
 
+    this.fetchKnownInconsistencies(); // TODO: do before submission
     this.populateSuggestedRevisions();
   },
 
@@ -103,6 +105,17 @@ var Compare = {
       alert("The page URL couldn't be updated likely because your browser doesn't support URL.searchParams :(");
       console.error(ex);
     }
+  },
+
+  fetchKnownInconsistencies: function() {
+    this.getJSON("known_inconsistencies.json").then(xhr => {
+      xhr.response.forEach(known => {
+	known.platformRegex = new RegExp(known.platformRegex);
+	known.pixelRegex = new RegExp(known.pixelRegex);
+	known.nameRegexes = known.nameRegexes.map(pattern => new RegExp(pattern));
+      });
+      this.knownInconsistencies = xhr.response;
+    });
   },
 
   populateSuggestedRevisions: function() {
@@ -362,6 +375,8 @@ var Compare = {
     let row = diffCol2.parentElement;
     let diffCol1 = diffCol2.previousElementSibling;
     let diffLink = diffCol1.querySelector(".diffLink");
+    let basename = image.replace(/\.png$/, "");
+
     switch (comparison.result) {
       case this.RESULT.SIMILAR:
         row.classList.add("similar");
@@ -370,16 +385,19 @@ var Compare = {
         diffCol2.remove();
         break;
       case this.RESULT.DIFFERENT:
-        if (platform == "windows7-32") {
-          if (image.includes("_normal_") || image.includes("_tabsOutsideTitlebar") ||
-              image.search(/^\d\d_prefs[^_]+\.png$/) === 0 ||
-              image.search(/(^|_)preferences_\d/) !== -1) {
-          // Desktop icons, bug 1245719.
-            row.classList.add("known_inconsistency");
-          } else if (image.includes("_noLWT") && !image.includes("_fullScreen")) {
-            row.classList.add("known_inconsistency");
-          }
-        }
+        for (let known of this.knownInconsistencies) {
+	  if (!known.platformRegex.test(platform)) {
+	    continue;
+	  }
+	  if (!known.pixelRegex.test(comparison.difference)) {
+	    continue;
+	  }
+	  if (!known.nameRegexes.some(pattern => pattern.test(basename))) {
+	    continue;
+	  }
+	  row.classList.add("known_inconsistency");
+	}
+
         row.classList.add("different");
         diffCol2.textContent = comparison.difference;
         diffLink.textContent = "Compare";
