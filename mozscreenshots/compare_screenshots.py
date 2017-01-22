@@ -163,7 +163,7 @@ def compare_dirs(before, after, outdir, args):
             matches = glob.glob(os.path.join(after, dir_prefix) + "*")
             if matches and os.path.isdir(matches[-1]):
                 rv.update(compare_dirs(os.path.join(before, before_dir), matches[-1],
-                                              os.path.join(outdir, dir_prefix), args))
+                                       os.path.join(outdir, dir_prefix), args))
 
     print('\nComparing {0} and {1} in {2}'.format(before, after, outdir))
     try:
@@ -176,6 +176,9 @@ def compare_dirs(before, after, outdir, args):
     json_path = os.path.join(outdir, "comparison.json")
     if os.path.isfile(json_path) and not getattr(args, "overwrite", False):
         print("Comparison already completed");
+        if getattr(args, "include_completed", False):
+            with open(json_path, 'r') as json_file:
+                rv[outdir] = json.load(json_file)
         return rv
 
     lock_fd = open(os.path.join(outdir, "comparison.lock"), 'w')
