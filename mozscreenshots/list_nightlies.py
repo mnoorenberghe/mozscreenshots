@@ -172,7 +172,7 @@ for i, resultset in enumerate(sorted_resultsets):
             sys.exit(1)
 
     CompareDirOptions = namedtuple('CompareDirOptions', 'dppx overwrite include_completed')
-    options = CompareDirOptions(dppx=1.0, overwrite=False, include_completed=True)
+    options = CompareDirOptions(dppx=1.0, overwrite=False, include_completed=False)
 
     comparison = compare_screenshots.compare_dirs(os.path.join(archive, project, oldRev),
                                                   os.path.join(archive, project, newRev),
