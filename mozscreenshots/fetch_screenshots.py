@@ -10,7 +10,7 @@ import pprint
 import requests
 import sys
 
-from datetime import date
+from datetime import date, datetime, timedelta
 from mozscreenshots import __version__
 
 
@@ -127,6 +127,25 @@ def nightly_revs_for_date(project, date):
 
     return found_revs
 
+def resultsets_for_date(project, date, job_type_name):
+    date_obj = datetime.strptime(date, '%Y-%m-%d')
+    start_time = date_obj.isoformat()
+    end_time = (date_obj + timedelta(days=1)).isoformat()
+    revs_url = '{TH_API}/project/{project}/jobs/?count=2000&exclusion_profile=false&job_type_name={job_type_name}&result=success&last_modified__gte={start_time}&last_modified__lt={end_time}'.format(TH_API=TH_API, project=project, job_type_name=job_type_name, start_time=start_time, end_time=end_time)
+    log.debug(revs_url)
+    result = fetch_json(revs_url)
+
+    found_resultset_ids = set()
+    resultsets = []
+    for job in result['results']:
+        result_set_id = job['result_set_id']
+        if result_set_id not in found_resultset_ids:
+            found_resultset_ids.add(result_set_id);
+            log.debug('Found result_set_id: %s' % (result_set_id,))
+            resultsets.append(resultset_response_for_id(project, result_set_id))
+
+    return resultsets
+
 def fetch_json(url, method = "get"):
     response = getattr(requests, method)(url, headers=DEFAULT_REQUEST_HEADERS, timeout=30)
     response.raise_for_status()
@@ -139,13 +158,15 @@ def run(args):
         if not resultset_response:
             sys.exit(1)
         resultsets.append(resultset_response['results'][0])
-    else:
-        nightly_revs = nightly_revs_for_date(args.project, args.nightly)
-        for rev in nightly_revs:
+    elif args.nightly:
+        revs = nightly_revs_for_date(args.project, args.nightly)
+        for rev in revs:
             resultset = resultset_response_for_push(args.project, rev)
             if not resultset:
                 continue
             resultsets.append(resultset['results'][0])
+    elif args.date:
+        resultsets = resultsets_for_date(args.project, args.date, args.job_type_name)
 
     for resultset in resultsets:
         run_for_resultset(args, resultset)
@@ -178,6 +199,8 @@ def cli():
     required = parser.add_mutually_exclusive_group(required=True)
     required.add_argument('-n', '--nightly', metavar='YYYY-MM-DD',
                           help='Date to fetch nightly screenshots from')
+    required.add_argument('-d', '--date', metavar='YYYY-MM-DD',
+                          help='Date to fetch screenshots from')
     required.add_argument('-r', '--rev',
                           help='Revision to fetch screenshots from')
 
@@ -191,7 +214,7 @@ def cli():
 
     args = parser.parse_args()
     if not args.project:
-        args.project = "mozilla-central" if args.nightly else "try"
+        args.project = "mozilla-central" if args.nightly or args.date else "try"
     log.setLevel(getattr(logging, args.log_level))
 
     run(args)
