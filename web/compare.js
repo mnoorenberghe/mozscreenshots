@@ -20,6 +20,7 @@ var Compare = {
   resultsetsByID: new Map(),
   screenshotsByJob: new Map(),
   knownInconsistencies: {},
+  slides: [],
 
   init: function() {
     console.log("init");
@@ -371,7 +372,7 @@ var Compare = {
     });
   },
 
-  updateComparisonCell: function(diffCol2, image, platform, comparison) {
+  updateComparisonCell: function(diffCol2, image, platform, comparison, index, url) {
     let row = diffCol2.parentElement;
     let diffCol1 = diffCol2.previousElementSibling;
     let diffLink = diffCol1.querySelector(".diffLink");
@@ -386,23 +387,26 @@ var Compare = {
         break;
       case this.RESULT.DIFFERENT:
         for (let known of this.knownInconsistencies) {
-	  if (!known.platformRegex.test(platform)) {
-	    continue;
-	  }
-	  if (!known.pixelRegex.test(comparison.difference)) {
-	    continue;
-	  }
-	  if (!known.nameRegexes.some(pattern => pattern.test(basename))) {
-	    continue;
-	  }
-	  row.classList.add("known_inconsistency");
-	}
+          if (!known.platformRegex.test(platform)) {
+            continue;
+          }
+          if (!known.pixelRegex.test(comparison.difference)) {
+            continue;
+          }
+          if (!known.nameRegexes.some(pattern => pattern.test(basename))) {
+            continue;
+          }
+          row.classList.add("known_inconsistency");
+        }
 
         row.classList.add("different");
         diffCol2.textContent = comparison.difference;
         diffLink.textContent = "Compare";
-        diffLink.href = `https://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/`
-          + `${this.newProject}/${this.newRev}/${platform}/${image}`;
+        diffLink.href = url;
+        diffLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          $.fancybox.open(this.slides, {}, index);
+        });
         break;
       case this.RESULT.MISSING_BEFORE:
       case this.RESULT.MISSING_AFTER:
@@ -462,6 +466,17 @@ var Compare = {
       jobsByPlatform.set(job.platform, jobs);
     }
 
+    this.slides = [];
+
+    // Calculate whether height or width should be the size
+    // delimiter for the lightbox image.
+    let heightOrWidth;
+    if (window.innerHeight < window.innerWidth) {
+      heightOrWidth = `height="${window.innerHeight * 0.8}"`;
+    } else {
+      heightOrWidth = `width="${window.innerWidth * 0.8}"`;
+    }
+
     let osTableTemplate = document.getElementById("osTableTemplate");
     let rowTemplate = document.getElementById("screenshotRowTemplate");
     let results = document.getElementById("results");
@@ -483,9 +498,16 @@ var Compare = {
         let tds = rowClone.querySelectorAll("td");
 
         let comp = comparisons[combo] || {};
-        this.updateComparisonCell(tds[4], combo, platform, comp);
-
         var comboName = combo.replace(/\.png$/, "");
+
+        let url = `https://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/${this.newProject}/${this.newRev}/${platform}/${combo}`;
+        let index = this.slides.push(`<div class="message">
+          <a href="${url}" target="_blank"><img ${heightOrWidth} src="${url}" /></a>
+          <div class="message-text">${comboName}</div>
+         </div>`) - 1;
+
+        this.updateComparisonCell(tds[4], combo, platform, comp, index, url);
+
         tds[0].textContent = comboName;
 
         rowClone.querySelector("tr").id = platform + "_" + comboName;

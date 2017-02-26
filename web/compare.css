@@ -128,3 +128,8 @@ tr.known_inconsistency > .diffCell {
 #results.hideSimilar tr.similar:not(.known_inconsistency) {
   display: none;
 }
+
+.message-text {
+  width: 100%;
+  text-align: center;
+}

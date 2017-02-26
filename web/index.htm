@@ -7,6 +7,7 @@
     <meta charset="utf-8">
     <title>Screenshot comparison</title>
     <link rel="stylesheet" href="compare.css"/>
+    <link rel="stylesheet" type="text/css" href="dist/jquery.fancybox.min.css">
   </head>
   <body>
     <datalist id="projects">
@@ -97,7 +98,7 @@
         <td></td>
         <td><a class="oldImage" target="_blank">Base</a></td>
         <td><a class="newImage" target="_blank">New</a></td>
-        <td class="diffCell"><a class="diffLink" target="_blank"></a></td>
+        <td class="diffCell"><a class="diffLink"></a></td>
         <td class="diffCell">?</td>
       </tr>
     </template>
@@ -105,6 +106,8 @@
     <div id="results" class="hideSimilar hideKnownInconsistencies">
     </div>
 
+    <script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="dist/jquery.fancybox.min.js"></script>
     <script src="compare.js"></script>
   </body>
 </html>
