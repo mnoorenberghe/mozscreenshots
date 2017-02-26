@@ -13,17 +13,18 @@ from pytz import timezone
 
 import compare_screenshots
 from compare_screenshots import ComparisonResult, comparisonResultNames
-from fetch_screenshots import nightly_revs_for_date, resultset_response_for_push
+from fetch_screenshots import resultsets_for_date, resultset_response_for_push
 
 archive = os.getcwd()
 compare_url_format = "https://screenshots.mattn.ca/compare/?oldProject=%s&oldRev=%s&newProject=%s&newRev=%s"
 project = "mozilla-central"
-base = datetime.date.today() # datetime.date(2017, 1, 19)
-numdays = 4
+base = datetime.date(2017, 2, 10) # datetime.date(2017, 2, 25) # datetime.date.today()
+numdays = 10 # 35
 timezone = timezone('US/Pacific')
+job_type_names = ['Mochitest Browser Screenshots', 'test-linux64/opt-mochitest-browser-screenshots-e10s']
 
 resultsets = []
-nightly_revs = set()
+resultset_revs = set()
 
 
 def email_results(project, oldResultset, newResultset, comparison, known_inconsistencies):
@@ -94,8 +95,8 @@ def email_results(project, oldResultset, newResultset, comparison, known_inconsi
     msg = MIMEMultipart('alternative')
     #msg['Date'] = email.utils.formatdate(float(newResultset['push_timestamp']))
     msg['Message-ID'] = re.sub("@[^>]+>", "@screenshots.mattn.ca>", email.utils.make_msgid())
-    msg['Subject'] = 'Nightly Screenshot Changes: {} to {}'.format(oldRev[:12], newRev[:12])
-    msg['From'] = 'Nightly Screenshot Changes <nightly-changes@screenshots.mattn.ca>'
+    msg['Subject'] = '{} Screenshot Changes: {} to {}'.format(project, oldRev[:12], newRev[:12])
+    msg['From'] = 'Screenshot Changes <screenshot-changes@screenshots.mattn.ca>'
     msg['To'] = 'dev-ui-alerts@lists.mozilla.org'
 
     msg.attach(MIMEText(body, 'plain'))
@@ -134,20 +135,14 @@ with open(known_inconsistencies_path, 'r') as ki_file:
 for offset in range(0, numdays):
     d = base - datetime.timedelta(days=offset)
     print d.isoformat()
-    revs = nightly_revs_for_date(project, d.isoformat())
-    print revs
-    nightly_revs.update(revs)
-
-for rev in nightly_revs:
-    resultset_response = resultset_response_for_push(project, rev)
-    if not resultset_response:
-        continue
-    resultset = resultset_response['results'][0]
-    print resultset['push_timestamp'], resultset['revision']
-    if len(os.listdir(os.path.join(archive, project, resultset['revision']))) == 0:
-        print 'No subdirs for', resultset['revision']
-        continue
-    resultsets.append(resultset)
+    for job_type_name in job_type_names:
+        date_resultsets = resultsets_for_date(project, d.isoformat(), job_type_name)
+        for r in date_resultsets:
+            if r['id'] in resultset_revs:
+                continue
+            resultset_revs.add(r['id'])
+            resultsets.append(r)
+    print resultset_revs
 
 # Sort by push timestamp since a nightly could be triggered on an older revision
 # later (e.g. if the newer revision is busted).
