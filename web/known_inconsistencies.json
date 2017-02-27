@@ -76,5 +76,11 @@
     "nameRegexes": ["^controlCenter_01_noLWT_about$"],
     "pixelRegex": "^13445$",
     "platformRegex": "^windows8-64$"
+  },
+  {
+    "reason": "Visited link styling is async",
+    "nameRegexes": ["^controlCenter_07_noLWT_singlePermission$"],
+    "pixelRegex": "^147$",
+    "platformRegex": "^windows8-64$"
   }
 ]
