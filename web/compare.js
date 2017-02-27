@@ -5,6 +5,10 @@
 "use strict";
 
 var Compare = {
+  JOB_TYPE_NAMES: [
+    "Mochitest Browser Screenshots",
+    "test-linux64/opt-mochitest-browser-screenshots-e10s"
+  ],
   RESULT: {
     SIMILAR: 0,
     DIFFERENT: 1,
@@ -313,8 +317,15 @@ var Compare = {
   },
 
   fetchJobsForResultset: function(resultset) {
-    return this.getJSON(this.TREEHERDER_API + "/project/" + resultset.meta.repository + "/jobs/?count=2000&result_set_id=" + resultset.results[0].id + "&job_type_name=Mochitest%20Browser%20Screenshots&exclusion_profile=false").then((xhr) => {
+    let jobsPromises = [];
+    for (let job_type_name of this.JOB_TYPE_NAMES) {
+      jobsPromises.push(this.getJSON(this.TREEHERDER_API + "/project/" + resultset.meta.repository +
+                                     "/jobs/?count=2000&result_set_id=" + resultset.results[0].id +
+                                     "&job_type_name=" + encodeURIComponent(job_type_name) +
+                                     "&exclusion_profile=false"));
+    }
 
+    let handleJobsForResultset = (xhr) => {
       if (!xhr.response.results.length) {
         console.warn("No jobs found for resultset:", resultset.results[0]);
         return Promise.resolve("No jobs found for resultset:", resultset.results[0]);
@@ -326,6 +337,14 @@ var Compare = {
             this.screenshotsByJob.set(job, screenshots);
           }.bind(this, job));
         promises.push(promise);
+      }
+      return Promise.all(promises);
+    };
+
+    return Promise.all(jobsPromises).then((xhrs) => {
+      let promises = [];
+      for (let xhr of xhrs) {
+        promises.push(handleJobsForResultset(xhr));
       }
       return Promise.all(promises);
     });
