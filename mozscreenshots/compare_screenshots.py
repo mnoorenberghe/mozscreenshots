@@ -164,6 +164,8 @@ def compare_dirs(before, after, outdir, args):
             if matches and os.path.isdir(matches[-1]):
                 rv.update(compare_dirs(os.path.join(before, before_dir), matches[-1],
                                        os.path.join(outdir, dir_prefix), args))
+            else:
+                print("\nNo matching after directory for {0}".format(os.path.join(after, dir_prefix)))
 
     print('\nComparing {0} and {1} in {2}'.format(before, after, outdir))
     try:
