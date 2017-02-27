@@ -19,15 +19,27 @@
   },
   {
     "reason": "Bug 1331496 - Control Center is intermittently captured at a different height",
-    "nameRegexes": ["(no|dark)LWT_mixedActiveUnblocked"],
+    "nameRegexes": ["_mixedActiveUnblocked"],
     "pixelRegex": "^2278$",
     "platformRegex": "^windows8-64$"
+  },
+  {
+    "reason": "Bug 1331496 - Control Center is intermittently captured at a different height",
+    "nameRegexes": ["_mixedActiveUnblocked"],
+    "pixelRegex": "^2998$",
+    "platformRegex": "^windows7-32$"
   },
   {
     "reason": "1px/2px speck under the selected tab",
     "nameRegexes": ["permissionPrompts_"],
     "pixelRegex": "^1|2$",
-    "platformRegex": "^(osx-10-10|linux32)$"
+    "platformRegex": "^(osx-10-10|linux32|linux64)$"
+  },
+  {
+    "reason": "1px/2px specks under the selected tab plus back button clip path",
+    "nameRegexes": ["permissionPrompts_"],
+    "pixelRegex": "^3$",
+    "platformRegex": "^(linux64)$"
   },
   {
     "reason": "10.10 Back button clip-path",
@@ -39,12 +51,18 @@
     "reason": "linux32 Back button clip-path",
     "nameRegexes": ["^controlCenter_"],
     "pixelRegex": "^1|3$",
-    "platformRegex": "^linux32$"
+    "platformRegex": "^linux(32|64)$"
   },
   {
     "reason": "linux32 preferences_16_prefsAdvanced-encryptionTab-certManager",
     "nameRegexes": ["^preferences_16_prefsAdvanced-encryptionTab-certManager$"],
     "pixelRegex": "^1$",
-    "platformRegex": "^linux32$"
+    "platformRegex": "^linux(32|64)$"
+  },
+  {
+    "reason": "linux64 controlCenter_01_noLWT_about",
+    "nameRegexes": ["^controlCenter_01_noLWT_about$"],
+    "pixelRegex": "^13286$",
+    "platformRegex": "^linux64$"
   }
 ]
