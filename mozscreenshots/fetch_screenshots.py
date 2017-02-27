@@ -138,6 +138,8 @@ def resultsets_for_date(project, date, job_type_name):
     found_resultset_ids = set()
     resultsets = []
     for job in result['results']:
+        if job['platform_option'] == 'pgo':
+            continue
         result_set_id = job['result_set_id']
         if result_set_id not in found_resultset_ids:
             found_resultset_ids.add(result_set_id);
