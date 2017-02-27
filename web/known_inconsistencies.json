@@ -30,6 +30,12 @@
     "platformRegex": "^windows7-32$"
   },
   {
+    "reason": "Bug 1331496 - Control Center is intermittently captured at a different height",
+    "nameRegexes": ["_singlePermission"],
+    "pixelRegex": "^3642$",
+    "platformRegex": "^linux64$"
+  },
+  {
     "reason": "1px/2px speck under the selected tab",
     "nameRegexes": ["permissionPrompts_"],
     "pixelRegex": "^1|2$",
@@ -64,5 +70,11 @@
     "nameRegexes": ["^controlCenter_01_noLWT_about$"],
     "pixelRegex": "^13286$",
     "platformRegex": "^linux64$"
+  },
+  {
+    "reason": "about:home is not fully loaded for the first image sometimes",
+    "nameRegexes": ["^controlCenter_01_noLWT_about$"],
+    "pixelRegex": "^13445$",
+    "platformRegex": "^windows8-64$"
   }
 ]
