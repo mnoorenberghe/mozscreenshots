@@ -157,6 +157,9 @@ def is_png_file(path):
 
 def compare_dirs(before, after, outdir, args):
     rv = {}
+    if not (os.path.isdir(before) and os.path.isdir(after)):
+        print("\nBefore or after doesn't exist")
+        return rv
     for before_dirpath, before_dirs, before_files in os.walk(before):
         for before_dir in before_dirs:
             dir_prefix = re.sub(r'-\d{3,}$', '', before_dir)

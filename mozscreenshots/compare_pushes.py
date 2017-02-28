@@ -18,13 +18,13 @@ from fetch_screenshots import resultsets_for_date, resultset_response_for_push
 archive = os.getcwd()
 compare_url_format = "https://screenshots.mattn.ca/compare/?oldProject=%s&oldRev=%s&newProject=%s&newRev=%s"
 project = "mozilla-central"
-base = datetime.date(2017, 2, 10) # datetime.date(2017, 2, 25) # datetime.date.today()
-numdays = 10 # 35
+base = datetime.date.today()
+numdays = 7
 timezone = timezone('US/Pacific')
 job_type_names = ['Mochitest Browser Screenshots', 'test-linux64/opt-mochitest-browser-screenshots-e10s']
 
 resultsets = []
-resultset_revs = set()
+resultset_ids = set()
 
 
 def email_results(project, oldResultset, newResultset, comparison, known_inconsistencies):
@@ -106,7 +106,7 @@ def email_results(project, oldResultset, newResultset, comparison, known_inconsi
     s.sendmail(msg['From'], [msg['To']], msg.as_string())
     s.quit()
     # Delay before the next email so they get received in the correct order
-    time.sleep(60)
+    time.sleep(20)
 
 def matches_inconsistency(inconsistencies, platform, basename, result):
     for known in inconsistencies:
@@ -135,14 +135,14 @@ with open(known_inconsistencies_path, 'r') as ki_file:
 for offset in range(0, numdays):
     d = base - datetime.timedelta(days=offset)
     print d.isoformat()
-    for job_type_name in job_type_names:
-        date_resultsets = resultsets_for_date(project, d.isoformat(), job_type_name)
-        for r in date_resultsets:
-            if r['id'] in resultset_revs:
-                continue
-            resultset_revs.add(r['id'])
-            resultsets.append(r)
-    print resultset_revs
+    date_resultsets = resultsets_for_date(project, d.isoformat())
+    for r in date_resultsets:
+        if r['id'] in resultset_ids:
+            continue
+        resultset_ids.add(r['id'])
+        resultsets.append(r)
+
+    print resultset_ids, len(resultset_ids), len(resultsets)
 
 # Sort by push timestamp since a nightly could be triggered on an older revision
 # later (e.g. if the newer revision is busted).
@@ -155,7 +155,7 @@ for i, resultset in enumerate(sorted_resultsets):
     oldResultset = sorted_resultsets[i - 1]
     oldRev = oldResultset['revision']
     newRev = resultset['revision']
-    print i, resultset['push_timestamp'], resultset['revision']
+    print i, resultset['id'], resultset['push_timestamp'], datetime.datetime.fromtimestamp(resultset['push_timestamp'], timezone), resultset['revision']
     print compare_url_format % (project, oldRev, project, newRev)
 
     outdir = os.path.join(archive, "comparisons", project, oldRev, project, newRev)
