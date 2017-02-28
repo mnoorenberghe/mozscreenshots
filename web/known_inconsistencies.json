@@ -73,9 +73,15 @@
   },
   {
     "reason": "about:home is not fully loaded for the first image sometimes",
-    "nameRegexes": ["^controlCenter_.*_noLWT_about$"],
+    "nameRegexes": ["^controlCenter_01"],
     "pixelRegex": "^13445$",
     "platformRegex": "^windows8-64$"
+  },
+  {
+    "reason": "about:home is not fully loaded for the first image sometimes",
+    "nameRegexes": ["^controlCenter_01"],
+    "pixelRegex": "^13290$",
+    "platformRegex": "^linux64$"
   },
   {
     "reason": "Visited link styling is async",
