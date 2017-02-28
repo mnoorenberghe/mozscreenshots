@@ -127,20 +127,18 @@ def nightly_revs_for_date(project, date):
 
     return found_revs
 
-def resultsets_for_date(project, date, job_type_name):
+def resultsets_for_date(project, date):
     date_obj = datetime.strptime(date, '%Y-%m-%d')
-    start_time = date_obj.isoformat()
-    end_time = (date_obj + timedelta(days=1)).isoformat()
-    revs_url = '{TH_API}/project/{project}/jobs/?count=2000&exclusion_profile=false&job_type_name={job_type_name}&result=success&last_modified__gte={start_time}&last_modified__lt={end_time}'.format(TH_API=TH_API, project=project, job_type_name=job_type_name, start_time=start_time, end_time=end_time)
+    start_time = date_obj.strftime("%s")
+    end_time = (date_obj + timedelta(days=1)).strftime("%s")
+    revs_url = '{TH_API}/project/{project}/resultset/?push_timestamp__gte={start_time}&push_timestamp__lt={end_time}'.format(TH_API=TH_API, project=project, start_time=start_time, end_time=end_time)
     log.debug(revs_url)
     result = fetch_json(revs_url)
 
     found_resultset_ids = set()
     resultsets = []
-    for job in result['results']:
-        if job['platform_option'] == 'pgo':
-            continue
-        result_set_id = job['result_set_id']
+    for resultset in result['results']:
+        result_set_id = resultset['id']
         if result_set_id not in found_resultset_ids:
             found_resultset_ids.add(result_set_id);
             log.debug('Found result_set_id: %s' % (result_set_id,))
@@ -168,7 +166,7 @@ def run(args):
                 continue
             resultsets.append(resultset['results'][0])
     elif args.date:
-        resultsets = resultsets_for_date(args.project, args.date, args.job_type_name)
+        resultsets = resultsets_for_date(args.project, args.date)
 
     for resultset in resultsets:
         run_for_resultset(args, resultset)
