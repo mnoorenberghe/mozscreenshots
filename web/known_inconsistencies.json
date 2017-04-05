@@ -130,5 +130,11 @@
     "nameRegexes": ["^controlCenter_61_lightLWT_trackingProtectionNoElements$"],
     "pixelRegex": "^21721$",
     "platformRegex": "^windows7-32$"
+  },
+  {
+    "reason": "Style editor caret blinking",
+    "nameRegexes": ["^devtools_7_styleeditor$"],
+    "pixelRegex": "^14$",
+    "platformRegex": "^linux64$"
   }
 ]
