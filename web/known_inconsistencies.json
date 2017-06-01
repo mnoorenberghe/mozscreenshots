@@ -1,4 +1,4 @@
-[  
+[
   {
     "reason": "Bug 1245719: Desktop icons show beside the window or through Aero Glass",
     "nameRegexes": [
@@ -9,6 +9,18 @@
       "_noLWT(?!_fullScreen)"
     ],
     "pixelRegex": "",
+    "platformRegex": "^windows7-32$"
+  },
+  {
+    "reason": "Bug 1245719: Desktop icons show beside the window or through Aero Glass",
+    "nameRegexes": [ "^devtools_3_undockedToolbox$" ],
+    "pixelRegex": "^(256|3765)$",
+    "platformRegex": "^windows7-32$"
+  },
+  {
+    "reason": "Bug 1245719: Desktop icons show beside the window or through Aero Glass",
+    "nameRegexes": [ "^devtools_" ],
+    "pixelRegex": "^(284|1438)$",
     "platformRegex": "^windows7-32$"
   },
   {
@@ -74,13 +86,13 @@
   {
     "reason": "about:home is not fully loaded for the first image sometimes",
     "nameRegexes": ["^controlCenter_01"],
-    "pixelRegex": "^13445$",
+    "pixelRegex": "^(13445|15765)$",
     "platformRegex": "^windows8-64$"
   },
   {
     "reason": "about:home is not fully loaded for the first image sometimes",
     "nameRegexes": ["^controlCenter_01"],
-    "pixelRegex": "^13290$",
+    "pixelRegex": "^13(290|395)$",
     "platformRegex": "^linux64$"
   },
   {
@@ -136,5 +148,14 @@
     "nameRegexes": ["^devtools_7_styleeditor$"],
     "pixelRegex": "^14$",
     "platformRegex": "^linux64$"
+  },
+  {
+    "reason": "Bug 1368653 - Reload button gets disabled while loading pages",
+    "nameRegexes": [
+      "^controlCenter_",
+      "^permissionPrompts_",
+      "^preferences_"
+    ],
+    "pixelRegex": "^1(09|10|11|12|22)$"
   }
 ]
