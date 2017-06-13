@@ -14,7 +14,7 @@
   {
     "reason": "Bug 1245719: Desktop icons show beside the window or through Aero Glass",
     "nameRegexes": [ "^devtools_3_undockedToolbox$" ],
-    "pixelRegex": "^(256|3765)$",
+    "pixelRegex": "^(256|3765|2565)$",
     "platformRegex": "^windows7-32$"
   },
   {
@@ -163,5 +163,23 @@
     "nameRegexes": ["^preferences_08_prefsSecurity$"],
     "pixelRegex": "^1$",
     "platformRegex": "^osx-10-10$"
+  },
+  {
+    "reason": "Preferences not fully loaded yet",
+    "nameRegexes": ["^preferences_01_prefsGeneral$"],
+    "pixelRegex": "^179040$",
+    "platformRegex": "^windows8-64$"
+  },
+  {
+    "reason": "Tab strip isn't scrolled all the way to the end",
+    "nameRegexes": ["tabsOutsideTitlebar_twoPinnedWithOverflow"],
+    "pixelRegex": "^(14768|17091|7075|8715|16301|15166|15628|16448|8152)$",
+    "platformRegex": "^windows8-64$"
+  },
+  {
+    "reason": "Tab strip isn't scrolled all the way to the end",
+    "nameRegexes": ["tabsInTitlebar_twoPinnedWithOverflow"],
+    "pixelRegex": "^(15666|16318|8035|17091|8715|14037|14234|6265|14783||15195|7094|15628|16448|8152|16301)$",
+    "platformRegex": "^windows8-64$"
   }
 ]
