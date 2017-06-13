@@ -24,30 +24,6 @@
     "platformRegex": "^windows7-32$"
   },
   {
-    "reason": "Bug 1331496 - Control Center is intermittently captured at a different height",
-    "nameRegexes": ["_mixedActiveUnblocked"],
-    "pixelRegex": "^8870$",
-    "platformRegex": "^osx-10-10$"
-  },
-  {
-    "reason": "Bug 1331496 - Control Center is intermittently captured at a different height",
-    "nameRegexes": ["_mixedActiveUnblocked"],
-    "pixelRegex": "^2278$",
-    "platformRegex": "^windows8-64$"
-  },
-  {
-    "reason": "Bug 1331496 - Control Center is intermittently captured at a different height",
-    "nameRegexes": ["_mixedActiveUnblocked"],
-    "pixelRegex": "^2998$",
-    "platformRegex": "^windows7-32$"
-  },
-  {
-    "reason": "Bug 1331496 - Control Center is intermittently captured at a different height",
-    "nameRegexes": ["_singlePermission"],
-    "pixelRegex": "^(3642|3643)$",
-    "platformRegex": "^linux64$"
-  },
-  {
     "reason": "1px/2px speck under the selected tab",
     "nameRegexes": ["permissionPrompts_"],
     "pixelRegex": "^(1|2)$",
