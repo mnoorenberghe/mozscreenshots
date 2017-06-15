@@ -104,15 +104,15 @@ def download_artifact(url, filepath):
         print '- Not overwriting existing file'
         return
     image = requests.get(url)
-    if image.status_code == 200:
+    try:
+        image.raise_for_status()
         print
-    else:
+        file = open(filepath, 'wb')
+        file.write(image.content)
+        file.close()
+    except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as e:
         print '- FAILED'
-        log.error('%s: %s' % (filepath, image.content))
-        return
-    file = open(filepath, 'wb')
-    file.write(image.content)
-    file.close()
+        log.error('%s: %s\n\t%s %s' % (filepath, image.content, e.errno, e.strerror))
 
 def nightly_revs_for_date(project, date):
     revs_url = '%s/namespaces/gecko.v2.%s.nightly.%s.revision' % (TC_API, project, date.replace('-', '.'))
