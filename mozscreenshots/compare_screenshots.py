@@ -115,10 +115,15 @@ def trim_system_ui(prefix, imagefile, outdir, args):
         dock_height = 90 * args.dppx # no longer used
         chop_bottom = 110
 
-    elif "windows7-" in imagefile or "windows8-64-" in imagefile or "windowsxp-" in imagefile:
+    elif "windows7-" in imagefile or "windows8-64-" in imagefile or "windowsxp-" in imagefile or "windows10-" in imagefile:
         taskbar_height = (30 if ("windowsxp-" in imagefile) else 40) * args.dppx
         chop_bottom = taskbar_height
         if "_maximized_" not in imagefile:
+            if "windows10-" in imagefile and "_normal_" in imagefile:
+                chop_right = 104
+                chop_left = 9
+                chop_top = 4
+                chop_bottom = 114
             if "windows8-64-" in imagefile or "windowsxp-" in imagefile:
                 chop_right = 316
                 chop_bottom = 156

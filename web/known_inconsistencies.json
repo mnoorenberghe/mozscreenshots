@@ -158,5 +158,11 @@
     "nameRegexes": ["tabsInTitlebar_twoPinnedWithOverflow"],
     "pixelRegex": "^(15666|16318|8035|17091|8715|14037|14234|6265|14783||15195|7094|15628|16448|8152|16301)$",
     "platformRegex": "^windows8-64$"
+  },
+  {
+    "reason": "Windows 10 is newly enabled with many inconsistencies",
+    "nameRegexes": ["_"],
+    "pixelRegex": "",
+    "platformRegex": "^windows10-64-vm$"
   }
 ]
