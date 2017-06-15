@@ -21,7 +21,11 @@ project = "mozilla-central"
 base = datetime.date.today() - datetime.timedelta(days=1) # Skip current day so we don't send partial emails for in-progress pushes (e.g. linux one email and win in another).
 numdays = 7
 timezone = timezone('US/Pacific')
-job_type_names = ['Mochitest Browser Screenshots', 'test-linux64/opt-mochitest-browser-screenshots-e10s']
+job_type_names = [
+    'Mochitest Browser Screenshots',
+    'test-linux64/opt-mochitest-browser-screenshots-e10s',
+    'test-windows10-64-vm/opt-mochitest-browser-screenshots-e10s'
+]
 
 resultsets = []
 resultset_ids = set()
