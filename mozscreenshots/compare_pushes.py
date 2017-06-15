@@ -18,7 +18,7 @@ from fetch_screenshots import resultsets_for_date, resultset_response_for_push
 archive = os.getcwd()
 compare_url_format = "https://screenshots.mattn.ca/compare/?oldProject=%s&oldRev=%s&newProject=%s&newRev=%s"
 project = "mozilla-central"
-base = datetime.date.today()
+base = datetime.date.today() - datetime.timedelta(days=1) # Skip current day so we don't send partial emails for in-progress pushes (e.g. linux one email and win in another).
 numdays = 7
 timezone = timezone('US/Pacific')
 job_type_names = ['Mochitest Browser Screenshots', 'test-linux64/opt-mochitest-browser-screenshots-e10s']
