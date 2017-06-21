@@ -14,7 +14,7 @@
   {
     "reason": "Bug 1245719: Desktop icons show beside the window or through Aero Glass",
     "nameRegexes": [ "^devtools_3_undockedToolbox$" ],
-    "pixelRegex": "^(256|3765|2565)$",
+    "pixelRegex": "^(256|2563|2565|3765)$",
     "platformRegex": "^windows7-32$"
   },
   {
@@ -68,7 +68,7 @@
   {
     "reason": "about:home is not fully loaded for the first image sometimes",
     "nameRegexes": ["^controlCenter_01"],
-    "pixelRegex": "^13(290|395)$",
+    "pixelRegex": "^13(289|290|395)$",
     "platformRegex": "^linux64$"
   },
   {
@@ -144,7 +144,7 @@
   {
     "reason": "Preferences not fully loaded yet",
     "nameRegexes": ["^preferences_01_prefsGeneral$"],
-    "pixelRegex": "^179040$",
+    "pixelRegex": "^(179040|178260|178662|178969)$",
     "platformRegex": "^windows8-64$"
   },
   {
@@ -164,5 +164,47 @@
     "nameRegexes": ["_"],
     "pixelRegex": "",
     "platformRegex": "^windows10-64-vm$"
+  },
+  {
+    "reason": "Preferences don't have checked checkboxes and no navigation active background",
+    "nameRegexes": ["^preferences_01_prefsGeneral$"],
+    "pixelRegex": "^(382|5869|6122|8027|8099)$",
+    "platformRegex": "^windows8-64$"
+  },
+  {
+    "reason": "Preferences don't have checked checkboxes and no navigation active background",
+    "nameRegexes": ["^preferences_01_prefsGeneral$"],
+    "pixelRegex": "^(270|418|450|485|782|1262|1450|1680|2044|2235)$",
+    "platformRegex": "^linux64$"
+  },
+  {
+    "reason": "Windows 7: slight rendering differences on the title of the last visible tab in tab overflow",
+    "nameRegexes": ["primaryUI_041_tabsInTitlebar_twoPinnedWithOverflow_maximized_allToolbars_darkLWT"],
+    "pixelRegex": "11",
+    "platformRegex": "^windows7-32$"
+  },
+  {
+    "reason": "Windows 7: slight rendering differences on the title of the last visible tab in tab overflow",
+    "nameRegexes": ["primaryUI_042_tabsInTitlebar_twoPinnedWithOverflow_maximized_allToolbars_lightLWT"],
+    "pixelRegex": "12",
+    "platformRegex": "^windows7-32$"
+  },
+  {
+    "reason": "Windows 7: slight rendering differences on the title of the last visible tab in tab overflow",
+    "nameRegexes": ["primaryUI_050_tabsInTitlebar_twoPinnedWithOverflow_fullScreen_onlyNavBar_darkLWT"],
+    "pixelRegex": "89",
+    "platformRegex": "^windows7-32$"
+  },
+  {
+    "reason": "Windows 7: slight rendering differences on the title of the last visible tab in tab overflow",
+    "nameRegexes": ["primaryUI_051_tabsInTitlebar_twoPinnedWithOverflow_fullScreen_onlyNavBar_lightLWT"],
+    "pixelRegex": "96",
+    "platformRegex": "^windows7-32$"
+  },
+  {
+    "reason": "Small reload button render difference",
+    "nameRegexes": ["permissionPrompts_17_darkLWT_loginCapture"],
+    "pixelRegex": "2",
+    "platformRegex": "^windows7-32$"
   }
 ]
