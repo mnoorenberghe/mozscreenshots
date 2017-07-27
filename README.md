@@ -4,7 +4,7 @@ Take screenshots of Mozilla applications in various UI configurations.
 
 The tool will setup the browser in every possible combination of the specified configuration sets (e.g. `WindowSize`) and take a screenshot. Note that the order of the sets affects the order that the configurations are setup. If no sets are specified, the default is: `TabsInTitlebar Tabs WindowSize Toolbars LightweightThemes`.
 
-Note that the extension (XPI) code has mostly moved to https://mxr.mozilla.org/mozilla-central/source/browser/tools/mozscreenshots/mozscreenshots/extension/
+Note that the extension (XPI) code has mostly moved to https://dxr.mozilla.org/mozilla-central/source/browser/tools/mozscreenshots/mozscreenshots/extension/
 
 [Documentation on MDN](https://developer.mozilla.org/en-US/docs/Mozilla/QA/Browser_screenshots)
 
