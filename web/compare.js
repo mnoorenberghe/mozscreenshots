@@ -9,6 +9,7 @@ var Compare = {
     "Mochitest Browser Screenshots",
     "test-linux64/opt-mochitest-browser-screenshots-e10s",
     'test-windows10-64/opt-mochitest-browser-screenshots-e10s ',
+    'test-windows7-32/opt-mochitest-browser-screenshots-e10s',
     "test-macosx64/opt-mochitest-browser-screenshots-e10s",
   ],
   RESULT: {
