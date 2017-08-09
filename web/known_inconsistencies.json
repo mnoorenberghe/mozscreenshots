@@ -160,9 +160,9 @@
     "platformRegex": "^windows8-64$"
   },
   {
-    "reason": "Windows 10 is newly enabled with many inconsistencies",
-    "nameRegexes": ["_"],
+    "reason": "_localFile URL changes on TC",
+    "nameRegexes": ["_localFile"],
     "pixelRegex": "",
-    "platformRegex": "^windows10-64-vm$"
+    "platformRegex": ""
   }
 ]
