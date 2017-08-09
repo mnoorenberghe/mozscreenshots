@@ -133,7 +133,7 @@ def trim_system_ui(prefix, imagefile, outdir, args):
                 chop_right = 124
                 chop_bottom = 135
 
-    elif "linux32-" in imagefile or "linux64-" in imagefile:
+    elif "linux32-" in imagefile:
         titlebar_height = 24 * args.dppx
         chop_top = titlebar_height
     else:
