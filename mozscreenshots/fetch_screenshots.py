@@ -86,7 +86,7 @@ def download_image_artifacts_for_job(project, job, dir_path):
 
     for detail in details['results']:
         log.debug('artifact blob job detail: %s' % pprint.pformat(detail))
-        if not detail['value'].endswith('.png'):
+        if not detail['value'].endswith('.png') or detail['value'].startswith('mozilla-test-fail-'):
             continue
         download_artifact(detail['url'], os.path.join(job_dir, detail['value']))
 
