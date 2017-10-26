@@ -8,9 +8,13 @@ var Compare = {
   JOB_TYPE_NAMES: [
     "Mochitest Browser Screenshots",
     "test-linux64/opt-mochitest-browser-screenshots-e10s",
-    'test-windows10-64/opt-mochitest-browser-screenshots-e10s ',
-    'test-windows7-32/opt-mochitest-browser-screenshots-e10s',
+    "test-windows10-64/opt-mochitest-browser-screenshots-e10s",
+    "test-windows7-32/opt-mochitest-browser-screenshots-e10s",
     "test-macosx64/opt-mochitest-browser-screenshots-e10s",
+    "test-linux64/opt-browser-screenshots-e10s",
+    "test-windows10-64/opt-browser-screenshots-e10s",
+    "test-windows7-32/opt-browser-screenshots-e10s",
+    "test-macosx64/opt-browser-screenshots-e10s",
   ],
   RESULT: {
     SIMILAR: 0,
