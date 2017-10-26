@@ -164,7 +164,9 @@ var Compare = {
         let jobIDSet = new Set(jobs.map((job) => {
           return job.id;
         }));
-
+	if (!jobIDSet.size) {
+	  return Promise.reject("No recent screenshot jobs found!");
+	}
         return this.getJSON(this.TREEHERDER_API + `/jobdetail/?repository=${project}&job_id__in=${[...jobIDSet].join(",")}`);
       }).then((jobDetailsXHR) => {
         let jobIDsWithScreenshots = new Set();
