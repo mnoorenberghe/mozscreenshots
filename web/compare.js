@@ -5,6 +5,7 @@
 "use strict";
 
 var Compare = {
+  JOB_TYPE_NAME_AUTOCOMPLETE: "test-linux64/opt-browser-screenshots-e10s",
   JOB_TYPE_NAMES: [
     "Mochitest Browser Screenshots",
     "test-linux64/opt-mochitest-browser-screenshots-e10s",
@@ -157,7 +158,7 @@ var Compare = {
     let isoEarliestDate = date.toISOString();
     let jobs = [];
     return this.getJSON(this.TREEHERDER_API + `/project/${project}/jobs/?count=2000&exclusion_profile=false` +
-                 `&job_type_name=Mochitest%20Browser%20Screenshots&result=success&last_modified__gte=${isoEarliestDate}`)
+                 `&job_type_name=${this.JOB_TYPE_NAME_AUTOCOMPLETE}&result=success&last_modified__gte=${isoEarliestDate}`)
       .then((jobsXHR) => {
         jobs = jobsXHR.response.results;
         let jobIDSet = new Set(jobs.map((job) => {
