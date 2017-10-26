@@ -458,14 +458,15 @@ var Compare = {
   },
 
   calculateCombinationDisplayName: function(comboName) {
+    let pushImagesMissingPrefix = (oldOrNew) => {
+      let commitMessage = document.getElementById(oldOrNew + "Commit").querySelector("a").title;
+      return this[oldOrNew + "Project"] == "try" && commitMessage.includes("MOZSCREENSHOTS_SETS=");
+    }
+
     // We want to be able to to compare the following:
     // "primaryUI_101_tabsOutsideTitlebar_twoPinnedWithOverflow_normal_allToolbars_darkLWT"
     // "101_tabsOutsideTitlebar_twoPinnedWithOverflow_normal_allToolbars_darkLWT" (try)
-    const PREFIX_ADDITION_TIME = 1464438021;
-    if (this.oldProject == "try" || this.newProject == "try" ||
-        [...this.resultsetsByID.values()].some(resultset => {
-          return resultset.push_timestamp < PREFIX_ADDITION_TIME;
-        })) {
+    if (pushImagesMissingPrefix("old") || pushImagesMissingPrefix("new")) {
       return comboName.replace(/^.*?_(\d+_)/, "$1");
     }
 
