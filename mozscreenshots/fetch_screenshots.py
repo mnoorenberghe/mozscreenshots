@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import argparse
+import concurrent.futures as cf
 import json
 import logging
 import os
@@ -11,6 +12,7 @@ import requests
 import sys
 
 from datetime import date, datetime, timedelta
+from requests_futures.sessions import FuturesSession
 from mozscreenshots import __version__
 
 
@@ -84,11 +86,21 @@ def download_image_artifacts_for_job(project, job, dir_path):
             log.error('Error creating directory: %s' % job_dir)
             return
 
+    session = FuturesSession(max_workers = 5) # TODO
+    request_futures = {}
     for detail in details['results']:
         log.debug('artifact blob job detail: %s' % pprint.pformat(detail))
         if not detail['value'].endswith('.png') or detail['value'].startswith('mozilla-test-fail-'):
             continue
-        download_artifact(detail['url'], os.path.join(job_dir, detail['value']))
+        filepath = os.path.join(job_dir, detail['value'])
+        future = request_artifact(session, detail['url'], filepath)
+        if future:
+            request_futures[future] = filepath
+
+    for future in cf.as_completed(request_futures, timeout=600):
+        res = future.result()
+        filepath = request_futures[future]
+        handle_artifact_download(res, filepath)
 
     # Remove any empty directories that we created
     try:
@@ -98,20 +110,24 @@ def download_image_artifacts_for_job(project, job, dir_path):
         pass
 
 
-def download_artifact(url, filepath):
-    print 'Downloading %s' % filepath,
+def request_artifact(session, url, filepath):
+    ''' Returns a future or None '''
+    print 'Requesting %s' % filepath,
     if os.path.isfile(filepath):
         print '- Not overwriting existing file'
         return
-    image = requests.get(url)
+    print
+    return session.get(url)
+
+def handle_artifact_download(image, filepath):
     try:
         image.raise_for_status()
-        print
+        print 'Download finished: %s' % filepath
         file = open(filepath, 'wb')
         file.write(image.content)
         file.close()
     except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as e:
-        print '- FAILED'
+        print 'Download FAILED: %s' % filepath
         log.error('%s: %s\n\t%s %s' % (filepath, image.content, e.errno, e.strerror))
 
 def nightly_revs_for_date(project, date):

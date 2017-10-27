@@ -12,6 +12,7 @@ desc = """Takes screenshots of different states of a Mozilla application"""
 deps = [
     'mozrunner >= 5.0',
     'requests == 2.7.0',
+    'requests-futures == 0.9.7',
 ]
 
 setup(name=PACKAGE_NAME,
