@@ -62,20 +62,8 @@
   {
     "reason": "about:home is not fully loaded for the first image sometimes",
     "nameRegexes": ["^controlCenter_01"],
-    "pixelRegex": "^(13445|15765)$",
-    "platformRegex": "^windows8-64$"
-  },
-  {
-    "reason": "about:home is not fully loaded for the first image sometimes",
-    "nameRegexes": ["^controlCenter_01"],
     "pixelRegex": "^13(290|395)$",
     "platformRegex": "^linux64$"
-  },
-  {
-    "reason": "Visited link styling is async",
-    "nameRegexes": ["^controlCenter_.*_noLWT_singlePermission$"],
-    "pixelRegex": "^147$",
-    "platformRegex": "^windows8-64$"
   },
   {
     "reason": "Visited link styling is async",
@@ -88,12 +76,6 @@
     "nameRegexes": ["_(mixedSubView|mixedActiveUnblockedSubView)$"],
     "pixelRegex": "^(8044|8388)$",
     "platformRegex": "^windows7-32$"
-  },
-  {
-    "reason": "Font rendering is intermittently different on Windows 8",
-    "nameRegexes": ["_httpSubView$"],
-    "pixelRegex": "^5312$",
-    "platformRegex": "^windows8-64$"
   },
   {
     "reason": "Control center contents are regularly shifted to the left",
@@ -140,24 +122,6 @@
     "nameRegexes": ["^preferences_08_prefsSecurity$"],
     "pixelRegex": "^1$",
     "platformRegex": "^osx-10-10$"
-  },
-  {
-    "reason": "Preferences not fully loaded yet",
-    "nameRegexes": ["^preferences_01_prefsGeneral$"],
-    "pixelRegex": "^179040$",
-    "platformRegex": "^windows8-64$"
-  },
-  {
-    "reason": "Tab strip isn't scrolled all the way to the end",
-    "nameRegexes": ["tabsOutsideTitlebar_twoPinnedWithOverflow"],
-    "pixelRegex": "^(14768|17091|7075|8715|16301|15166|15628|16448|8152)$",
-    "platformRegex": "^windows8-64$"
-  },
-  {
-    "reason": "Tab strip isn't scrolled all the way to the end",
-    "nameRegexes": ["tabsInTitlebar_twoPinnedWithOverflow"],
-    "pixelRegex": "^(15666|16318|8035|17091|8715|14037|14234|6265|14783||15195|7094|15628|16448|8152|16301)$",
-    "platformRegex": "^windows8-64$"
   },
   {
     "reason": "_localFile URL changes on TC",
