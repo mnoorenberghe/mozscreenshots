@@ -27,7 +27,7 @@
     "reason": "1px/2px speck under the selected tab",
     "nameRegexes": ["permissionPrompts_"],
     "pixelRegex": "^(1|2)$",
-    "platformRegex": "^(osx-10-10|linux32|linux64)$"
+    "platformRegex": "^(osx-10-10|linux64)$"
   },
   {
     "reason": "1px/2px specks under the selected tab plus back button clip path",
@@ -45,13 +45,13 @@
     "reason": "linux Back button clip-path",
     "nameRegexes": ["^controlCenter_"],
     "pixelRegex": "^(1|3|4)$",
-    "platformRegex": "^linux(32|64)$"
+    "platformRegex": "^linux(64)$"
   },
   {
     "reason": "linux32 preferences_16_prefsAdvanced-encryptionTab-certManager",
     "nameRegexes": ["^preferences_.*_prefsAdvanced-encryptionTab-certManager$"],
     "pixelRegex": "^(1|2)$",
-    "platformRegex": "^linux(32|64)$"
+    "platformRegex": "^linux(64)$"
   },
   {
     "reason": "linux64 controlCenter_01_noLWT_about",
