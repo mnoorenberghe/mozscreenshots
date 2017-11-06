@@ -42,6 +42,12 @@
     "platformRegex": "^osx-10-10$"
   },
   {
+    "reason": "Windows Back button clip-path",
+    "nameRegexes": ["^controlCenter.*_about$"],
+    "pixelRegex": "^(1|2)$",
+    "platformRegex": "^windows(7-32|10-64)$"
+  },
+  {
     "reason": "linux Back button clip-path",
     "nameRegexes": ["^controlCenter_"],
     "pixelRegex": "^(1|3|4)$",
@@ -61,8 +67,8 @@
   },
   {
     "reason": "Visited link styling is async",
-    "nameRegexes": ["_singlePermission$", "_https$", "_http$"],
-    "pixelRegex": "^(87|88)$",
+    "nameRegexes": ["_singlePermission$", "_https$", "_http$", "_httpSubView$"],
+    "pixelRegex": "^(87|88|279)$",
     "platformRegex": "^linux64$"
   },
   {
@@ -88,5 +94,53 @@
     "nameRegexes": ["_localFile"],
     "pixelRegex": "",
     "platformRegex": ""
+  },
+  {
+    "reason": "Bug 1414741 - Control center shadow is intermittently different.",
+    "nameRegexes": ["^controlCenter_"],
+    "pixelRegex": "^(5042|5050|5338|552.|580.|5968|5969|5970|6860|6861)$",
+    "platformRegex": "^osx-10-10$"
+  },
+  {
+    "reason": "Windows 10 - Console in the background is at an intermittently different position.",
+    "nameRegexes": ["^primaryUI_.*_tabsOutsideTitlebar"],
+    "pixelRegex": "^170$",
+    "platformRegex": "^windows10-64$"
+  },
+  {
+    "reason": "Bug 1414757 - URL bar text is intermittently not scrolled to the beginning",
+    "nameRegexes": ["^permissionPrompts_"],
+    "pixelRegex": "^(4276|4291|4451|4456)$",
+    "platformRegex": "^osx-10-10$"
+  },
+  {
+    "reason": "URL bar font is rendered inconsistently.",
+    "nameRegexes": ["^controlCenter_.*(_mixed|_httpPassword)$"],
+    "pixelRegex": "^(2958|2975|2985|2966|3003|3005|3012|3014|3024|3025)$",
+    "platformRegex": ""
+  },
+  {
+    "reason": "Search box on activity stream has inconsistent border radius on Windows 10.",
+    "nameRegexes": ["^primaryUI_.*_(tabsInTitlebar|tabsOutsideTitlebar)"],
+    "pixelRegex": "^(2|4|8)$",
+    "platformRegex": "^windows(7-32|10-64)$"
+  },
+  {
+    "reason": "Bug 1414754 - Favicon intermittently not loaded",
+    "nameRegexes": ["^controlCenter_.*(_https|_httpPassword)$"],
+    "pixelRegex": "^(410|444)$",
+    "platformRegex": "^linux64$"
+  },
+  {
+    "reason": "Bug 1414754 - Favicon intermittently not loaded",
+    "nameRegexes": ["^controlCenter_.*(_https|_httpPassword)$"],
+    "pixelRegex": "^745$",
+    "platformRegex": "^windows10-64$"
+  },
+  {
+    "reason": "Bug 1414749 - URL bar text intermittently appears cut off / below the identity block.",
+    "nameRegexes": ["^controlCenter_"],
+    "pixelRegex": "^(18|591|810|813)$",
+    "platformRegex": "^windows7-32$"
   }
 ]
