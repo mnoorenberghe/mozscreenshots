@@ -33,7 +33,7 @@
     "reason": "1px/2px specks under the selected tab plus back button clip path",
     "nameRegexes": ["permissionPrompts_"],
     "pixelRegex": "^3$",
-    "platformRegex": "^(linux64)$"
+    "platformRegex": "^linux"
   },
   {
     "reason": "10.10 Back button clip-path",
@@ -51,25 +51,25 @@
     "reason": "linux Back button clip-path",
     "nameRegexes": ["^controlCenter_"],
     "pixelRegex": "^(1|3|4)$",
-    "platformRegex": "^linux(32|64)$"
+    "platformRegex": "^linux"
   },
   {
-    "reason": "linux32 preferences_16_prefsAdvanced-encryptionTab-certManager",
+    "reason": "linux preferences_16_prefsAdvanced-encryptionTab-certManager",
     "nameRegexes": ["^preferences_.*_prefsAdvanced-encryptionTab-certManager$"],
     "pixelRegex": "^(1|2)$",
-    "platformRegex": "^linux(32|64)$"
+    "platformRegex": "^linux"
   },
   {
-    "reason": "linux64 controlCenter_01_noLWT_about",
+    "reason": "linux controlCenter_01_noLWT_about",
     "nameRegexes": ["^controlCenter_.*_noLWT_about$"],
     "pixelRegex": "^13286$",
-    "platformRegex": "^linux64$"
+    "platformRegex": "^linux"
   },
   {
     "reason": "Visited link styling is async",
     "nameRegexes": ["_singlePermission$", "_https$", "_http$", "_httpSubView$"],
     "pixelRegex": "^(87|88|279)$",
-    "platformRegex": "^linux64$"
+    "platformRegex": "^linux"
   },
   {
     "reason": "Font rendering is intermittently different on Windows 7",
@@ -81,7 +81,7 @@
     "reason": "Style editor caret blinking",
     "nameRegexes": ["^devtools_7_styleeditor$"],
     "pixelRegex": "^14$",
-    "platformRegex": "^linux64$"
+    "platformRegex": "^linux"
   },
   {
     "reason": "Unknown 1px change",
@@ -129,7 +129,7 @@
     "reason": "Bug 1414754 - Favicon intermittently not loaded",
     "nameRegexes": ["^controlCenter_.*(_https|_httpPassword)$"],
     "pixelRegex": "^(410|444)$",
-    "platformRegex": "^linux64$"
+    "platformRegex": "^linux"
   },
   {
     "reason": "Bug 1414754 - Favicon intermittently not loaded",
