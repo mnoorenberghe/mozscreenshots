@@ -102,16 +102,6 @@
     "platformRegex": "^linux64$"
   },
   {
-    "reason": "Bug 1368653 - Reload button gets disabled while loading pages",
-    "nameRegexes": [
-      "^controlCenter_",
-      "^permissionPrompts_",
-      "^preferences_"
-    ],
-    "pixelRegex": "^1(09|10|11|12|22)$",
-    "platformRegex": ""
-  },
-  {
     "reason": "Unknown 1px change",
     "nameRegexes": ["^preferences_08_prefsSecurity$"],
     "pixelRegex": "^1$",
