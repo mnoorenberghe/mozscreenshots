@@ -72,30 +72,6 @@
     "platformRegex": "^windows7-32$"
   },
   {
-    "reason": "Control center contents are regularly shifted to the left",
-    "nameRegexes": ["^controlCenter_"],
-    "pixelRegex": "^(5401|5402|7571|8113|8126|8569|8570|10471|10472|10666|10667|10747|10748|11637|11638|11650|11651|11889|12410|12411)$",
-    "platformRegex": "^osx-10-10$"
-  },
-  {
-    "reason": "Bug 1343049: Aero basic is sometimes used for Windows 7",
-    "nameRegexes": ["^devtools_"],
-    "pixelRegex": "^([39]\\d\\d\\d\\d)$",
-    "platformRegex": "^windows7-32$"
-  },
-  {
-    "reason": "Bug 1343049: Aero basic is sometimes used for Windows 7.",
-    "nameRegexes": ["^(primaryUI|permissionPrompts|controlCenter)_"],
-    "pixelRegex": "^(1789|1820|1857|1888|2630|2649|2833|2853|2944|2965|3097|3127|3743|3810|4939|4967|4989|5017|5022|5069|5129|5185|5246|5285|5311|5320|5324|5341|5350|5394|6239|6632|7997|8309|10171|13355|16096|18174|20212|20241|20243|20244|36148|36149|38276|38801|38802|38806|48146)$",
-    "platformRegex": "^windows7-32$"
-  },
-  {
-    "reason": "Control center panel isn't finished opening",
-    "nameRegexes": ["^controlCenter_61_lightLWT_trackingProtectionNoElements$"],
-    "pixelRegex": "^21721$",
-    "platformRegex": "^windows7-32$"
-  },
-  {
     "reason": "Style editor caret blinking",
     "nameRegexes": ["^devtools_7_styleeditor$"],
     "pixelRegex": "^14$",
