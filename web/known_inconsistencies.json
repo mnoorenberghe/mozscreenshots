@@ -50,7 +50,7 @@
   {
     "reason": "linux Back button clip-path",
     "nameRegexes": ["^controlCenter_"],
-    "pixelRegex": "^(1|3|4)$",
+    "pixelRegex": "^(1|2|3|4)$",
     "platformRegex": "^linux"
   },
   {
@@ -67,7 +67,7 @@
   },
   {
     "reason": "Visited link styling is async",
-    "nameRegexes": ["_singlePermission$", "_https$", "_http$", "_httpSubView$"],
+    "nameRegexes": ["_singlePermission$", "_https?$", "_https?SubView$"],
     "pixelRegex": "^(87|88|279)$",
     "platformRegex": "^linux"
   },
@@ -98,7 +98,7 @@
   {
     "reason": "Bug 1414741 - Control center shadow is intermittently different.",
     "nameRegexes": ["^controlCenter_"],
-    "pixelRegex": "^(5042|5050|5338|552.|580.|5968|5969|5970|6860|6861)$",
+    "pixelRegex": "^(5042|5050|5537|5338|552.|580.|5824|5968|5969|5970|5986|6860|6861|7052|7053)$",
     "platformRegex": "^osx-10-10$"
   },
   {
@@ -128,7 +128,7 @@
   {
     "reason": "Bug 1414754 - Favicon intermittently not loaded",
     "nameRegexes": ["^controlCenter_.*(_https|_httpPassword)$"],
-    "pixelRegex": "^(410|444)$",
+    "pixelRegex": "^(410|444|446|689)$",
     "platformRegex": "^linux"
   },
   {
@@ -140,7 +140,13 @@
   {
     "reason": "Bug 1414749 - URL bar text intermittently appears cut off / below the identity block.",
     "nameRegexes": ["^controlCenter_"],
-    "pixelRegex": "^(18|591|810|813)$",
+    "pixelRegex": "^(18|591|596|810|813)$",
     "platformRegex": "^windows7-32$"
+  },
+  {
+    "reason": "Bug 1416779 - Intermittent 'Turn on Windows Firewall' message on Windows 10 machines.",
+    "nameRegexes": ["^controlCenter_"],
+    "pixelRegex": "^(32450|35330|17386)$",
+    "platformRegex": "^windows10-64$"
   }
 ]
