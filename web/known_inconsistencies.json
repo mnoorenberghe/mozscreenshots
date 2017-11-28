@@ -1,29 +1,5 @@
 [
   {
-    "reason": "Bug 1245719: Desktop icons show beside the window or through Aero Glass",
-    "nameRegexes": [
-      "_normal_",
-      "_tabsOutsideTitlebar",
-      "^\\d\\d_prefs[^_]+\\.png$",
-      "(^|_)preferences_\\d",
-      "_noLWT(?!_fullScreen)"
-    ],
-    "pixelRegex": "",
-    "platformRegex": "^windows7-32$"
-  },
-  {
-    "reason": "Bug 1245719: Desktop icons show beside the window or through Aero Glass",
-    "nameRegexes": [ "^devtools_3_undockedToolbox$" ],
-    "pixelRegex": "^(256|3765|2565)$",
-    "platformRegex": "^windows7-32$"
-  },
-  {
-    "reason": "Bug 1245719: Desktop icons show beside the window or through Aero Glass",
-    "nameRegexes": [ "^devtools_" ],
-    "pixelRegex": "^(284|1438)$",
-    "platformRegex": "^windows7-32$"
-  },
-  {
     "reason": "1px/2px speck under the selected tab",
     "nameRegexes": ["permissionPrompts_"],
     "pixelRegex": "^(1|2)$",
@@ -98,7 +74,7 @@
   {
     "reason": "Bug 1414741 - Control center shadow is intermittently different.",
     "nameRegexes": ["^controlCenter_"],
-    "pixelRegex": "^(5042|5050|5537|5338|552.|580.|5824|5968|5969|5970|5986|6860|6861|7052|7053)$",
+    "pixelRegex": "^(5028|5042|5050|5214|5537|5338|5502|5503|552.|5662|580.|5824|5968|5969|5970|5986|6742|6743|6860|6861|7052|7053)$",
     "platformRegex": "^osx-10-10$"
   },
   {
@@ -148,5 +124,27 @@
     "nameRegexes": ["^controlCenter_"],
     "pixelRegex": "^(32450|35330|17386)$",
     "platformRegex": "^windows10-64$"
+  },
+  {
+    "reason": "macOS upgrade notifications appear on top of the browser",
+    "nameRegexes": [""],
+    "pixelRegex": "^(1813|2205|2247|2310|2329|2379|2385|2401|2407|2408|2422|2423|2424|2426|2441|20701|22294|23199|23340|24224|24309|24345|24980|24987|24997|24998|2500.)$",
+    "platformRegex": "^osx-10-10$"
+  },
+  {
+    "reason": "Windows taskbar not cropped out",
+    "nameRegexes": [
+      "^devtools_",
+      "^preferences_",
+      "^primaryUI_"
+    ],
+    "pixelRegex": "^(2100|2103)$",
+    "platformRegex": "^windows7-32$"
+  },
+  {
+    "reason": "top-left border-radius of new tab search box",
+    "nameRegexes": ["_tabsOutsideTitlebar_fiveTabs_"],
+    "pixelRegex": "^3$",
+    "platformRegex": "^windows7-32$"
   }
 ]
