@@ -97,6 +97,10 @@ def compare_images(before, after, outdir, similar_dir, args):
 
 
 def trim_system_ui(prefix, imagefile, outdir, args):
+    # TODO: no longer needed since bug 1403686
+    return imagefile
+
+
     if "_fullScreen" in imagefile:
         return imagefile
     outpath = os.path.join(outdir, prefix + "_" + os.path.basename(imagefile))
