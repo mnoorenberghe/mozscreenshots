@@ -152,5 +152,11 @@
     "nameRegexes": ["_tabsOutsideTitlebar_fiveTabs_"],
     "pixelRegex": "^3$",
     "platformRegex": "^windows7-32$"
+  },
+  {
+    "reason": "Windows console not properly cropped out",
+    "nameRegexes": ["^primaryUI_"],
+    "pixelRegex": "^(107|260)$",
+    "platformRegex": "^windows10-64$"
   }
 ]
