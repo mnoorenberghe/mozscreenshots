@@ -90,6 +90,12 @@
     "platformRegex": "^osx-10-10$"
   },
   {
+    "reason": "Bug 1414757 - URL bar text is intermittently not scrolled to the beginning",
+    "nameRegexes": ["^permissionPrompts_"],
+    "pixelRegex": "^(3278)$",
+    "platformRegex": "^windows7-32$"
+  },
+  {
     "reason": "URL bar font is rendered inconsistently.",
     "nameRegexes": ["^controlCenter_.*(_mixed|_httpPassword)$"],
     "pixelRegex": "^(2958|2975|2985|2966|3003|3005|3012|3014|3024|3025)$",
