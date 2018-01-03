@@ -138,12 +138,6 @@
     "platformRegex": "^windows10-64$"
   },
   {
-    "reason": "macOS upgrade notifications appear on top of the browser",
-    "nameRegexes": [""],
-    "pixelRegex": "^(1813|2205|2247|2310|2329|2379|2385|2401|2407|2408|2422|2423|2424|2426|2441|20701|22294|23199|23340|24224|24309|24345|24980|24987|24997|24998|2500.)$",
-    "platformRegex": "^osx-10-10$"
-  },
-  {
     "reason": "Windows taskbar not cropped out",
     "nameRegexes": [
       "^devtools_",
