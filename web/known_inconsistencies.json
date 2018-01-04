@@ -98,7 +98,7 @@
   {
     "reason": "Bug 1414757 - URL bar text is intermittently not scrolled to the beginning",
     "nameRegexes": ["^permissionPrompts_"],
-    "pixelRegex": "^(3430)$",
+    "pixelRegex": "^(3417|3430)$",
     "platformRegex": "^windows10-64$"
   },
   {
