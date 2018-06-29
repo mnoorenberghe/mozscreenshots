@@ -167,5 +167,11 @@
     ],
     "pixelRegex": "^(116|402|525)$",
     "platformRegex": "^linux64$"
+  },
+  {
+    "reason": "New tab page onboarding speech bubble font weight",
+    "nameRegexes": ["^primaryUI_"],
+    "pixelRegex": "^1171$",
+    "platformRegex": "^osx-10-10$"
   }
 ]
