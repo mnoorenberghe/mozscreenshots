@@ -68,13 +68,16 @@ def compare_images(before, after, outdir, similar_dir, args):
                          before_trimmed, after_trimmed, outpath])
         try:
             FNULL = open(os.devnull, 'w')
-            subprocess.call(["apngasm", "--force", "--delay", "400", outpath,
-                             before_trimmed, after_trimmed,
-                             "--output", outpath + ".animated"],
-                            stdout=FNULL, close_fds=True)
+            exitcode = subprocess.call(["apngasm", "--force", "--delay", "400", outpath,
+                                        before_trimmed, after_trimmed,
+                                        "--output", outpath + ".animated"],
+                                       stdout=FNULL, close_fds=True)
+            if exitcode != 0:
+                # TODO: handle when dimensions of frames differ!
+                raise Exception("Could not create APNG. Leaving non-animated in-place")
             os.remove(outpath) # For Windows
             os.rename(outpath + ".animated", outpath)
-        except OSError:
+        except (OSError, Exception):
             # Not a fatal error if the APNG can't be created since we have the
             # compare output already
             pass
