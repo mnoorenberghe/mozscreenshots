@@ -173,5 +173,13 @@
     "nameRegexes": ["^primaryUI_"],
     "pixelRegex": "^1171$",
     "platformRegex": "^osx-10-10$"
+  },
+  {
+    "reason": "New tab page font differences",
+    "nameRegexes": [
+      "_twoPinnedWithOverflow_"
+    ],
+    "pixelRegex": "^(6831|8066)$",
+    "platformRegex": "^osx-10-10$"
   }
 ]
