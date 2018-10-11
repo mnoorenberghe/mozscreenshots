@@ -181,5 +181,21 @@
     ],
     "pixelRegex": "^(6831|8066)$",
     "platformRegex": "^osx-10-10$"
+  },
+  {
+    "reason": "Linux Arrow Panel right side with noLWT",
+    "nameRegexes": [
+      "(controlCenter|permissionPrompts)_.*noLWT"
+    ],
+    "pixelRegex": "^8$",
+    "platformRegex": "^linux64$"
+  },
+  {
+    "reason": "Linux Arrow Panel right side with compactDark",
+    "nameRegexes": [
+      "(controlCenter|permissionPrompts)_.*compactDark"
+    ],
+    "pixelRegex": "^7$",
+    "platformRegex": "^linux64$"
   }
 ]
