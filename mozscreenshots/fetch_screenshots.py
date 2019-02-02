@@ -31,7 +31,7 @@ log.addHandler(handler)
 
 def resultset_response_for_id(project, resultset_id):
     print 'Fetching resultset for id: %d' % resultset_id
-    resultset_url = '%s/project/%s/resultset/%s/' % (TH_API, project, resultset_id)
+    resultset_url = '%s/project/%s/push/%s/' % (TH_API, project, resultset_id)
     log.info(resultset_url)
     try:
         json = fetch_json(resultset_url)
@@ -47,7 +47,7 @@ def resultset_response_for_id(project, resultset_id):
 
 def resultset_response_for_push(project, rev):
     print 'Fetching resultset for revision: %s' % rev
-    resultset_url = '%s/project/%s/resultset/?count=2&full=true&revision=%s' % (TH_API, project, rev)
+    resultset_url = '%s/project/%s/push/?count=2&full=true&revision=%s' % (TH_API, project, rev)
     log.info(resultset_url)
     response = fetch_json(resultset_url)
 
@@ -147,7 +147,7 @@ def resultsets_for_date(project, date):
     date_obj = datetime.strptime(date, '%Y-%m-%d')
     start_time = date_obj.strftime("%s")
     end_time = (date_obj + timedelta(days=1)).strftime("%s")
-    revs_url = '{TH_API}/project/{project}/resultset/?push_timestamp__gte={start_time}&push_timestamp__lt={end_time}'.format(TH_API=TH_API, project=project, start_time=start_time, end_time=end_time)
+    revs_url = '{TH_API}/project/{project}/push/?push_timestamp__gte={start_time}&push_timestamp__lt={end_time}'.format(TH_API=TH_API, project=project, start_time=start_time, end_time=end_time)
     log.debug(revs_url)
     result = fetch_json(revs_url)
 

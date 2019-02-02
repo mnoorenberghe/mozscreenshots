@@ -188,7 +188,7 @@ var Compare = {
 
         return resultsetIDsWithScreenshots;
       }).then((resultSetIDs) => {
-        return this.getJSON(this.TREEHERDER_API + `/project/${project}/resultset/?id__in=${[...resultSetIDs].join(",")}`);
+        return this.getJSON(this.TREEHERDER_API + `/project/${project}/push/?id__in=${[...resultSetIDs].join(",")}`);
       }).then((resultsetsXHR) => {
         return resultsetsXHR.response.results;
       });
@@ -294,7 +294,7 @@ var Compare = {
 
   fetchResultset: function(project, rev) {
     var url = this.TREEHERDER_API + "/project/" + project
-              + "/resultset/?count=2&full=true&revision=" + rev;
+              + "/push/?count=2&full=true&revision=" + rev;
     return this.getJSON(url);
   },
 
