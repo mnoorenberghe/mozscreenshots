@@ -12,6 +12,7 @@ import requests
 import sys
 
 from datetime import date, datetime, timedelta
+from hashlib import sha512
 from requests_futures.sessions import FuturesSession
 from mozscreenshots import __version__
 
@@ -21,6 +22,7 @@ DEFAULT_REQUEST_HEADERS = {
     'Content-Type': 'application/json',
     'User-Agent': 'mozscreenshots/%s' % __version__,
 }
+HASHED_IMAGE_PATH = 'sha512'
 TC_API = 'https://index.taskcluster.net/v1'
 TH_API = 'https://treeherder.mozilla.org/api'
 
@@ -72,6 +74,15 @@ def jobs_for_resultset(project, resultset_id, job_type_name):
     log.debug('jobs_for_resultset: %s' % pprint.pformat(jobs))
     return jobs['results']
 
+def makedirs(path):
+    try:
+        os.makedirs(path)
+    except OSError:
+        if not os.path.isdir(path):
+            log.error('Error creating directory: %s' % path)
+            sys.exit(1)
+
+
 def download_image_artifacts_for_job(project, job, dir_path):
     print 'Fetching artifact list for job: %d (%s)' % (job['id'], job['job_guid'])
     artifacts_url = '%s/jobdetail/?job__guid=%s' % (TH_API, job['job_guid'])
@@ -79,12 +90,7 @@ def download_image_artifacts_for_job(project, job, dir_path):
     details = fetch_json(artifacts_url)
 
     job_dir = os.path.join(dir_path, '%s-%s' % (job['platform'], job['id']))
-    try:
-        os.makedirs(job_dir)
-    except OSError:
-        if not os.path.isdir(job_dir):
-            log.error('Error creating directory: %s' % job_dir)
-            return
+    makedirs(job_dir)
 
     session = FuturesSession(max_workers = 5) # TODO
     request_futures = {}
@@ -122,10 +128,21 @@ def request_artifact(session, url, filepath):
 def handle_artifact_download(image, filepath):
     try:
         image.raise_for_status()
-        print 'Download finished: %s' % filepath
-        file = open(filepath, 'wb')
-        file.write(image.content)
-        file.close()
+        sha512sum = sha512(image.content).hexdigest()
+        print 'Download finished: %s (%s)' % (filepath, sha512sum)
+        # Write data if the sha512 doesn't exist
+        data_dir = os.path.join(HASHED_IMAGE_PATH, sha512sum[0], sha512sum[1])
+        data_path = os.path.join(data_dir, sha512sum)
+        if os.path.isfile(data_path):
+            log.debug('Data file %s already exists' % data_path)
+        else:
+            makedirs(data_dir)
+            file = open(data_path, 'wb')
+            file.write(image.content)
+            file.close()
+
+        # Make a hard link to the data with the image file name
+        os.link(data_path, filepath)
     except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError) as e:
         print 'Download FAILED: %s' % filepath
         log.error('%s: %s\n\t%s %s' % (filepath, image.content, e.errno, e.strerror))
@@ -193,12 +210,7 @@ def run_for_resultset(args, resultset):
         sys.exit(1)
 
     rev_dir = os.path.join(args.project, resultset['revision'])
-    try:
-        os.makedirs(rev_dir)
-    except OSError:
-        if not os.path.isdir(rev_dir):
-            log.error('Error creating directory: %s' % rev_dir)
-            sys.exit(1)
+    makedirs(rev_dir)
 
     job_dirs = []
     for job in jobs:
