@@ -185,13 +185,21 @@
   {
     "reason": "Linux Arrow Panel right side with noLWT",
     "nameRegexes": [
-      "(controlCenter|permissionPrompts)_.*noLWT"
+      "(controlCenter|permissionPrompts)_.*(noLWT|compactLight)"
     ],
-    "pixelRegex": "^8$",
+    "pixelRegex": "^7|8$",
     "platformRegex": "^linux64$"
   },
   {
-    "reason": "Linux Arrow Panel right side with compactDark",
+    "reason": "Linux Arrow Panel right side with noLWT",
+    "nameRegexes": [
+      "(controlCenter|permissionPrompts)_.*(noLWT|compactLight)"
+    ],
+    "pixelRegex": "^4$",
+    "platformRegex": "^linux64$"
+  },
+  {
+    "reason": "Linux Arrow Panel right side with compactDark|compactLight",
     "nameRegexes": [
       "(controlCenter|permissionPrompts)_.*compactDark"
     ],
