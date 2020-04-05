@@ -23,7 +23,7 @@ DEFAULT_REQUEST_HEADERS = {
     'User-Agent': 'mozscreenshots/%s' % __version__,
 }
 HASHED_IMAGE_PATH = 'sha512'
-TC_API = 'https://index.taskcluster.net/v1'
+TC_API = 'https://firefox-ci-tc.services.mozilla.com/api/index/v1'
 TH_API = 'https://treeherder.mozilla.org/api'
 
 log = logging.getLogger('fetch_screenshots')
