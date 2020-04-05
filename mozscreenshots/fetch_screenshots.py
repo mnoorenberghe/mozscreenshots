@@ -65,10 +65,17 @@ def resultset_response_for_push(project, rev):
     log.debug('resultset_for_push: %s' % pprint.pformat(response['results'][0]))
     return response
 
-def jobs_for_resultset(project, resultset_id, job_type_name):
+def jobs_for_resultset(project, resultset_id, job_type_name, job_type_symbol, job_group_name):
     print 'Fetching jobs for resultset: %d' % resultset_id
 
-    jobs_url = '%s/project/%s/jobs/?count=2000&result_set_id=%d&job_type_name=%s&exclusion_profile=false' % (TH_API, project, resultset_id, job_type_name)
+    jobs_url = '%s/project/%s/jobs/?count=2000&result_set_id=%d&exclusion_profile=false' % (TH_API, project, resultset_id)
+    if job_type_name:
+        jobs_url += '&job_type_name=' + job_type_name
+    if job_type_symbol:
+        jobs_url += '&job_type_symbol=' + job_type_symbol
+    if job_group_name:
+        jobs_url += '&job_group_name=' + job_group_name
+
     log.info(jobs_url)
     jobs = fetch_json(jobs_url)
     if len(jobs['results']) == 0:
@@ -216,7 +223,7 @@ def run(args):
         run_for_resultset(args, resultset)
 
 def run_for_resultset(args, resultset):
-    jobs = jobs_for_resultset(args.project, resultset['id'], args.job_type_name)
+    jobs = jobs_for_resultset(args.project, resultset['id'], args.job_type_name, args.job_type_symbol, args.job_group_name)
     if not jobs:
         sys.exit(1)
 
@@ -244,8 +251,12 @@ def cli():
                           help='Revision to fetch screenshots from')
 
 
-    parser.add_argument('--job-type-name', default='Mochitest Browser Screenshots',
-                        help='Type of job to fetch from (aka. job_type_name) [Default="Mochitest Browser Screenshots"]')
+    parser.add_argument('--job-type-symbol', default='ss',
+                        help='Treeherder symbol of the job to fetch from (aka. job_type_symbol) [Default="ss"]')
+    parser.add_argument('--job-group-name', default='Mochitests',
+                        help='Treeherder symbol group of the job to fetch from (aka. job_group_name) [Default="Mochitests"]')
+    parser.add_argument('--job-type-name', default=None,
+                        help='Type of job to fetch from (aka. job_type_name e.g. test-windows7-32/opt-browser-screenshots-e10s)')
     parser.add_argument('--log-level', default='WARNING')
 
     parser.add_argument('--project',
