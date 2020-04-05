@@ -145,47 +145,41 @@ var Compare = {
     }
   },
 
-  fetchRecentScreenshotJobsWithScreenshots(project = "mozilla-central") {
+  async fetchRecentScreenshotJobsWithScreenshots(project = "mozilla-central") {
     let date = new Date();
     // Subtract 6 days from now
     date.setDate(date.getDate() - 6);
     let isoEarliestDate = date.toISOString();
     let jobs = [];
-    return this.getJSON(this.TREEHERDER_API + `/project/${project}/jobs/?count=2000&exclusion_profile=false` +
-                 `&job_type_name=${this.JOB_TYPE_NAME_AUTOCOMPLETE}&result=success&last_modified__gte=${isoEarliestDate}`)
-      .then((jobsXHR) => {
-        jobs = jobsXHR.response.results;
-        let jobIDSet = new Set(jobs.map((job) => {
-          return job.id;
-        }));
-	if (!jobIDSet.size) {
-	  return Promise.reject("No recent screenshot jobs found!");
-	}
-        return this.getJSON(this.TREEHERDER_API + `/jobdetail/?repository=${project}&job_id__in=${[...jobIDSet].join(",")}`);
-      }).then((jobDetailsXHR) => {
-        let jobIDsWithScreenshots = new Set();
-        for (let jobDetail of jobDetailsXHR.response.results) {
-          let hasScreenshots = this.isJobDetailAScreenshot(jobDetail);
-          if (!hasScreenshots) {
-            continue;
-          }
-          jobIDsWithScreenshots.add(jobDetail.job_id);
-        }
+    let jobsXHR = await this.getJSON(this.TREEHERDER_API + `/project/${project}/jobs/?count=2000&exclusion_profile=false` +
+                               `&job_type_name=${this.JOB_TYPE_NAME_AUTOCOMPLETE}&result=success&last_modified__gte=${isoEarliestDate}`);
+    jobs = jobsXHR.response.results;
+    let jobIDSet = new Set(jobs.map((job) => {
+      return job.id;
+    }));
+    if (!jobIDSet.size) {
+      throw new Error("No recent screenshot jobs found!");
+    }
+    let jobDetailsXHR = await this.getJSON(this.TREEHERDER_API + `/jobdetail/?repository=${project}&job_id__in=${[...jobIDSet].join(",")}`);
+    let jobIDsWithScreenshots = new Set();
+    for (let jobDetail of jobDetailsXHR.response.results) {
+      let hasScreenshots = this.isJobDetailAScreenshot(jobDetail);
+      if (!hasScreenshots) {
+        continue;
+      }
+      jobIDsWithScreenshots.add(jobDetail.job_id);
+    }
 
-        let resultsetIDsWithScreenshots = new Set();
-        for (let job of jobs) {
-          if (!jobIDsWithScreenshots.has(job.id)) {
-            continue;
-          }
-          resultsetIDsWithScreenshots.add(job.result_set_id);
-        }
+    let resultsetIDsWithScreenshots = new Set();
+    for (let job of jobs) {
+      if (!jobIDsWithScreenshots.has(job.id)) {
+        continue;
+      }
+      resultsetIDsWithScreenshots.add(job.result_set_id);
+    }
 
-        return resultsetIDsWithScreenshots;
-      }).then((resultSetIDs) => {
-        return this.getJSON(this.TREEHERDER_API + `/project/${project}/push/?id__in=${[...resultSetIDs].join(",")}`);
-      }).then((resultsetsXHR) => {
-        return resultsetsXHR.response.results;
-      });
+    let resultsetsXHR = await this.getJSON(this.TREEHERDER_API + `/project/${project}/push/?id__in=${[...resultsetIDsWithScreenshots].join(",")}`);
+    return resultsetsXHR.response.results;
   },
 
   compare(evt) {
