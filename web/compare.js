@@ -119,18 +119,17 @@ var Compare = {
     }
   },
 
-  fetchKnownInconsistencies() {
-    this.getJSON("known_inconsistencies.json").then(xhr => {
-      xhr.response.forEach(known => {
-	known.platformRegex = new RegExp(known.platformRegex);
-	known.pixelRegex = new RegExp(known.pixelRegex);
-	known.nameRegexes = known.nameRegexes.map(pattern => new RegExp(pattern));
-      });
-      this.knownInconsistencies = xhr.response;
+  async fetchKnownInconsistencies() {
+    let xhr = await this.getJSON("known_inconsistencies.json");
+    xhr.response.forEach(known => {
+      known.platformRegex = new RegExp(known.platformRegex);
+      known.pixelRegex = new RegExp(known.pixelRegex);
+      known.nameRegexes = known.nameRegexes.map(pattern => new RegExp(pattern));
     });
+    this.knownInconsistencies = xhr.response;
   },
 
-  populateSuggestedRevisions() {
+  async populateSuggestedRevisions() {
     let dateOptions = {
       hour12: false,
       month: "short",
@@ -140,15 +139,14 @@ var Compare = {
     };
     let dateFormat = new Intl.DateTimeFormat(undefined, dateOptions);
 
-    this.fetchRecentScreenshotJobsWithScreenshots().then((resultsets) => {
-      let mcRevs = document.getElementById("mcRevs");
-      for (let resultset of resultsets) {
-        let pushDate = new Date(resultset.push_timestamp * 1000);
-        let option = new Option(dateFormat.format(pushDate) + " (m-c: " + resultset.revision + ")",
-                                resultset.revision);
-        mcRevs.appendChild(option);
-      }
-    });
+    let resultsets = await this.fetchRecentScreenshotJobsWithScreenshots();
+    let mcRevs = document.getElementById("mcRevs");
+    for (let resultset of resultsets) {
+      let pushDate = new Date(resultset.push_timestamp * 1000);
+      let option = new Option(dateFormat.format(pushDate) + " (m-c: " + resultset.revision + ")",
+                              resultset.revision);
+      mcRevs.appendChild(option);
+    }
   },
 
   fetchRecentScreenshotJobsWithScreenshots(project = "mozilla-central") {
@@ -360,11 +358,9 @@ var Compare = {
     });
   },
 
-  fetchScreenshotsForJob(repository, job) {
-    return this.getJSON(this.TREEHERDER_API + "/jobdetail/?job__guid=" + job.job_guid)
-      .then((xhr) => {
-        return this.extractScreenshotArtifacts(xhr.response.results);
-      });
+  async fetchScreenshotsForJob(repository, job) {
+    let xhr = await this.getJSON(this.TREEHERDER_API + "/jobdetail/?job__guid=" + job.job_guid);
+    return this.extractScreenshotArtifacts(xhr.response.results);
   },
 
   isJobDetailAScreenshot(jobDetail) {
