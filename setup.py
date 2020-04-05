@@ -5,7 +5,7 @@
 from setuptools import setup
 
 PACKAGE_NAME = 'mozscreenshots'
-PACKAGE_VERSION = '0.5.0'
+PACKAGE_VERSION = '0.6.0'
 
 desc = """Takes screenshots of different states of a Mozilla application"""
 
@@ -13,6 +13,7 @@ deps = [
     'mozrunner >= 5.0',
     'requests == 2.20.0',
     'requests-futures == 0.9.7',
+    'slugid == 2.0.0',
 ]
 
 setup(name=PACKAGE_NAME,

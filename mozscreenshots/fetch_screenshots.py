@@ -9,7 +9,9 @@ import logging
 import os
 import pprint
 import requests
+import slugid
 import sys
+import uuid
 
 from datetime import date, datetime, timedelta
 from hashlib import sha512
@@ -23,7 +25,8 @@ DEFAULT_REQUEST_HEADERS = {
     'User-Agent': 'mozscreenshots/%s' % __version__,
 }
 HASHED_IMAGE_PATH = 'sha512'
-TC_API = 'https://firefox-ci-tc.services.mozilla.com/api/index/v1'
+TC_INDEX_API = 'https://firefox-ci-tc.services.mozilla.com/api/index/v1'
+TC_QUEUE_API = "https://firefox-ci-tc.services.mozilla.com/api/queue/v1"
 TH_API = 'https://treeherder.mozilla.org/api'
 
 log = logging.getLogger('fetch_screenshots')
@@ -82,10 +85,17 @@ def makedirs(path):
             log.error('Error creating directory: %s' % path)
             sys.exit(1)
 
+# From https://github.com/mozilla/treeherder/blob/fdc336ce265e8dfef0a1afb3c8a6c566bcf60679/treeherder/etl/job_loader.py#L26
+def task_and_retry_ids(job_guid):
+    (decoded_task_id, retry_id) = job_guid.split('/')
+    # As of slugid v2, slugid.encode() returns a string not bytestring under Python 3.
+    slug_id = slugid.encode(uuid.UUID(decoded_task_id))
+    return (slug_id, retry_id)
 
 def download_image_artifacts_for_job(project, job, dir_path):
     print 'Fetching artifact list for job: %d (%s)' % (job['id'], job['job_guid'])
-    artifacts_url = '%s/jobdetail/?job__guid=%s' % (TH_API, job['job_guid'])
+    (slug_id, retry_id) = task_and_retry_ids(job['job_guid'])
+    artifacts_url = '%s/task/%s/runs/%s/artifacts' % (TC_QUEUE_API, slug_id, retry_id)
     log.info(artifacts_url)
     details = fetch_json(artifacts_url)
 
@@ -94,12 +104,13 @@ def download_image_artifacts_for_job(project, job, dir_path):
 
     session = FuturesSession(max_workers = 5) # TODO
     request_futures = {}
-    for detail in details['results']:
-        log.debug('artifact blob job detail: %s' % pprint.pformat(detail))
-        if not detail['value'].endswith('.png') or detail['value'].startswith('mozilla-test-fail-'):
+    for artifact in details['artifacts']:
+        log.debug('artifact details: %s' % pprint.pformat(artifact))
+        if not artifact['contentType'] == 'image/png' or not artifact['name'].endswith('.png') or 'mozilla-test-fail-' in artifact['name']:
             continue
-        filepath = os.path.join(job_dir, detail['value'])
-        future = request_artifact(session, detail['url'], filepath)
+        filepath = os.path.join(job_dir, os.path.basename(artifact['name']))
+        artifact_url = '%s/%s' % (artifacts_url, artifact['name'])
+        future = request_artifact(session, artifact_url, filepath)
         if future:
             request_futures[future] = filepath
 
@@ -148,7 +159,7 @@ def handle_artifact_download(image, filepath):
         log.error('%s: %s\n\t%s %s' % (filepath, image.content, e.errno, e.strerror))
 
 def nightly_revs_for_date(project, date):
-    revs_url = '%s/namespaces/gecko.v2.%s.nightly.%s.revision' % (TC_API, project, date.replace('-', '.'))
+    revs_url = '%s/namespaces/gecko.v2.%s.nightly.%s.revision' % (TC_INDEX_API, project, date.replace('-', '.'))
     log.debug(revs_url)
     result = fetch_json(revs_url, "post")
 
