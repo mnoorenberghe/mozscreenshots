@@ -33,7 +33,7 @@ var Compare = {
   screenshotsByJob: new Map(),
   knownInconsistencies: {},
 
-  init: function() {
+  init() {
     console.log("init");
     this.form = document.getElementById("chooser");
     // Load from URL params
@@ -71,20 +71,20 @@ var Compare = {
     this.populateSuggestedRevisions();
   },
 
-  filterChanged: function() {
+  filterChanged() {
     document.getElementById("results").classList.toggle(this.name, this.checked);
     Compare.applyRegexFilter();
     Compare.updateURL({ replace: true });
   },
 
-  applyRegexFilter: function() {
+  applyRegexFilter() {
     let filterRegexp = new RegExp((this.form["filter"].value), "i");
     for (var row of document.querySelectorAll("#results > details > table > tbody > tr")) {
       row.classList.toggle("textMismatch", row.id.search(filterRegexp) == -1);
     }
   },
 
-  updatePushlogLink: function() {
+  updatePushlogLink() {
     var pushlog = document.getElementById("pushlog");
     if (this.oldProject == this.newProject) {
       pushlog.querySelector("a").href = `https://hg.mozilla.org/` +
@@ -97,7 +97,7 @@ var Compare = {
     }
   },
 
-  generateURL: function() {
+  generateURL() {
     let url = new URL(window.location.href);
     url.search = "";
     for (let param of ["oldProject", "oldRev", "newProject", "newRev", "filter"]) {
@@ -110,7 +110,7 @@ var Compare = {
     return url;
   },
 
-  updateURL: function(args = {}) {
+  updateURL(args = {}) {
     try {
       window.history[args.replace ? "replaceState" : "pushState"]({}, document.title, this.generateURL());
     } catch (ex) {
@@ -119,7 +119,7 @@ var Compare = {
     }
   },
 
-  fetchKnownInconsistencies: function() {
+  fetchKnownInconsistencies() {
     this.getJSON("known_inconsistencies.json").then(xhr => {
       xhr.response.forEach(known => {
 	known.platformRegex = new RegExp(known.platformRegex);
@@ -130,7 +130,7 @@ var Compare = {
     });
   },
 
-  populateSuggestedRevisions: function() {
+  populateSuggestedRevisions() {
     let dateOptions = {
       hour12: false,
       month: "short",
@@ -151,7 +151,7 @@ var Compare = {
     });
   },
 
-  fetchRecentScreenshotJobsWithScreenshots: function(project = "mozilla-central") {
+  fetchRecentScreenshotJobsWithScreenshots(project = "mozilla-central") {
     let date = new Date();
     // Subtract 6 days from now
     date.setDate(date.getDate() - 6);
@@ -194,7 +194,7 @@ var Compare = {
       });
   },
 
-  compare: function(evt) {
+  compare(evt) {
     console.info("compare");
     // TODO: cancel pending work if submitted again. Simple way is to not preventDefault
     evt.preventDefault();
@@ -252,7 +252,7 @@ var Compare = {
       });
   },
 
-  triggerComparisons: function() {
+  triggerComparisons() {
     console.debug("triggerComparisons");
     let params = new URLSearchParams();
     for (let param of ["oldProject", "oldRev", "newProject", "newRev"]) {
@@ -261,7 +261,7 @@ var Compare = {
     return this.getJSON("https://screenshots.mattn.ca/compare/cgi-bin/request_comparison.cgi?" + params.toString());
   },
 
-  fetchComparisons: function() {
+  fetchComparisons() {
     let promises = [];
     let platforms = new Set([...this.screenshotsByJob.keys()].map((job) => {
       return job.platform;
@@ -292,13 +292,13 @@ var Compare = {
     return Promise.all(promises);
   },
 
-  fetchResultset: function(project, rev) {
+  fetchResultset(project, rev) {
     var url = this.TREEHERDER_API + "/project/" + project
               + "/push/?count=2&full=true&revision=" + rev;
     return this.getJSON(url);
   },
 
-  handleResultset: function(type, response) {
+  handleResultset(type, response) {
     let commitMsgEl = document.getElementById(type + "Commit");
     let link = commitMsgEl.querySelector("a");
     if (!response.meta.count) {
@@ -326,7 +326,7 @@ var Compare = {
     link.href = `https://treeherder.mozilla.org/#/jobs?repo=${response.meta.repository}&revision=${response.meta.revision}&filter-tier=1&filter-tier=2&filter-tier=3&exclusion_profile=false`;
   },
 
-  fetchJobsForResultset: function(resultset) {
+  fetchJobsForResultset(resultset) {
     let jobsPromises = [];
     for (let job_type_name of this.JOB_TYPE_NAMES) {
       jobsPromises.push(this.getJSON(this.TREEHERDER_API + "/project/" + resultset.meta.repository +
@@ -360,19 +360,19 @@ var Compare = {
     });
   },
 
-  fetchScreenshotsForJob: function(repository, job) {
+  fetchScreenshotsForJob(repository, job) {
     return this.getJSON(this.TREEHERDER_API + "/jobdetail/?job__guid=" + job.job_guid)
       .then((xhr) => {
         return this.extractScreenshotArtifacts(xhr.response.results);
       });
   },
 
-  isJobDetailAScreenshot: function(jobDetail) {
+  isJobDetailAScreenshot(jobDetail) {
     return jobDetail.url && jobDetail.value.endsWith(".png") &&
       !jobDetail.value.startsWith("mozilla-test-fail-");
   },
 
-  extractScreenshotArtifacts: function(results) {
+  extractScreenshotArtifacts(results) {
     let screenshots = new Map();
     if (!results.length) {
       return screenshots;
@@ -387,7 +387,7 @@ var Compare = {
     return screenshots;
   },
 
-  getJSON: function(url) {
+  getJSON(url) {
     return new Promise((resolve, reject) => {
       var xhr = new XMLHttpRequest();
       xhr.addEventListener("load", (evt) => resolve(evt.target));
@@ -400,7 +400,7 @@ var Compare = {
     });
   },
 
-  updateComparisonCell: function(diffCol2, image, platform, comparison) {
+  updateComparisonCell(diffCol2, image, platform, comparison) {
     let row = diffCol2.parentElement;
     let diffCol1 = diffCol2.previousElementSibling;
     let diffLink = diffCol1.querySelector(".diffLink");
@@ -464,7 +464,7 @@ var Compare = {
     }
   },
 
-  calculateCombinationDisplayName: function(comboName) {
+  calculateCombinationDisplayName(comboName) {
     let pushImagesMissingPrefix = (oldOrNew) => {
       let commitMessage = document.getElementById(oldOrNew + "Commit").querySelector("a").title;
       return this[oldOrNew + "Project"] == "try" && commitMessage.includes("MOZSCREENSHOTS_SETS=");
@@ -480,7 +480,7 @@ var Compare = {
     return comboName;
   },
 
-  updateDisplay: function() {
+  updateDisplay() {
     console.debug("updateDisplay");
     let jobsByPlatform = new Map();
     let jobsSortedByPlatform = [...this.screenshotsByJob.keys()].sort((a, b) => {
