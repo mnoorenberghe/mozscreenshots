@@ -24,12 +24,14 @@ timezone = timezone('US/Pacific')
 job_type_names = [
     'Mochitest Browser Screenshots',
     'test-linux64/opt-mochitest-browser-screenshots-e10s',
+    'test-linux1804-64/opt-browser-screenshots-e10s',
     'test-windows10-64/opt-mochitest-browser-screenshots-e10s',
     'test-windows7-32/opt-mochitest-browser-screenshots-e10s',
     'test-macosx64/opt-mochitest-browser-screenshots-e10s'
     'test-linux64/opt-browser-screenshots-e10s',
     'test-windows10-64/opt-browser-screenshots-e10s',
     'test-windows7-32/opt-browser-screenshots-e10s',
+    'test-macosx1014-64-shippable/opt-browser-screenshots-e10s',
     'test-macosx64/opt-browser-screenshots-e10s'
 ]
 
