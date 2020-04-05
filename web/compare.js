@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-"use strict";
+import * as slugid from "./vendor/slugid/slugid.js";
 
 var Compare = {
   JOB_TYPE_NAME_AUTOCOMPLETE: "test-linux1804-64/opt-browser-screenshots-e10s",
@@ -21,6 +21,7 @@ var Compare = {
     MISSING_AFTER: 4,
     KNOWN_INCONSISTENCY: 5,
   },
+  TASKCLUSTER_API: "https://firefox-ci-tc.services.mozilla.com/api",
   TREEHERDER_API: "https://treeherder.mozilla.org/api",
 
   comparisonsByPlatform: new Map(),
@@ -32,6 +33,8 @@ var Compare = {
   init() {
     console.log("init");
     this.form = document.getElementById("chooser");
+    this.form.addEventListener("submit", (event) => this.compare(event));
+
     // Load from URL params
     let params = new URLSearchParams(window.location.search.slice(1));
     let missingParams = [];
@@ -152,22 +155,31 @@ var Compare = {
     let isoEarliestDate = date.toISOString();
     let jobs = [];
     let jobsXHR = await this.getJSON(this.TREEHERDER_API + `/project/${project}/jobs/?count=2000&exclusion_profile=false` +
-                               `&job_type_name=${this.JOB_TYPE_NAME_AUTOCOMPLETE}&result=success&last_modified__gte=${isoEarliestDate}`);
+                                     `&job_type_name=${this.JOB_TYPE_NAME_AUTOCOMPLETE}&result=success&last_modified__gte=${isoEarliestDate}`);
     jobs = jobsXHR.response.results;
-    let jobIDSet = new Set(jobs.map((job) => {
-      return job.id;
+
+    let screenshotFetches = await Promise.allSettled(jobs.map(async job => {
+      return {
+        job,
+        screenshots: await this.fetchScreenshotsForJob(job),
+      };
     }));
-    if (!jobIDSet.size) {
-      throw new Error("No recent screenshot jobs found!");
-    }
-    let jobDetailsXHR = await this.getJSON(this.TREEHERDER_API + `/jobdetail/?repository=${project}&job_id__in=${[...jobIDSet].join(",")}`);
+
     let jobIDsWithScreenshots = new Set();
-    for (let jobDetail of jobDetailsXHR.response.results) {
-      let hasScreenshots = this.isJobDetailAScreenshot(jobDetail);
-      if (!hasScreenshots) {
+    for (let outcome of screenshotFetches) {
+      if (outcome.status != "fulfilled") {
         continue;
       }
-      jobIDsWithScreenshots.add(jobDetail.job_id);
+
+      if (!outcome.value.screenshots.size) {
+        continue;
+      }
+
+      jobIDsWithScreenshots.add(outcome.value.job.id);
+    }
+
+    if (!jobIDsWithScreenshots.size) {
+      throw new Error("No recent screenshots found!");
     }
 
     let resultsetIDsWithScreenshots = new Set();
@@ -330,7 +342,7 @@ var Compare = {
       }
       let promises = [];
       for (let job of xhr.response.results) {
-        let promise = this.fetchScreenshotsForJob(resultset.meta.repository, job)
+        let promise = this.fetchScreenshotsForJob(job)
           .then(function (job, screenshots) {
             this.screenshotsByJob.set(job, screenshots);
           }.bind(this, job));
@@ -348,27 +360,35 @@ var Compare = {
     });
   },
 
-  async fetchScreenshotsForJob(repository, job) {
-    let xhr = await this.getJSON(this.TREEHERDER_API + "/jobdetail/?job__guid=" + job.job_guid);
-    return this.extractScreenshotArtifacts(xhr.response.results);
+  getArtifactsURL(slugID, run) {
+    return this.TASKCLUSTER_API + `/queue/v1/task/${slugID}/runs/${run}/artifacts`;
   },
 
-  isJobDetailAScreenshot(jobDetail) {
-    return jobDetail.url && jobDetail.value.endsWith(".png") &&
-      !jobDetail.value.startsWith("mozilla-test-fail-");
+  async fetchScreenshotsForJob(job) {
+    // See https://github.com/mozilla/treeherder/blob/fdc336ce265e8dfef0a1afb3c8a6c566bcf60679/treeherder/etl/job_loader.py#L26
+    let [taskID, run] = job.job_guid.split("/");
+    let slugID = slugid.encode(taskID);
+    let xhr = await this.getJSON(this.getArtifactsURL(slugID, run));
+    return this.extractScreenshotArtifacts(slugID, run, xhr.response.artifacts);
   },
 
-  extractScreenshotArtifacts(results) {
+  isArtifactAScreenshot(artifact) {
+    return artifact.name && artifact.contentType == "image/png" &&
+      !artifact.name.includes("mozilla-test-fail-");
+  },
+
+  extractScreenshotArtifacts(slugID, run, artifacts) {
     let screenshots = new Map();
-    if (!results.length) {
+    if (!artifacts.length) {
       return screenshots;
     }
-    for (let jobDetail of results) {
-      if (!this.isJobDetailAScreenshot(jobDetail)) {
+    let artifactsBaseURL = this.getArtifactsURL(slugID, run);
+    for (let artifact of artifacts) {
+      if (!this.isArtifactAScreenshot(artifact)) {
         continue;
       }
-      screenshots.set(this.calculateCombinationDisplayName(jobDetail.value.replace(/^[^-_]+[-_]/, "")),
-                      jobDetail.url);
+      screenshots.set(this.calculateCombinationDisplayName(artifact.name.replace(/^.*\/[^-_]+[-_]/, "")),
+                      `${artifactsBaseURL}/${artifact.name}`);
     }
     return screenshots;
   },
@@ -553,4 +573,4 @@ var Compare = {
 
 };
 
-document.addEventListener("DOMContentLoaded", Compare.init.bind(Compare));
+document.addEventListener("DOMContentLoaded", () => Compare.init());
