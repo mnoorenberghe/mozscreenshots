@@ -5,17 +5,13 @@
 "use strict";
 
 var Compare = {
-  JOB_TYPE_NAME_AUTOCOMPLETE: "test-linux64/opt-browser-screenshots-e10s",
+  JOB_TYPE_NAME_AUTOCOMPLETE: "test-linux1804-64/opt-browser-screenshots-e10s",
   JOB_TYPE_NAMES: [
     "Mochitest Browser Screenshots",
-    "test-linux64/opt-mochitest-browser-screenshots-e10s",
-    "test-windows10-64/opt-mochitest-browser-screenshots-e10s",
-    "test-windows7-32/opt-mochitest-browser-screenshots-e10s",
-    "test-macosx64/opt-mochitest-browser-screenshots-e10s",
-    "test-linux64/opt-browser-screenshots-e10s",
+    "test-linux1804-64/opt-browser-screenshots-e10s",
+    "test-macosx1014-64-shippable/opt-browser-screenshots-e10s",
     "test-windows10-64/opt-browser-screenshots-e10s",
     "test-windows7-32/opt-browser-screenshots-e10s",
-    "test-macosx64/opt-browser-screenshots-e10s",
   ],
   RESULT: {
     SIMILAR: 0,
