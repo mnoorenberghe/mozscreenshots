@@ -13,7 +13,7 @@ from pytz import timezone
 
 import compare_screenshots
 from compare_screenshots import ComparisonResult, comparisonResultNames
-from fetch_screenshots import resultsets_for_date, resultset_response_for_push
+from fetch_screenshots import resultsets_for_date
 
 archive = os.getcwd()
 compare_url_format = "https://screenshots.mattn.ca/compare/?oldProject=%s&oldRev=%s&newProject=%s&newRev=%s"
@@ -51,7 +51,6 @@ def email_results(project, oldResultset, newResultset, comparison, known_inconsi
 
     for dir, results in comparison.iteritems():
         platform = os.path.basename(dir)
-        differences = ""
 
         nonsimilar = dict((key.replace(".png", ""), value) for key, value in results.iteritems()
                           if value["result"] != ComparisonResult.SIMILAR)
@@ -81,7 +80,7 @@ def email_results(project, oldResultset, newResultset, comparison, known_inconsi
             body += "{}  {}".format(row[0].ljust(imagenamecolumnwidth), row[1])
             if (len(row) == 3):
                 body += " ({})".format(row[2])
-            body +="\n"
+            body += "\n"
         body += "\n\n"
 
     if not difference_found:
@@ -107,6 +106,7 @@ def email_results(project, oldResultset, newResultset, comparison, known_inconsi
     # Delay before the next email so they get received in the correct order
     time.sleep(20)
 
+
 def matches_inconsistency(inconsistencies, platform, basename, result):
     for known in inconsistencies:
         if not known['platformRegex'].search(platform):
@@ -120,6 +120,7 @@ def matches_inconsistency(inconsistencies, platform, basename, result):
         return True
 
     return False
+
 
 # Load the known inconsistencies file
 known_inconsistencies_path = os.path.join(os.path.dirname(__file__), "..", "web", "known_inconsistencies.json")
