@@ -4,7 +4,6 @@
 
 import argparse
 import concurrent.futures as cf
-import json
 import logging
 import os
 import pprint
@@ -13,7 +12,7 @@ import slugid
 import sys
 import uuid
 
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from hashlib import sha512
 from requests_futures.sessions import FuturesSession
 from mozscreenshots import __version__
@@ -34,6 +33,7 @@ handler = logging.StreamHandler(sys.stderr)
 handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 log.addHandler(handler)
 
+
 def resultset_response_for_id(project, resultset_id):
     print 'Fetching resultset for id: %d' % resultset_id
     resultset_url = '%s/project/%s/push/%s/' % (TH_API, project, resultset_id)
@@ -50,6 +50,7 @@ def resultset_response_for_id(project, resultset_id):
     log.debug('resultset_response_for_id: %s' % pprint.pformat(json, depth=1))
     return json
 
+
 def resultset_response_for_push(project, rev):
     print 'Fetching resultset for revision: %s' % rev
     resultset_url = '%s/project/%s/push/?count=2&full=true&revision=%s' % (TH_API, project, rev)
@@ -64,6 +65,7 @@ def resultset_response_for_push(project, rev):
         return None
     log.debug('resultset_for_push: %s' % pprint.pformat(response['results'][0]))
     return response
+
 
 def jobs_for_resultset(project, resultset_id, job_type_name, job_type_symbol, job_group_name):
     print 'Fetching jobs for resultset: %d' % resultset_id
@@ -84,6 +86,7 @@ def jobs_for_resultset(project, resultset_id, job_type_name, job_type_symbol, jo
     log.debug('jobs_for_resultset: %s' % pprint.pformat(jobs))
     return jobs['results']
 
+
 def makedirs(path):
     try:
         os.makedirs(path)
@@ -92,12 +95,14 @@ def makedirs(path):
             log.error('Error creating directory: %s' % path)
             sys.exit(1)
 
+
 # From https://github.com/mozilla/treeherder/blob/fdc336ce265e8dfef0a1afb3c8a6c566bcf60679/treeherder/etl/job_loader.py#L26
 def task_and_retry_ids(job_guid):
     (decoded_task_id, retry_id) = job_guid.split('/')
     # As of slugid v2, slugid.encode() returns a string not bytestring under Python 3.
     slug_id = slugid.encode(uuid.UUID(decoded_task_id))
     return (slug_id, retry_id)
+
 
 def download_image_artifacts_for_job(project, job, dir_path):
     print 'Fetching artifact list for job: %d (%s)' % (job['id'], job['job_guid'])
@@ -109,7 +114,7 @@ def download_image_artifacts_for_job(project, job, dir_path):
     job_dir = os.path.join(dir_path, '%s-%s' % (job['platform'], job['id']))
     makedirs(job_dir)
 
-    session = FuturesSession(max_workers = 5) # TODO
+    session = FuturesSession(max_workers=5)  # TODO
     request_futures = {}
     for artifact in details['artifacts']:
         log.debug('artifact details: %s' % pprint.pformat(artifact))
@@ -143,6 +148,7 @@ def request_artifact(session, url, filepath):
     print
     return session.get(url)
 
+
 def handle_artifact_download(image, filepath):
     try:
         image.raise_for_status()
@@ -165,6 +171,7 @@ def handle_artifact_download(image, filepath):
         print 'Download FAILED: %s' % filepath
         log.error('%s: %s\n\t%s %s' % (filepath, image.content, e.errno, e.strerror))
 
+
 def nightly_revs_for_date(project, date):
     revs_url = '%s/namespaces/gecko.v2.%s.nightly.%s.revision' % (TC_INDEX_API, project, date.replace('-', '.'))
     log.debug(revs_url)
@@ -173,10 +180,11 @@ def nightly_revs_for_date(project, date):
     found_revs = set()
     for namespace in result['namespaces']:
         if namespace['name'] not in found_revs:
-            found_revs.add(namespace['name']);
+            found_revs.add(namespace['name'])
             log.debug('Found Nightly: %s' % (namespace['name'],))
 
     return found_revs
+
 
 def resultsets_for_date(project, date):
     date_obj = datetime.strptime(date, '%Y-%m-%d')
@@ -197,10 +205,12 @@ def resultsets_for_date(project, date):
 
     return resultsets
 
-def fetch_json(url, method = "get"):
+
+def fetch_json(url, method="get"):
     response = getattr(requests, method)(url, headers=DEFAULT_REQUEST_HEADERS, timeout=30)
     response.raise_for_status()
     return response.json()
+
 
 def run(args):
     resultsets = []
@@ -222,6 +232,7 @@ def run(args):
     for resultset in resultsets:
         run_for_resultset(args, resultset)
 
+
 def run_for_resultset(args, resultset):
     jobs = jobs_for_resultset(args.project, resultset['id'], args.job_type_name, args.job_type_symbol, args.job_group_name)
     if not jobs:
@@ -239,6 +250,7 @@ def run_for_resultset(args, resultset):
 
     return job_dirs
 
+
 def cli():
     parser = argparse.ArgumentParser(description='Fetch screenshots from automation')
 
@@ -249,7 +261,6 @@ def cli():
                           help='Date to fetch screenshots from')
     required.add_argument('-r', '--rev',
                           help='Revision to fetch screenshots from')
-
 
     parser.add_argument('--job-type-symbol', default='ss',
                         help='Treeherder symbol of the job to fetch from (aka. job_type_symbol) [Default="ss"]')
@@ -268,6 +279,7 @@ def cli():
     log.setLevel(getattr(logging, args.log_level))
 
     run(args)
+
 
 if __name__ == '__main__':
     cli()
