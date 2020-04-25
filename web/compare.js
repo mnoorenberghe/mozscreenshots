@@ -9,7 +9,7 @@ var Compare = {
   JOB_TYPE_NAMES: [
     "Mochitest Browser Screenshots",
     "test-linux1804-64/opt-browser-screenshots-e10s",
-    "test-macosx1014-64-shippable/opt-browser-screenshots-e10s",
+    // "test-macosx1014-64-shippable/opt-browser-screenshots-e10s", // Bug 1554821
     "test-windows10-64/opt-browser-screenshots-e10s",
     "test-windows7-32/opt-browser-screenshots-e10s",
   ],
