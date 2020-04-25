@@ -10,7 +10,9 @@ PACKAGE_VERSION = '0.6.0'
 desc = """Takes screenshots of different states of a Mozilla application"""
 
 deps = [
+    'bleach == 3.1.4',
     'mozrunner >= 5.0',
+    'pytz',
     'requests == 2.20.0',
     'requests-futures == 0.9.7',
     'slugid == 2.0.0',

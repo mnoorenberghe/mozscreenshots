@@ -18,8 +18,11 @@ from fetch_screenshots import resultsets_for_date
 archive = os.getcwd()
 compare_url_format = "https://screenshots.mattn.ca/compare/?oldProject=%s&oldRev=%s&newProject=%s&newRev=%s"
 project = "mozilla-central"
-base = datetime.date.today() - datetime.timedelta(days=1) # Skip current day so we don't send partial emails for in-progress pushes (e.g. linux one email and win in another).
+END_DAY = datetime.date.today()
 numdays = 7
+# Wait a minimum number of hours to reduce sending partial emails for
+# in-progress pushes (e.g. linux one email and win in another).
+MIN_TIME_SINCE_PUSH = datetime.timedelta(hours=3)
 timezone = timezone('US/Pacific')
 
 resultsets = []
@@ -133,11 +136,14 @@ with open(known_inconsistencies_path, 'r') as ki_file:
         known['nameRegexes'] = map(lambda pattern: re.compile(pattern), known['nameRegexes'])
 
 for offset in range(0, numdays):
-    d = base - datetime.timedelta(days=offset)
+    d = END_DAY - datetime.timedelta(days=offset)
     print d.isoformat()
     date_resultsets = resultsets_for_date(project, d.isoformat())
     for r in date_resultsets:
         if r['id'] in resultset_ids:
+            continue
+        if datetime.datetime.fromtimestamp(r['push_timestamp'], timezone) > datetime.datetime.now(timezone) - MIN_TIME_SINCE_PUSH:
+            # Give more time for the jobs to complete.
             continue
         resultset_ids.add(r['id'])
         resultsets.append(r)
