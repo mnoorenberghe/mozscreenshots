@@ -20,6 +20,7 @@ var Compare = {
     MISSING_BEFORE: 3,
     MISSING_AFTER: 4,
     KNOWN_INCONSISTENCY: 5,
+    NOT_COMPARED: 6,
   },
   TASKCLUSTER_API: "https://firefox-ci-tc.services.mozilla.com/api",
   TREEHERDER_API: "https://treeherder.mozilla.org/api",
@@ -37,11 +38,9 @@ var Compare = {
 
     // Load from URL params
     let params = new URLSearchParams(window.location.search.slice(1));
-    let missingParams = [];
     for (let param of ["oldProject", "oldRev", "newProject", "newRev"]) {
       let value = params.get(param);
       if (!value) {
-        missingParams.push(param);
         continue;
       }
       this.form[param].value = value.trim();
@@ -49,12 +48,8 @@ var Compare = {
 
     this.form["filter"].value = params.has("filter") ? params.get("filter") : "";
 
-    if (missingParams.length) {
-      this.form[missingParams[0]].focus();
-    } else {
-      if (this.form.checkValidity()) {
-        document.querySelector("form button[type='submit']").click();
-      }
+    if (this.form.reportValidity()) {
+      document.querySelector("form button[type='submit']").click();
     }
 
     this.filterChanged.call(this.form["hideSimilar"]);
@@ -194,7 +189,7 @@ var Compare = {
     return resultsetsXHR.response.results;
   },
 
-  compare(evt) {
+  async compare(evt) {
     console.info("compare");
     // TODO: cancel pending work if submitted again. Simple way is to not preventDefault
     evt.preventDefault();
@@ -202,6 +197,7 @@ var Compare = {
     document.querySelector("progress").hidden = false;
     this.updateURL();
 
+    // new* are optional when not comparing (just view results)
     this.oldProject = this.form["oldProject"].value.trim();
     this.newProject = this.form["newProject"].value.trim();
     this.oldRev = this.form["oldRev"].value.trim();
@@ -209,47 +205,54 @@ var Compare = {
 
     this.updatePushlogLink();
 
+    let isComparison = this.newProject && this.newRev;
+    document.getElementById("results").classList.toggle("comparison", isComparison);
+
     this.comparisonsByPlatform = new Map();
     this.resultsetsByID = new Map();
     this.screenshotsByJob = new Map();
 
-    Promise.all([
-      this.fetchResultset(this.oldProject, this.oldRev),
-      this.fetchResultset(this.newProject, this.newRev),
-    ]).then((resultsets) => {
+    try {
+      let resultsetPromises = [
+        this.fetchResultset(this.oldProject, this.oldRev)
+      ];
+      if (isComparison) {
+        resultsetPromises.push(this.fetchResultset(this.newProject, this.newRev));
+      }
+
       let promises = [];
-      for (let rs of resultsets) {
+      for (let rs of await Promise.all(resultsetPromises)) {
         let response = rs.response;
         let type = response.meta.revision.startsWith(this.oldRev)
-              && response.meta.repository == this.oldProject ? "old" : "new";
+            && response.meta.repository == this.oldProject ? "old" : "new";
         this.handleResultset(type, response);
         promises.push(this.fetchJobsForResultset(response));
       }
-      return Promise.all(promises);
-    })
-      .then(() => {
-        return this.fetchComparisons();
-      })
-      .then((xhrs) => {
-        // If an XHR returned null then the comparison likely hasn't been
-        // performed yet so fire off a comparison for the revs.
-        if (xhrs.some((xhr) => xhr.response === null)) {
-          this.updateDisplay();
-          return this.triggerComparisons()
-            .then(() => {
-              return this.fetchComparisons();
-            });
-        }
-        return null;
-      })
-      .then(() => {
+      await Promise.all(promises);
+
+      // If we don't have a new revision then we aren't doing a comparison,
+      // just showing one revision.
+      if (!this.newProject || !this.newRev) {
         this.updateDisplay();
-        document.querySelector("progress").hidden = true;
-      })
-      .catch((error) => {
-        document.querySelector("progress").hidden = true;
-        console.error(error);
-      });
+        return;
+      }
+
+      let xhrs = await this.fetchComparisons();
+
+      // If an XHR returned null then the comparison likely hasn't been
+      // performed yet so fire off a comparison for the revs.
+      if (xhrs.some((xhr) => xhr.response === null)) {
+        this.updateDisplay();
+        await this.triggerComparisons();
+        await this.fetchComparisons();
+      }
+
+      this.updateDisplay();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      document.querySelector("progress").hidden = true;
+    }
   },
 
   triggerComparisons() {
@@ -456,6 +459,10 @@ var Compare = {
         diffCol1.textContent = "Missing source image";
         diffCol2.remove();
         break;
+      case this.RESULT.NOT_COMPARED:
+        // Not a comparison, just viewing one rev.
+        row.classList.add("not_compared");
+        break;
       case this.RESULT.ERROR:
         diffCol1.textContent = "Error";
         // Fall through
@@ -474,7 +481,7 @@ var Compare = {
     let pushImagesMissingPrefix = (oldOrNew) => {
       let commitMessage = document.getElementById(oldOrNew + "Commit").querySelector("a").title;
       return this[oldOrNew + "Project"] == "try" && commitMessage.includes("MOZSCREENSHOTS_SETS=");
-    }
+    };
 
     // We want to be able to to compare the following:
     // "primaryUI_101_tabsOutsideTitlebar_twoPinnedWithOverflow_normal_allToolbars_darkLWT"
@@ -518,7 +525,7 @@ var Compare = {
         let rowClone = document.importNode(rowTemplate.content, true);
         let tds = rowClone.querySelectorAll("td");
 
-        let comp = comparisons[combo] || {};
+        let comp = comparisons[combo] || { result: this.RESULT.NOT_COMPARED };
         this.updateComparisonCell(tds[4], combo, platform, comp);
 
         var comboName = combo.replace(/\.png$/, "");
@@ -545,7 +552,8 @@ var Compare = {
         [counts[this.RESULT.DIFFERENT] - counts[this.RESULT.KNOWN_INCONSISTENCY], "different"],
         [counts[this.RESULT.KNOWN_INCONSISTENCY], "known inconsistencies"],
         [counts[this.RESULT.MISSING_AFTER] + counts[this.RESULT.MISSING_BEFORE], "missing"],
-        [counts[this.RESULT.ERROR], "errors"]
+        [counts[this.RESULT.ERROR], "errors"],
+        [counts[this.RESULT.NOT_COMPARED], "images not compared"]
       ];
       let summaryCounts = [];
       for (let [count, category] of summaryCategories) {

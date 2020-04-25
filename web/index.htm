@@ -44,10 +44,14 @@
           </tr>
           <tr>
             <th scope="row">New</th>
-            <td><input name="newProject" required list="projects" size="12"
+            <td><input name="newProject" list="projects" size="12"
                        pattern="[ ]*[a-z0-9][-.a-z0-9]+[ ]*"
+                       placeholder="(optional)"
                        title="Old project name (e.g. mozilla-central, try, etc.)"/></td>
-            <td><input name="newRev" required size="24" list="mcRevs" pattern="[ ]*[0-9a-f]{40}[ ]*" title="Full 40 character hexadecimal commit hash"/></td>
+            <td><input name="newRev" size="24" list="mcRevs"
+                       pattern="[ ]*[0-9a-f]{40}[ ]*"
+                       placeholder="(optional)"
+                       title="Full 40 character hexadecimal commit hash"/></td>
             <td id="newDate"></td>
             <td id="newCommit"><a></a></td>
           </tr>
@@ -77,15 +81,15 @@
     </form>
 
     <template id="osTableTemplate">
-      <details open>
+      <details>
         <summary>OS Name</summary>
         <table width="100%">
           <thead>
             <tr>
               <th>Combination</th>
               <th>Base Image</th>
-              <th>New Image</th>
-              <th colspan="2">Difference (px)</th>
+              <th class="newColumn">New Image</th>
+              <th class="diffCell" colspan="2">Difference (px)</th>
             </tr>
           </thead>
           <tbody>
@@ -98,7 +102,7 @@
       <tr>
         <td></td>
         <td><a class="oldImage" target="_blank">Base</a></td>
-        <td><a class="newImage" target="_blank">New</a></td>
+        <td><a class="newImage newColumn" target="_blank">New</a></td>
         <td class="diffCell"><a class="diffLink" target="_blank"></a></td>
         <td class="diffCell">?</td>
       </tr>

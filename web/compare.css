@@ -125,6 +125,8 @@ tr.known_inconsistency > .diffCell {
 #results.hideMissing tr.missing_before,
 #results.hideKnownInconsistencies.hideSimilar tr.known_inconsistency.similar,
 #results.hideKnownInconsistencies tr.known_inconsistency:not(.similar),
+#results:not(.comparison) .diffCell,
+#results:not(.comparison) .newColumn,
 #results.hideSimilar tr.similar:not(.known_inconsistency) {
   display: none;
 }
