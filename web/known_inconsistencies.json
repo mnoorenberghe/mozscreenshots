@@ -66,22 +66,10 @@
     "platformRegex": "^osx-10-10$"
   },
   {
-    "reason": "_localFile URL changes on TC",
-    "nameRegexes": ["_localFile"],
-    "pixelRegex": "",
-    "platformRegex": ""
-  },
-  {
     "reason": "Bug 1414741 - Control center shadow is intermittently different.",
     "nameRegexes": ["^controlCenter_"],
     "pixelRegex": "^(4732|4740|5028|5042|5050|5214|5215|5537|5338|5502|5503|552.|5662|580.|5824|5968|5969|5970|5986|6742|6743|6860|6861|7052|7053)$",
     "platformRegex": "^osx-10-10$"
-  },
-  {
-    "reason": "Windows 10 - Console in the background is at an intermittently different position.",
-    "nameRegexes": ["^primaryUI_.*_tabsOutsideTitlebar"],
-    "pixelRegex": "^170$",
-    "platformRegex": "^windows10-64$"
   },
   {
     "reason": "Bug 1414757 - URL bar text is intermittently not scrolled to the beginning",
@@ -138,35 +126,10 @@
     "platformRegex": "^windows10-64$"
   },
   {
-    "reason": "Windows taskbar not cropped out",
-    "nameRegexes": [
-      "^devtools_",
-      "^preferences_",
-      "^primaryUI_"
-    ],
-    "pixelRegex": "^(2100|2103)$",
-    "platformRegex": "^windows7-32$"
-  },
-  {
     "reason": "top-left border-radius of new tab search box",
     "nameRegexes": ["_tabsOutsideTitlebar_fiveTabs_"],
     "pixelRegex": "^3$",
     "platformRegex": "^windows7-32$"
-  },
-  {
-    "reason": "Windows console not properly cropped out",
-    "nameRegexes": ["^primaryUI_"],
-    "pixelRegex": "^(107|260)$",
-    "platformRegex": "^windows10-64$"
-  },
-  {
-    "reason": "New tab page hover help icons",
-    "nameRegexes": [
-      "_fiveTabs_",
-      "_twoPinnedWithOverflow_"
-    ],
-    "pixelRegex": "^(116|402|525)$",
-    "platformRegex": "^linux64$"
   },
   {
     "reason": "New tab page onboarding speech bubble font weight",
