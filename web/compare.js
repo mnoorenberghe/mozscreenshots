@@ -50,6 +50,8 @@ var Compare = {
 
     if (this.form.checkValidity()) {
       document.querySelector("form button[type='submit']").click();
+    } else {
+      document.getElementById("intro").hidden = false;
     }
 
     this.filterChanged.call(this.form["hideSimilar"]);
@@ -155,7 +157,8 @@ var Compare = {
   async populateIntro() {
     // TODO: set cache headers on server
     try {
-      let response = await fetch("recent_data.json");
+      // Hard-code the server address since this isn't part of the local dev. env.
+      let response = await fetch("https://screenshots.mattn.ca/compare/recent_data.json");
       let json = await response.json();
       document.getElementById("recentImages").href = `?oldProject=mozilla-central&oldRev=${json.last_compared_central_new}`;
       document.getElementById("recentComparison").href = `?oldProject=mozilla-central&oldRev=${json.last_compared_central_old}&newProject=mozilla-central&newRev=${json.last_compared_central_new}`;

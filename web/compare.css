@@ -88,6 +88,8 @@ legend {
 
 #results table {
   border-collapse: collapse;
+  margin: 0 8px;
+  width: calc(100% - 16px);
 }
 
 summary {
@@ -130,7 +132,7 @@ summary .similar:first-child:last-child {
 }
 
 tr:target {
-  background: #00feff;
+  background: #00feff80;
 }
 
 /* Highlight the row where the lightbox left off */
