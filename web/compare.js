@@ -49,7 +49,7 @@ var Compare = {
     this.form["filter"].value = params.has("filter") ? params.get("filter") : "";
 
     if (this.form.checkValidity()) {
-      document.querySelector("form button[type='submit']").click();
+      document.getElementById("hiddenSubmit").click();
     } else {
       document.getElementById("intro").hidden = false;
     }
@@ -83,9 +83,7 @@ var Compare = {
 
   applyFragment() {
     if (window.location.hash) {
-      //history.replaceState(null, "", window.location.hash);
-      console.info("applyFragment");
-          window.location.hash = window.location.hash;
+      window.location.hash = window.location.hash;
     }
   },
 
@@ -138,12 +136,13 @@ var Compare = {
 
   async fetchKnownInconsistencies() {
     let xhr = await this.getJSON("known_inconsistencies.json");
-    xhr.response.forEach(known => {
+    let response = xhr.response;
+    for (let known of response) {
       known.platformRegex = new RegExp(known.platformRegex);
       known.pixelRegex = new RegExp(known.pixelRegex);
       known.nameRegexes = known.nameRegexes.map(pattern => new RegExp(pattern));
-    });
-    this.knownInconsistencies = xhr.response;
+    }
+    this.knownInconsistencies = response;
   },
 
   async populateSuggestedRevisions() {
@@ -232,7 +231,8 @@ var Compare = {
 
     document.querySelector("progress").hidden = false;
     document.getElementById("intro").hidden = true;
-    this.updateURL();
+    // Don't add to session history when the form was auto-submitted due to query params.
+    this.updateURL({ replace: evt.submitter?.id == "hiddenSubmit" });
 
     // new* are optional when not comparing (just view results)
     this.oldProject = this.form["oldProject"].value.trim();
@@ -439,7 +439,8 @@ var Compare = {
       xhr.addEventListener("error", reject);
       xhr.addEventListener("abort", reject);
       xhr.open("GET", url, true);
-      xhr.setRequestHeader("Accept", "application/json");
+      // This will prevent the rel="preload" from working due to the preload not using this accept header
+      //xhr.setRequestHeader("Accept", "application/json");
       xhr.responseType = "json";
       xhr.send();
     });

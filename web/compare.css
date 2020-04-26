@@ -207,6 +207,22 @@ tr:not(.known_inconsistency) > .diffCell .knownInconsistencyIcon,
 
 /* Lightbox styles */
 
+/* The next three rulesets workaround a flicker in the .gslide-description max-width calculation */
+.glightbox-container .ginner-container {
+  display: grid !important;
+  grid-template: "slide" "desc";
+  grid-template-rows: 1fr auto;
+  grid-template-columns: max-content;
+}
+
+.glightbox-clean .gslide-media, .glightbox-modern .gslide-media {
+  grid-area: slide;
+}
+
+.glightbox-clean .gslide-description, .glightbox-modern .gslide-description {
+  grid-area: desc;
+}
+
 .gslide-title {
   word-break: break-word;
 }

@@ -8,7 +8,7 @@
     <title>Screenshot Comparison</title>
     <link rel="stylesheet" href="compare.css?v=20200426"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
-    <link rel="preload" href="known_inconsistencies.json" as="fetch"/>
+    <link rel="preload" href="known_inconsistencies.json" as="fetch" crossorigin="anonymous" type="application/json"/>
     <link rel="shortcut icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
   </head>
   <body>
@@ -66,6 +66,7 @@
             <td></td>
             <td colspan="2">
               <button type="submit" style="width:100%">Compare Revisions</button>
+              <button id="hiddenSubmit" type="submit" style="display:none"><!-- hidden for automated submissions --></button>
             </td>
             <td>
               <progress indeterminate hidden></progress>
@@ -73,6 +74,7 @@
             </td>
             <td colspan="2">
               <label>Filter: <input name="filter" type="search"
+                                    size="23"
                                     placeholder="Case-Insensitive RegExp."
                                     title="Case-insensitive regular expression filter matching on combination names (e.g. linux32_preferences_06_prefsSecurity)"/></label>
               <fieldset>
