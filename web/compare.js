@@ -117,7 +117,19 @@ var Compare = {
 
   updateURL(args = {}) {
     try {
-      window.history[args.replace ? "replaceState" : "pushState"]({}, document.title, this.generateURL());
+      let url = this.generateURL();
+      let {searchParams} = url;
+      let title = document.title;
+      let oldRev = searchParams.get("oldRev");
+      if (!oldRev || !searchParams.get("oldProject")) {
+        title = "Screenshot Comparison";
+      } else if (searchParams.get("newRev") && searchParams.get("newProject")) {
+        title = `Comparing ${oldRev.substring(0, 8)} and ${searchParams.get("oldRev").substring(0, 8)}`;
+      } else {
+        title = `Screenshots for ${oldRev.substring(0, 8)} on ${searchParams.get("oldProject")}`;
+      }
+      document.title = title;
+      window.history[args.replace ? "replaceState" : "pushState"]({}, title, url);
     } catch (ex) {
       alert("The page URL couldn't be updated likely because your browser doesn't support URL.searchParams :(");
       console.error(ex);
