@@ -4,7 +4,7 @@
 
 import "https://cdn.jsdelivr.net/gh/mnoorenberghe/glightbox@patch-1/dist/js/glightbox.min.js";
 
-const IMAGE_LINK_SELECTORS = ".oldImage, .newImage, .diffLink";
+const IMAGE_LINK_SELECTORS = ".oldImage[href], .newImage[href], .diffLink[href]";
 
 let lightbox = null;
 

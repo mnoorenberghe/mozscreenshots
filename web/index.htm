@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8">
     <title>Screenshot comparison</title>
-    <link rel="stylesheet" href="compare.css"/>
+    <link rel="stylesheet" href="compare.css?v=20200426"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
     <link rel="preload" href="known_inconsistencies.json" as="fetch"/>
     <link rel="shortcut icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
@@ -110,10 +110,12 @@
       </tr>
     </template>
 
-    <div id="results" class="hideSimilar hideKnownInconsistencies">
-    </div>
+    <!-- Make sure this element stays empty by default for :empty -->
+    <div id="results" class="hideSimilar hideKnownInconsistencies"></div>
 
-    <script type="module" src="compare.js?v=20200425"></script>
-    <script type="module" src="lightbox.js?v=20200425"></script>
+    <p id="intro">Browse <a id="recentImages">recent images from mozilla-central</a> or <a id="recentComparison">a recent comparison</a></p>
+
+    <script type="module" src="compare.js?v=20200426"></script>
+    <script type="module" src="lightbox.js?v=20200426"></script>
   </body>
 </html>

@@ -9,8 +9,12 @@ html {
 
 a {
   text-decoration: none;
+}
+
+a:link {
   color: #0060df;
 }
+
 /* Include :link with :hover so we don't underline with no @href */
 a:link:hover,
 a:active {
@@ -154,6 +158,7 @@ tr.known_inconsistency > .diffCell {
 #results.hideKnownInconsistencies tr.known_inconsistency:not(.similar),
 #results:not(.comparison) .diffCell,
 #results:not(.comparison) .newColumn,
+#results:not(:empty) ~ #intro,
 #results.hideSimilar tr.similar:not(.known_inconsistency) {
   display: none;
 }

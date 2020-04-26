@@ -48,7 +48,7 @@ var Compare = {
 
     this.form["filter"].value = params.has("filter") ? params.get("filter") : "";
 
-    if (this.form.reportValidity()) {
+    if (this.form.checkValidity()) {
       document.querySelector("form button[type='submit']").click();
     }
 
@@ -63,6 +63,7 @@ var Compare = {
 
     this.fetchKnownInconsistencies(); // TODO: do before submission
     this.populateSuggestedRevisions();
+    this.populateIntro();
   },
 
   filterChanged() {
@@ -148,6 +149,18 @@ var Compare = {
       let option = new Option(dateFormat.format(pushDate) + " (m-c: " + resultset.revision + ")",
                               resultset.revision);
       mcRevs.appendChild(option);
+    }
+  },
+
+  async populateIntro() {
+    // TODO: set cache headers on server
+    try {
+      let response = await fetch("recent_data.json");
+      let json = await response.json();
+      document.getElementById("recentImages").href = `?oldProject=mozilla-central&oldRev=${json.last_compared_central_new}`;
+      document.getElementById("recentComparison").href = `?oldProject=mozilla-central&oldRev=${json.last_compared_central_old}&newProject=mozilla-central&newRev=${json.last_compared_central_new}`;
+    } catch (ex) {
+      console.error(ex);
     }
   },
 

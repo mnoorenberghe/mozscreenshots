@@ -16,6 +16,8 @@ from compare_screenshots import ComparisonResult, comparisonResultNames
 from fetch_screenshots import resultsets_for_date
 
 archive = os.getcwd()
+RECENT_DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "web", "recent_data.json")
+VIEW_URL_FORMAT = "https://screenshots.mattn.ca/compare/?oldProject=%s&oldRev=%s"
 compare_url_format = "https://screenshots.mattn.ca/compare/?oldProject=%s&oldRev=%s&newProject=%s&newRev=%s"
 project = "mozilla-central"
 END_DAY = datetime.date.today()
@@ -27,6 +29,7 @@ timezone = timezone('US/Pacific')
 
 resultsets = []
 resultset_ids = set()
+recent_data = {}
 
 
 def email_results(project, oldResultset, newResultset, comparison, known_inconsistencies):
@@ -89,6 +92,9 @@ def email_results(project, oldResultset, newResultset, comparison, known_inconsi
     if not difference_found:
         print "\nNo differences found\n\n"
         return
+
+    recent_data['last_compared_central_old'] = oldRev
+    recent_data['last_compared_central_new'] = newRev
 
     print "====\n"
     print body
@@ -181,3 +187,9 @@ for i, resultset in enumerate(sorted_resultsets):
     lastRev = newRev
 
     email_results(project, oldResultset, resultset, comparison, known_inconsistencies)
+
+
+# Write to a file so the default web view can link to these as examples.
+if recent_data['last_compared_central_old'] and recent_data['last_compared_central_new']:
+    with open(RECENT_DATA_PATH, 'w') as outfile:
+        json.dump(recent_data, outfile)
