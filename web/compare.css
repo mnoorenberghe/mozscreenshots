@@ -8,6 +8,10 @@ html {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+th {
+  font-weight: 500; /* semi-bold */
+}
+
 a {
   text-decoration: none;
 }
@@ -33,22 +37,39 @@ body {
 }
 
 #chooser, #results {
-  margin: 10px;
+  padding: 8px;
+}
+
+#results {
+  padding-top: 0;
 }
 
 #chooser {
   background-color: inherit;
-  font-size: 0.9em;
+  font-size: 0.85em;
   position: sticky;
-  top: -17px; /* TODO */
+  top: -2.1em;
   z-index: 1;
+}
+
+#chooser tbody input {
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 #oldCommit, #newCommit {
   max-width: 45vw;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  display: -webkit-inline-box;
+  -webkit-box-orient: vertical;
+}
+
+progress + span {
+  font-size: 0.8em;
+  opacity: 0.9;
 }
 
 progress:not([hidden]) + span {
@@ -73,11 +94,13 @@ summary {
   background-color: #f9f9fa;
   cursor: pointer;
   position: sticky;
-  top: 70px; /* TODO */
+  top: 6em;
 }
 
 summary > h2 {
   display: inline-block;
+  font-size: 1.25em;
+  font-weight: 500;
   margin-bottom: 0.5em;
   margin-top: 0.8em;
 }
@@ -91,9 +114,9 @@ summary .different {
   color: #ff0039;
 }
 
-/* only similar for the platform */
+/* Only if the whole platform is similar */
 summary .similar:first-child:last-child {
-  color: green;
+  color: #058b00;
 }
 
 #oldDate, #oldCommit,
@@ -122,8 +145,10 @@ tr:target {
 }
 
 tr.similar > .diffCell {
-  background: green;
+  /*
+  background: #058b00;
   color: white;
+*/
   text-align: right;
 }
 
@@ -138,14 +163,32 @@ tr.missing_before > .diffCell {
 }
 
 tr.different > .diffCell {
-  background: #ff9400a3;
+  background: #b5007f;
+  color: white;
   text-align: right;
+}
+
+tr.different > .diffCell a:link {
+  color: white;
+}
+
+tr.different > .diffCell a:visited {
+  color: #e3e3e3;
 }
 
 /* Must be below the equivalent tr.different since they are both applied */
 tr.known_inconsistency > .diffCell {
   background: lightblue;
+  color: #0c0c0d;
   text-align: right;
+}
+
+tr.known_inconsistency > .diffCell a:link {
+  color: inherit;
+}
+
+tr.known_inconsistency > .diffCell a:visited {
+  color: inherit;
 }
 
 .diffCell:last-child {

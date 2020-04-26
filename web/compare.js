@@ -216,6 +216,7 @@ var Compare = {
     evt.preventDefault();
 
     document.querySelector("progress").hidden = false;
+    document.getElementById("intro").hidden = true;
     this.updateURL();
 
     // new* are optional when not comparing (just view results)
@@ -336,7 +337,6 @@ var Compare = {
 
     let dateOptions = {
       hour12: false,
-      year: "numeric",
       month: "short",
       day: "numeric",
       hour: "numeric",
@@ -439,7 +439,7 @@ var Compare = {
     switch (comparison.result) {
       case this.RESULT.SIMILAR:
         row.classList.add("similar");
-        diffCol1.textContent = comparison.difference;
+        diffCol1.textContent = comparison.difference == "0" ? "None" : comparison.difference + "px";
         diffCol1.colSpan = 2;
         diffCol2.remove();
         break;
@@ -458,8 +458,8 @@ var Compare = {
 	}
 
         row.classList.add("different");
-        diffCol2.textContent = comparison.difference;
-        diffLink.textContent = "Compare";
+        diffCol2.textContent = comparison.difference + "px";
+        diffLink.textContent = "";
         diffLink.href = `https://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/`
           + `${this.newProject}/${this.newRev}/${platform}/${image}`;
         break;
@@ -549,9 +549,10 @@ var Compare = {
         let comp = comparisons[combo] || { result: this.RESULT.NOT_COMPARED };
         this.updateComparisonCell(tds[4], combo, platform, comp);
 
+        // Add zero-width space to allow breaking:
         let comboName = combo.replace(/\.png$/, "");
         let nameLink = tds[0].firstElementChild;
-        nameLink.textContent = comboName;
+        nameLink.textContent = comboName.replace(/_/g, "_​");
 
         let id = platform + "_" + comboName;
         nameLink.href = "#" + id;
