@@ -78,6 +78,14 @@ var Compare = {
     }
   },
 
+  applyFragment() {
+    if (window.location.hash) {
+      //history.replaceState(null, "", window.location.hash);
+      console.info("applyFragment");
+          window.location.hash = window.location.hash;
+    }
+  },
+
   updatePushlogLink() {
     var pushlog = document.getElementById("pushlog");
     if (this.oldProject == this.newProject) {
@@ -528,10 +536,13 @@ var Compare = {
         let comp = comparisons[combo] || { result: this.RESULT.NOT_COMPARED };
         this.updateComparisonCell(tds[4], combo, platform, comp);
 
-        var comboName = combo.replace(/\.png$/, "");
-        tds[0].textContent = comboName;
+        let comboName = combo.replace(/\.png$/, "");
+        let nameLink = tds[0].firstElementChild;
+        nameLink.textContent = comboName;
 
-        rowClone.querySelector("tr").id = platform + "_" + comboName;
+        let id = platform + "_" + comboName;
+        nameLink.href = "#" + id;
+        rowClone.querySelector("tr").id = id;
         for (let job of jobs) {
           let url = this.screenshotsByJob.get(job).get(combo);
           if (!url) {
@@ -577,6 +588,7 @@ var Compare = {
       results.appendChild(osClone);
     }
     this.applyRegexFilter();
+    this.applyFragment();
   },
 
 };

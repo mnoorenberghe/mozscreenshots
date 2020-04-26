@@ -7,6 +7,7 @@
     <meta charset="utf-8">
     <title>Screenshot comparison</title>
     <link rel="stylesheet" href="compare.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
     <link rel="preload" href="known_inconsistencies.json" as="fetch"/>
     <link rel="shortcut icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
   </head>
@@ -67,7 +68,7 @@
               <span>(may take several minutes)</span>
             </td>
             <td colspan="2">
-              <label>Filter: <input name="filter" title="Case-insensitive regular expression filter matching on combination names (e.g. linux32_preferences_06_prefsSecurity)"/></label>
+              <label>Filter: <input name="filter" type="search" title="Case-insensitive regular expression filter matching on combination names (e.g. linux32_preferences_06_prefsSecurity)"/></label>
               <fieldset>
                 <legend>Hide:</legend>
                 <label><input type="checkbox" name="hideSimilar" value="1" checked />similar</label>
@@ -81,7 +82,7 @@
     </form>
 
     <template id="osTableTemplate">
-      <details>
+      <details open>
         <summary>OS Name</summary>
         <table width="100%">
           <thead>
@@ -100,9 +101,10 @@
 
     <template id="screenshotRowTemplate">
       <tr>
-        <td></td>
+        <td><a></a></td>
+        <!-- Note: navigation code assumes that image links have a single class -->
         <td><a class="oldImage" target="_blank">Base</a></td>
-        <td><a class="newImage newColumn" target="_blank">New</a></td>
+        <td class="newColumn"><a class="newImage" target="_blank">New</a></td>
         <td class="diffCell"><a class="diffLink" target="_blank"></a></td>
         <td class="diffCell">?</td>
       </tr>
@@ -111,6 +113,7 @@
     <div id="results" class="hideSimilar hideKnownInconsistencies">
     </div>
 
-    <script type="module" src="compare.js?v=20200404"></script>
+    <script type="module" src="compare.js?v=20200425"></script>
+    <script type="module" src="lightbox.js?v=20200425"></script>
   </body>
 </html>
