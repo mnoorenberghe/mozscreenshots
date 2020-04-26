@@ -23,7 +23,7 @@ export class Lightbox {
       return;
     }
 
-    switch (event.code) {
+    switch (event.key) {
       case "ArrowDown":
       case "ArrowUp": {
         let offset = event.code == "ArrowDown" ? 1 : -1;
@@ -41,6 +41,17 @@ export class Lightbox {
         lightbox.close();
 
         Lightbox.showForRow(nextVisibleOfType);
+        break;
+      }
+      case "f": {
+        if (!lightbox) {
+          return;
+        }
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        } else {
+          document.documentElement.requestFullscreen();
+        }
         break;
       }
       default: {
@@ -86,7 +97,7 @@ export class Lightbox {
       },
       get description() {
         return parentElement.closest("details").querySelector("summary h2").textContent +
-          ` / ${description} <button class="fullScreenButton">Fullscreen</button>`;
+          ` / ${description} <button class="fullScreenButton" title="(f)">Fullscreen</button>`;
       },
       link,
     };
