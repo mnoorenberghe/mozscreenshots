@@ -5,6 +5,7 @@
 html {
   /* Offset anchors/fragments so they don't appear under the sticky header */
   scroll-padding-top: 200px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 a {
