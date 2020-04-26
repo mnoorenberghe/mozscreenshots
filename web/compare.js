@@ -430,18 +430,15 @@ var Compare = {
     });
   },
 
-  updateComparisonCell(diffCol2, image, platform, comparison) {
-    let row = diffCol2.parentElement;
-    let diffCol1 = diffCol2.previousElementSibling;
-    let diffLink = diffCol1.querySelector(".diffLink");
+  updateComparisonCell(diffCol, image, platform, comparison) {
+    let row = diffCol.parentElement;
+    let diffLink = diffCol.querySelector(".diffLink");
     let basename = image.replace(/\.png$/, "");
 
     switch (comparison.result) {
       case this.RESULT.SIMILAR:
         row.classList.add("similar");
-        diffCol1.textContent = comparison.difference == "0" ? "None" : comparison.difference + "px";
-        diffCol1.colSpan = 2;
-        diffCol2.remove();
+        diffCol.textContent = comparison.difference == "0" ? "None" : comparison.difference + "px";
         break;
       case this.RESULT.DIFFERENT:
         for (let known of this.knownInconsistencies) {
@@ -458,8 +455,7 @@ var Compare = {
 	}
 
         row.classList.add("different");
-        diffCol2.textContent = comparison.difference + "px";
-        diffLink.textContent = "";
+        diffLink.textContent = comparison.difference + "px";
         diffLink.href = `https://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/`
           + `${this.newProject}/${this.newRev}/${platform}/${image}`;
         break;
@@ -476,23 +472,19 @@ var Compare = {
         if (className) {
           row.classList.add(className);
         }
-        diffCol1.colSpan = 2;
-        diffCol1.textContent = "Missing source image";
-        diffCol2.remove();
+        diffCol.textContent = "Missing source image";
         break;
       case this.RESULT.NOT_COMPARED:
         // Not a comparison, just viewing one rev.
         row.classList.add("not_compared");
         break;
       case this.RESULT.ERROR:
-        diffCol1.textContent = "Error";
+        diffCol.textContent = "Error";
         // Fall through
       default:
         if (!("result" in comparison)) {
-          diffCol1.textContent = "No results";
+          diffCol.textContent = "No results";
         }
-        diffCol1.colSpan = 2;
-        diffCol2.remove();
         row.classList.add("error");
         break;
     }
@@ -547,7 +539,7 @@ var Compare = {
         let tds = rowClone.querySelectorAll("td");
 
         let comp = comparisons[combo] || { result: this.RESULT.NOT_COMPARED };
-        this.updateComparisonCell(tds[4], combo, platform, comp);
+        this.updateComparisonCell(tds[3], combo, platform, comp);
 
         // Add zero-width space to allow breaking:
         let comboName = combo.replace(/\.png$/, "");

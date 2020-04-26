@@ -145,21 +145,19 @@ tr:target {
 }
 
 tr.similar > .diffCell {
-  /*
   background: #058b00;
   color: white;
-*/
   text-align: right;
 }
 
 tr.error > .diffCell {
-  background: red;
+  background: #d70022;
   color: white;
 }
 
 tr.missing_after > .diffCell,
 tr.missing_before > .diffCell {
-  background: yellow;
+  background: #ffe900;
 }
 
 tr.different > .diffCell {
@@ -168,8 +166,8 @@ tr.different > .diffCell {
   text-align: right;
 }
 
-tr.different > .diffCell a:link {
-  color: white;
+.diffCell a:link {
+  color: inherit;
 }
 
 tr.different > .diffCell a:visited {
@@ -183,16 +181,13 @@ tr.known_inconsistency > .diffCell {
   text-align: right;
 }
 
-tr.known_inconsistency > .diffCell a:link {
-  color: inherit;
-}
-
 tr.known_inconsistency > .diffCell a:visited {
   color: inherit;
 }
 
-.diffCell:last-child {
-  min-width: 5ex;
+.knownInconsistencyIcon {
+  vertical-align: super;
+  width: 0.7em;
 }
 
 .textMismatch,
@@ -200,6 +195,7 @@ tr.known_inconsistency > .diffCell a:visited {
 #results.hideMissing tr.missing_before,
 #results.hideKnownInconsistencies.hideSimilar tr.known_inconsistency.similar,
 #results.hideKnownInconsistencies tr.known_inconsistency:not(.similar),
+tr:not(.known_inconsistency) > .diffCell .knownInconsistencyIcon,
 #results:not(.comparison) .diffCell,
 #results:not(.comparison) .newColumn,
 #results:not(:empty) ~ #intro,
