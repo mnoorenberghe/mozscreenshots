@@ -169,3 +169,11 @@ tr.known_inconsistency > .diffCell {
 .gloader {
   display: none !important;
 }
+
+.fullScreenButton {
+  float: right;
+}
+
+:root:fullscreen .fullScreenButton {
+  display: none;
+}

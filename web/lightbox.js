@@ -14,7 +14,7 @@ let lastViewedLink = null;
 
 export class Lightbox {
   static init() {
-    document.getElementById("results").addEventListener("click", Lightbox.onResultClick);
+    window.addEventListener("click", Lightbox.onClick);
     window.addEventListener("keydown", Lightbox.onKeyDown);
   }
 
@@ -52,7 +52,12 @@ export class Lightbox {
     event.preventDefault();
   }
 
-  static onResultClick(event) {
+  static onClick(event) {
+    if (event.target.matches(".fullScreenButton")) {
+      document.documentElement.requestFullscreen();
+      return;
+    }
+
     if (!event.target.matches(IMAGE_LINK_SELECTORS)) {
       return;
     }
@@ -81,7 +86,7 @@ export class Lightbox {
       },
       get description() {
         return parentElement.closest("details").querySelector("summary h2").textContent +
-          ` / ${description}`;
+          ` / ${description} <button class="fullScreenButton">Fullscreen</button>`;
       },
       link,
     };
@@ -107,10 +112,10 @@ export class Lightbox {
         let linkIndex = lightbox.getActiveSlideIndex();
         let activeLink = lightbox.elements[linkIndex].link;
         lastViewedLink = activeLink;
+        history.replaceState(null, "", "#" + activeLink.closest("tr").id);
       },
       onClose() {
         lightbox = null;
-        history.replaceState(null, "", "#" + lastViewedLink.closest("tr").id);
         // TODO: this will happen when navigating vertically too since we close and re-open.
         lastViewedLink.focus();
       },
