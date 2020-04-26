@@ -190,6 +190,6 @@ for i, resultset in enumerate(sorted_resultsets):
 
 
 # Write to a file so the default web view can link to these as examples.
-if recent_data['last_compared_central_old'] and recent_data['last_compared_central_new']:
+if 'last_compared_central_old' in recent_data and 'last_compared_central_new' in recent_data:
     with open(RECENT_DATA_PATH, 'w') as outfile:
         json.dump(recent_data, outfile)
