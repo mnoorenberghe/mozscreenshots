@@ -214,7 +214,7 @@ tr:not(.known_inconsistency) > .diffCell .knownInconsistencyIcon,
   display: grid !important;
   grid-template: "slide" "desc";
   grid-template-rows: 1fr auto;
-  grid-template-columns: max-content;
+  grid-template-columns: minmax(min-content, auto);
 }
 
 .glightbox-clean .gslide-media, .glightbox-modern .gslide-media {
