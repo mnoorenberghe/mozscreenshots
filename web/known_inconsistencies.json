@@ -132,6 +132,18 @@
     "platformRegex": "^windows7-32$"
   },
   {
+    "reason": "top-right border-radius of new tab blue search icon on Amazon",
+    "nameRegexes": ["_fiveTabs_"],
+    "pixelRegex": "^5$",
+    "platformRegex": "^windows7-32$"
+  },
+  {
+    "reason": "border-radius of new tab blue search icon on Amazon",
+    "nameRegexes": ["_fiveTabs_"],
+    "pixelRegex": "^21$",
+    "platformRegex": "^windows10-64$"
+  },
+  {
     "reason": "New tab page onboarding speech bubble font weight",
     "nameRegexes": ["^primaryUI_"],
     "pixelRegex": "^1171$",
@@ -168,5 +180,39 @@
     ],
     "pixelRegex": "^7$",
     "platformRegex": "^linux64$"
+  },
+  {
+    "reason": "Right side of the search engine dropdown",
+    "nameRegexes": ["^preferences_04_prefsSearch$"],
+    "pixelRegex": "^1$",
+    "platformRegex": "^windows10-64$"
+  },
+  {
+    "reason": "Separate pixels on the bottom-border of the toolbox (Win10)",
+    "nameRegexes": [
+      "^primaryUI_111_tabsInTitlebar_twoPinnedWithOverflow_maximized_onlyNavBar_noLWT_touchDensity$",
+      "^primaryUI_127_tabsInTitlebar_twoPinnedWithOverflow_normal_onlyNavBar_noLWT_compactDensity$"
+    ],
+    "pixelRegex": "^1$",
+    "platformRegex": "^windows10-64$"
+  },
+  {
+    "reason": "Separate pixels on the bottom-border of the toolbox (Win7)",
+    "nameRegexes": [
+      "^primaryUI_133_tabsInTitlebar_twoPinnedWithOverflow_normal_onlyNavBar_compactDark_compactDensity$",
+      "^primaryUI_279_tabsOutsideTitlebar_twoPinnedWithOverflow_maximized_onlyNavBar_compactDark_touchDensity$",
+      "^primaryUI_315_tabsOutsideTitlebar_twoPinnedWithOverflow_fullScreen_onlyNavBar_compactDark_touchDensity"
+    ],
+    "pixelRegex": "^1$",
+    "platformRegex": "^windows7-32$"
+  },
+  {
+    "reason": "Separate pixels on the bottom-border of the toolbox (linux1804-64)",
+    "nameRegexes": [
+      "primaryUI_291_tabsOutsideTitlebar_twoPinnedWithOverflow_normal_onlyNavBar_noLWT_touchDensity",
+      "primaryUI_309_tabsOutsideTitlebar_twoPinnedWithOverflow_fullScreen_onlyNavBar_noLWT_touchDensity"
+    ],
+    "pixelRegex": "^4$",
+    "platformRegex": "^linux1804-64$"
   }
 ]

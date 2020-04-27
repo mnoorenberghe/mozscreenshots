@@ -133,6 +133,8 @@ summary .similar:first-child:last-child {
 
 tr:target {
   background: #00feff80;
+  /* Force the permalink fragment row to be visible since we don't add all filters to the URL */
+  display: table-row !important;
 }
 
 /* Highlight the row where the lightbox left off */
