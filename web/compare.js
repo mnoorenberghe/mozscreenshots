@@ -75,7 +75,8 @@ var Compare = {
   },
 
   applyRegexFilter() {
-    let filterRegexp = new RegExp((this.form["filter"].value), "i");
+    // Strip zero-width spaces from search query:
+    let filterRegexp = new RegExp((this.form["filter"].value.replace(/​/g, "")), "i");
     for (var row of document.querySelectorAll("#results > details > table > tbody > tr")) {
       row.classList.toggle("textMismatch", row.id.search(filterRegexp) == -1);
     }

@@ -140,7 +140,7 @@
   {
     "reason": "border-radius of new tab blue search icon on Amazon",
     "nameRegexes": ["_fiveTabs_"],
-    "pixelRegex": "^21$",
+    "pixelRegex": "^16|21$",
     "platformRegex": "^windows10-64$"
   },
   {
@@ -199,6 +199,7 @@
   {
     "reason": "Separate pixels on the bottom-border of the toolbox (Win7)",
     "nameRegexes": [
+      "^primaryUI_115_tabsInTitlebar_twoPinnedWithOverflow_maximized_onlyNavBar_compactDark_compactDensity$",
       "^primaryUI_133_tabsInTitlebar_twoPinnedWithOverflow_normal_onlyNavBar_compactDark_compactDensity$",
       "^primaryUI_279_tabsOutsideTitlebar_twoPinnedWithOverflow_maximized_onlyNavBar_compactDark_touchDensity$",
       "^primaryUI_315_tabsOutsideTitlebar_twoPinnedWithOverflow_fullScreen_onlyNavBar_compactDark_touchDensity"
@@ -210,9 +211,27 @@
     "reason": "Separate pixels on the bottom-border of the toolbox (linux1804-64)",
     "nameRegexes": [
       "primaryUI_291_tabsOutsideTitlebar_twoPinnedWithOverflow_normal_onlyNavBar_noLWT_touchDensity",
+      "^primaryUI_273_tabsOutsideTitlebar_twoPinnedWithOverflow_maximized_onlyNavBar_noLWT_touchDensity$",
       "primaryUI_309_tabsOutsideTitlebar_twoPinnedWithOverflow_fullScreen_onlyNavBar_noLWT_touchDensity"
     ],
-    "pixelRegex": "^4$",
+    "pixelRegex": "^4|5|6$",
+    "platformRegex": "^linux1804-64$"
+  },
+  {
+    "reason": "Devtools side and undocked toolbox have inconsistent pane widths",
+    "nameRegexes": [
+      "_sideToolbox$",
+      "_undockedToolbox$"
+    ],
+    "pixelRegex": "",
+    "platformRegex": ""
+  },
+  {
+    "reason": "trackingProtectionEnabled purple shield highlight",
+    "nameRegexes": [
+      "_trackingProtectionEnabled$"
+    ],
+    "pixelRegex": "^23$",
     "platformRegex": "^linux1804-64$"
   }
 ]
