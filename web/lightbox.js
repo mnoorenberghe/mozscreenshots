@@ -11,6 +11,9 @@ let lightbox = null;
 // Keep track of the last viewed <a> so we can focus it when the lightbox closes
 // so the user knows where they left off.
 let lastViewedLink = null;
+// To preload the images for the adjacent rows:
+let prevImg = new Image();
+let nextImg = new Image();
 
 export class Lightbox {
   static init() {
@@ -128,6 +131,19 @@ export class Lightbox {
         let activeLink = lightbox.elements[linkIndex].link;
         lastViewedLink = activeLink;
         history.replaceState(null, "", "#" + activeLink.closest("tr").id);
+
+        // Preload next row's image (columns are handled by GLightbox)
+        // Note: Assuming single class on image links.
+        let visibleOfType = Lightbox.getVisibleMatchingSelector("." + activeLink.className);
+        let i = visibleOfType.indexOf(activeLink);
+        let nextVisibleOfType = visibleOfType[i + 1];
+        if (nextVisibleOfType) {
+          nextImg.src = nextVisibleOfType.href;
+        }
+        let prevVisibleOfType = visibleOfType[i - 1];
+        if (prevVisibleOfType) {
+          prevImg.src = prevVisibleOfType.href;
+        }
       },
       onClose() {
         lightbox = null;
