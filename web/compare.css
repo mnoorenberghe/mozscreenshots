@@ -223,6 +223,8 @@ tr:not(.known_inconsistency) > .diffCell .knownInconsistencyIcon,
 
 .glightbox-clean .gslide-description, .glightbox-modern .gslide-description {
   grid-area: desc;
+  /* Don't break cropper when resizing the window. This shouldn't be necessary with the grid anyways. */
+  max-width: none !important;
 }
 
 .gslide-title {
@@ -235,8 +237,17 @@ tr:not(.known_inconsistency) > .diffCell .knownInconsistencyIcon,
   display: none !important;
 }
 
+.cropButton + svg,
 .fullScreenButton {
+  -moz-appearance: none;
+  background: none;
+  border: none;
   float: right;
+  padding: 0 10px;
+}
+
+.cropButton:checked + svg {
+  color: #0a84ff;
 }
 
 :root:fullscreen .fullScreenButton {

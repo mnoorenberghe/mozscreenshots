@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import "https://cdn.jsdelivr.net/gh/mnoorenberghe/glightbox@patch-1/dist/js/glightbox.min.js";
+import Cropper from "https://cdn.jsdelivr.net/gh/fengyuanchen/cropperjs@v1.5.6/dist/cropper.esm.js";
 
 const IMAGE_LINK_SELECTORS = ".oldImage[href], .newImage[href], .diffLink[href]";
 
@@ -17,7 +18,9 @@ let nextImg = new Image();
 
 export class Lightbox {
   static init() {
+    window.addEventListener("dblclick", Lightbox.onDblClick);
     window.addEventListener("click", Lightbox.onClick);
+    window.addEventListener("change", Lightbox.onChange);
     window.addEventListener("keydown", Lightbox.onKeyDown);
   }
 
@@ -66,8 +69,49 @@ export class Lightbox {
     event.preventDefault();
   }
 
+  static onDblClick(event) {
+    let slideMedia = event.target.closest(".gslide-media");
+    if (!slideMedia) {
+      return;
+    }
+    let originalImage = slideMedia.querySelector(".cropper-hidden");
+    if (!originalImage) {
+      // Not in cropping mode
+      return;
+    }
+
+    let {cropper} = originalImage;
+    let {width, height, x, y} = cropper.getData(true);
+    window.open(originalImage.src.replace(/.png$/, `_crop${width}x${height},${x},${y}.png`));
+    cropper.destroy();
+
+    event.preventDefault();
+  }
+
+  static onChange(event) {
+    if (!event.target.matches(".cropButton")) {
+      return;
+    }
+
+    let currentSlideImg = lightbox.getActiveSlide().querySelector(".gslide-media img");
+    if (currentSlideImg.cropper) {
+      currentSlideImg.cropper.destroy();
+      return;
+    }
+
+    let cropper = new Cropper(currentSlideImg, {
+      autoCropArea: 0.1,
+      checkOrientation: false,
+      guides: false,
+      rotatable: false,
+      toggleDragModeOnDblclick: false,
+      viewMode: 1,
+      zoomable: false,
+    });
+  }
+
   static onClick(event) {
-    if (event.target.matches(".fullScreenButton")) {
+    if (event.target.closest(".fullScreenButton")) {
       document.documentElement.requestFullscreen();
       return;
     }
@@ -102,7 +146,21 @@ export class Lightbox {
         let desc = parentElement.closest("details").querySelector("summary h2").textContent +
             ` / ${description}`;
         if (document.fullscreenEnabled) {
-          desc += ` <button class="fullScreenButton" title="(f)">Fullscreen</button>`;
+          desc += ` <button type="button" class="fullScreenButton" title="fullscreen (f)">
+<svg style="width:20px;height:20px" viewBox="3 3 18 18">
+    <path fill="currentColor" d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
+</svg>
+</button>`;
+        }
+        // TODO: Can only crop on server with comparison (animated PNG). Do this check better.
+        if (!["Base", "New"].includes(description)) {
+          desc += `<label  title="Crop Image. Double-click the cropped region to finish">
+                     <input class="cropButton" type="checkbox" style="position:absolute; left: -100vh">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"  width="20" height="20" viewBox="0 0 24 24">
+   <path fill="currentColor" d="M7,17V1H5V5H1V7H5V17A2,2 0 0,0 7,19H17V23H19V19H23V17M17,15H19V7C19,5.89 18.1,5 17,5H9V7H17V15Z" />
+</svg>
+
+                   </label>`;
         }
         return desc;
       },
@@ -143,6 +201,18 @@ export class Lightbox {
         let prevVisibleOfType = visibleOfType[i - 1];
         if (prevVisibleOfType) {
           prevImg.src = prevVisibleOfType.href;
+        }
+      },
+      beforeSlideChange() {
+        let activeSlide = lightbox.getActiveSlide();
+        let currentSlideImg = activeSlide.querySelector(".gslide-media img");
+        if (currentSlideImg && currentSlideImg.cropper) {
+          currentSlideImg.cropper.destroy();
+        }
+
+        let cropButton = activeSlide.querySelector(".cropButton");
+        if (cropButton) {
+          cropButton.checked = false;
         }
       },
       onClose() {
