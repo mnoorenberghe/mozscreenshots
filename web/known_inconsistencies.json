@@ -191,7 +191,7 @@
     "reason": "Separate pixels on the bottom-border of the toolbox (Win10)",
     "nameRegexes": [
       "^primaryUI_111_tabsInTitlebar_twoPinnedWithOverflow_maximized_onlyNavBar_noLWT_touchDensity$",
-      "^primaryUI_127_tabsInTitlebar_twoPinnedWithOverflow_normal_onlyNavBar_noLWT_compactDensity$"
+      "_twoPinnedWithOverflow_"
     ],
     "pixelRegex": "^1$",
     "platformRegex": "^windows10-64$"
@@ -199,10 +199,7 @@
   {
     "reason": "Separate pixels on the bottom-border of the toolbox (Win7)",
     "nameRegexes": [
-      "^primaryUI_115_tabsInTitlebar_twoPinnedWithOverflow_maximized_onlyNavBar_compactDark_compactDensity$",
-      "^primaryUI_133_tabsInTitlebar_twoPinnedWithOverflow_normal_onlyNavBar_compactDark_compactDensity$",
-      "^primaryUI_279_tabsOutsideTitlebar_twoPinnedWithOverflow_maximized_onlyNavBar_compactDark_touchDensity$",
-      "^primaryUI_315_tabsOutsideTitlebar_twoPinnedWithOverflow_fullScreen_onlyNavBar_compactDark_touchDensity"
+      "_twoPinnedWithOverflow_"
     ],
     "pixelRegex": "^1$",
     "platformRegex": "^windows7-32$"
@@ -210,9 +207,7 @@
   {
     "reason": "Separate pixels on the bottom-border of the toolbox (linux1804-64)",
     "nameRegexes": [
-      "primaryUI_291_tabsOutsideTitlebar_twoPinnedWithOverflow_normal_onlyNavBar_noLWT_touchDensity",
-      "^primaryUI_273_tabsOutsideTitlebar_twoPinnedWithOverflow_maximized_onlyNavBar_noLWT_touchDensity$",
-      "primaryUI_309_tabsOutsideTitlebar_twoPinnedWithOverflow_fullScreen_onlyNavBar_noLWT_touchDensity"
+      "_twoPinnedWithOverflow_"
     ],
     "pixelRegex": "^4|5|6$",
     "platformRegex": "^linux1804-64$"
