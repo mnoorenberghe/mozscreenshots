@@ -96,8 +96,12 @@ export class Lightbox {
         return parentElement.parentElement.cells[0].textContent.replace(/_/g, "_<wbr>");
       },
       get description() {
-        return parentElement.closest("details").querySelector("summary h2").textContent +
-          ` / ${description} <button class="fullScreenButton" title="(f)">Fullscreen</button>`;
+        let desc = parentElement.closest("details").querySelector("summary h2").textContent +
+            ` / ${description}`;
+        if (document.fullscreenEnabled) {
+          desc += ` <button class="fullScreenButton" title="(f)">Fullscreen</button>`;
+        }
+        return desc;
       },
       link,
     };
