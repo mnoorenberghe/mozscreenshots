@@ -96,12 +96,6 @@
     "platformRegex": ""
   },
   {
-    "reason": "Search box on activity stream has inconsistent border radius on Windows 10.",
-    "nameRegexes": ["^primaryUI_.*_(tabsInTitlebar|tabsOutsideTitlebar)"],
-    "pixelRegex": "^(2|4|8)$",
-    "platformRegex": "^windows(7-32|10-64)$"
-  },
-  {
     "reason": "Bug 1414754 - Favicon intermittently not loaded",
     "nameRegexes": ["^controlCenter_.*(_https|_httpPassword)$"],
     "pixelRegex": "^(410|444|446|689)$",
@@ -193,7 +187,7 @@
       "^primaryUI_111_tabsInTitlebar_twoPinnedWithOverflow_maximized_onlyNavBar_noLWT_touchDensity$",
       "_twoPinnedWithOverflow_"
     ],
-    "pixelRegex": "^1$",
+    "pixelRegex": "^1|2$",
     "platformRegex": "^windows10-64$"
   },
   {
@@ -201,7 +195,7 @@
     "nameRegexes": [
       "_twoPinnedWithOverflow_"
     ],
-    "pixelRegex": "^1|3$",
+    "pixelRegex": "^1|2|3|4|6$",
     "platformRegex": "^windows7-32$"
   },
   {

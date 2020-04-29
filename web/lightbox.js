@@ -154,9 +154,10 @@ export class Lightbox {
         }
         // TODO: Can only crop on server with comparison (animated PNG). Do this check better.
         if (!["Base", "New"].includes(description)) {
-          desc += `<label  title="Crop Image. Double-click the cropped region to finish">
+          desc += `<label>
                      <input class="cropButton" type="checkbox" style="position:absolute; left: -100vh">
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"  width="20" height="20" viewBox="0 0 24 24">
+   <title>Crop Image. Double-click the cropped region to finish.</title>
    <path fill="currentColor" d="M7,17V1H5V5H1V7H5V17A2,2 0 0,0 7,19H17V23H19V19H23V17M17,15H19V7C19,5.89 18.1,5 17,5H9V7H17V15Z" />
 </svg>
 

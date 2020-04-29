@@ -459,17 +459,19 @@ var Compare = {
         break;
       case this.RESULT.DIFFERENT:
         for (let known of this.knownInconsistencies) {
-	  if (!known.platformRegex.test(platform)) {
-	    continue;
-	  }
-	  if (!known.pixelRegex.test(comparison.difference)) {
-	    continue;
-	  }
-	  if (!known.nameRegexes.some(pattern => pattern.test(basename))) {
-	    continue;
-	  }
-	  row.classList.add("known_inconsistency");
-	}
+          if (!known.platformRegex.test(platform)) {
+            continue;
+          }
+          if (!known.pixelRegex.test(comparison.difference)) {
+            continue;
+          }
+          if (!known.nameRegexes.some(pattern => pattern.test(basename))) {
+            continue;
+          }
+          row.classList.add("known_inconsistency");
+          diffLink.parentElement.title = `Known inconsistency: ${known.reason}`;
+          break;
+        }
 
         row.classList.add("different");
         diffLink.textContent = comparison.difference + "px";
