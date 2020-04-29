@@ -134,7 +134,7 @@
   {
     "reason": "border-radius of new tab blue search icon on Amazon",
     "nameRegexes": ["_fiveTabs_"],
-    "pixelRegex": "^16|21$",
+    "pixelRegex": "^5|16|21$",
     "platformRegex": "^windows10-64$"
   },
   {
