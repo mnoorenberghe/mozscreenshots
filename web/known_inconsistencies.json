@@ -195,7 +195,7 @@
     "nameRegexes": [
       "_twoPinnedWithOverflow_"
     ],
-    "pixelRegex": "^1|2|3|4|6$",
+    "pixelRegex": "^[1-6]$",
     "platformRegex": "^windows7-32$"
   },
   {
