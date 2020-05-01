@@ -203,7 +203,7 @@
     "nameRegexes": [
       "_twoPinnedWithOverflow_"
     ],
-    "pixelRegex": "^3|4|5|6$",
+    "pixelRegex": "^[2-6]$",
     "platformRegex": "^linux1804-64$"
   },
   {
