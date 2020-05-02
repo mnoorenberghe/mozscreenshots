@@ -67,7 +67,7 @@ def resultset_response_for_push(project, rev):
     return response
 
 
-def jobs_for_resultset(project, resultset_id, job_type_name, job_type_symbol, job_group_name):
+def jobs_for_resultset(project, resultset_id, job_type_name, job_type_symbol, job_group_symbol):
     print 'Fetching jobs for resultset: %d' % resultset_id
 
     jobs_url = '%s/project/%s/jobs/?count=2000&result_set_id=%d&exclusion_profile=false' % (TH_API, project, resultset_id)
@@ -75,8 +75,11 @@ def jobs_for_resultset(project, resultset_id, job_type_name, job_type_symbol, jo
         jobs_url += '&job_type_name=' + job_type_name
     if job_type_symbol:
         jobs_url += '&job_type_symbol=' + job_type_symbol
-    if job_group_name:
-        jobs_url += '&job_group_name=' + job_group_name
+
+    # Handle this in a post-processing filter below to make the query much faster and not return 503 intermittently.
+    # It's likely not using a DB index when more than one of of these args is specified.
+    # if job_group_symbol:
+    #     jobs_url += '&job_group_symbol=' + job_group_symbol
 
     log.info(jobs_url)
     jobs = fetch_json(jobs_url)
@@ -84,7 +87,13 @@ def jobs_for_resultset(project, resultset_id, job_type_name, job_type_symbol, jo
         log.error('No jobs found for resultset: %d' % resultset_id)
         return None
     log.debug('jobs_for_resultset: %s' % pprint.pformat(jobs))
-    return jobs['results']
+
+    def filter_jobs(job):
+        if not job_group_symbol:
+            return True
+        return job['job_group_symbol'] == job_group_symbol
+
+    return list(filter(filter_jobs, jobs['results']))
 
 
 def makedirs(path):
@@ -234,7 +243,7 @@ def run(args):
 
 
 def run_for_resultset(args, resultset):
-    jobs = jobs_for_resultset(args.project, resultset['id'], args.job_type_name, args.job_type_symbol, args.job_group_name)
+    jobs = jobs_for_resultset(args.project, resultset['id'], args.job_type_name, args.job_type_symbol, args.job_group_symbol)
     if not jobs:
         sys.exit(1)
 
@@ -264,8 +273,8 @@ def cli():
 
     parser.add_argument('--job-type-symbol', default='ss',
                         help='Treeherder symbol of the job to fetch from (aka. job_type_symbol) [Default="ss"]')
-    parser.add_argument('--job-group-name', default='Mochitests',
-                        help='Treeherder symbol group of the job to fetch from (aka. job_group_name) [Default="Mochitests"]')
+    parser.add_argument('--job-group-symbol', default='M',
+                        help='Treeherder symbol group of the job to fetch from (aka. job_group_symbol) [Default="M" for Mochitests]')
     parser.add_argument('--job-type-name', default=None,
                         help='Type of job to fetch from (aka. job_type_name e.g. test-windows7-32/opt-browser-screenshots-e10s)')
     parser.add_argument('--log-level', default='WARNING')
