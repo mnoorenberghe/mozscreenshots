@@ -121,51 +121,17 @@ def compare_images(before, after, outdir, similar_dir, args):
     return (result, diff, diff_bounds)
 
 
+# Not needed in most cases since bug 1403686
 def trim_system_ui(prefix, imagefile, outdir, args):
-    # TODO: no longer needed since bug 1403686
-    return imagefile
-
-
-    if "_fullScreen" in imagefile:
-        return imagefile
     outpath = os.path.join(outdir, prefix + "_" + os.path.basename(imagefile))
-
     chop_top = chop_right = chop_bottom = chop_left = 0
-    if "osx-10-6-" in imagefile:
-        titlebar_height = 22 * args.dppx
-        chop_top = titlebar_height
-        # Check for maximized since the default is normal (e.g. devtools)
+    if "windows10-" in imagefile or "windows7-" in imagefile:
         if "_maximized_" in imagefile:
-            chop_right = 0
-        else:
-            # desktop icons and other windows
-            chop_right = 316
-            chop_left = 4
-        dock_height = 90 * args.dppx # no longer used
-        chop_bottom = 110
+            # Two pixels from the taskbar are visible for maximized windows
+            # This should be fixed in the widget code ideally.
+            chop_bottom = 2
 
-    elif "windows7-" in imagefile or "windows8-64-" in imagefile or "windowsxp-" in imagefile or "windows10-" in imagefile:
-        taskbar_height = (30 if ("windowsxp-" in imagefile) else 40) * args.dppx
-        chop_bottom = taskbar_height
-        if "_maximized_" not in imagefile:
-            if "windows10-" in imagefile and "_normal_" in imagefile:
-                chop_right = 104
-                chop_left = 9
-                chop_top = 4
-                chop_bottom = 114
-            if "windows8-64-" in imagefile or "windowsxp-" in imagefile:
-                chop_right = 316
-                chop_bottom = 156
-                chop_top = chop_left = 4
-            if "windows7-" in imagefile and "_normal_" in imagefile:
-                # We check for _normal_ since the default is maximized for the resolution of the Win7 machines.
-                chop_right = 124
-                chop_bottom = 135
-
-    elif "linux32-" in imagefile:
-        titlebar_height = 24 * args.dppx
-        chop_top = titlebar_height
-    else:
+    if chop_top == chop_right == chop_bottom == chop_left == 0:
         return imagefile
 
     trim_args = ["convert", imagefile,
