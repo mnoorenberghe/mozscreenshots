@@ -78,6 +78,7 @@ def jobs_for_resultset(project, resultset_id, job_type_name, job_type_symbol, jo
 
     # Handle this in a post-processing filter below to make the query much faster and not return 503 intermittently.
     # It's likely not using a DB index when more than one of of these args is specified.
+    # https://bugzilla.mozilla.org/show_bug.cgi?id=1333156
     # if job_group_symbol:
     #     jobs_url += '&job_group_symbol=' + job_group_symbol
 

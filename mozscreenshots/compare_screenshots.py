@@ -9,7 +9,6 @@ import fcntl
 import glob
 import json
 import os
-import platform
 import re
 import subprocess
 import sys
@@ -33,7 +32,7 @@ def compare_images(before, after, outdir, similar_dir, args):
     # https://medium.com/@rhuber/imagemagick-is-on-fire-cve-2016-3714-379faf762247#.ftia8t3qs
     if not is_png_file(before) or not is_png_file(after):
         print("No PNG magic number")
-        return (ComparisonResult.ERROR, -1)
+        return (ComparisonResult.ERROR, -1, None)
 
     output_similar_composite = getattr(args, "output_similar_composite", False)
     before_trimmed = trim_system_ui("before", before, outdir, args)
@@ -50,16 +49,39 @@ def compare_images(before, after, outdir, similar_dir, args):
     outpath = os.path.join(outdir, outname)
     result = 0
     diff = -1
+    diff_bounds = None
     try:
-        diff = subprocess.check_output(["compare", "-quiet", "-fuzz", "3%", "-metric", "AE",
-                                        before_trimmed, after_trimmed, "null:"],
-                                       stderr=subprocess.STDOUT)
+        process = subprocess.Popen(["compare", "-quiet", "-fuzz", "3%", "-metric", "AE",
+                                    before_trimmed, after_trimmed,
+                                    # Arguments to dump the differing pixel data as text
+                                    "-highlight-color", "green", "-compose", "src", "sparse-color:"],
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        pixel_info, diff = process.communicate()
+        result = process.poll()
+
+        top = left = float('inf')
+        right = bottom = 0
+        if result != 0:
+            pixels = pixel_info.split(" ")
+            for pixel in pixels:
+                if pixel == "":
+                    continue
+                # Convert to ints
+                x, y = map(int, pixel.split(",")[0:2])
+                top = min(top, y)
+                left = min(left, x)
+                right = max(right, x)
+                bottom = max(bottom, y)
+
+                diff_bounds = {
+                    "top": top,
+                    "right": right,
+                    "bottom": bottom,
+                    "left": left,
+                }
     except OSError:
         print("\n\nEnsure that ImageMagick is installed and on your PATH, specifically `compare`.\n")
         raise
-    except subprocess.CalledProcessError as e:
-        result = e.returncode
-        diff = e.output
 
     print(diff)
 
@@ -96,7 +118,7 @@ def compare_images(before, after, outdir, similar_dir, args):
         os.remove(before_trimmed)
     if os.path.exists(after_trimmed) and os.path.abspath(after) != os.path.abspath(after_trimmed):
         os.remove(after_trimmed)
-    return (result, diff)
+    return (result, diff, diff_bounds)
 
 
 def trim_system_ui(prefix, imagefile, outdir, args):
@@ -233,10 +255,12 @@ def compare_dirs(before, after, outdir, args):
             file_output_dict[f]["result"] = ComparisonResult.MISSING_AFTER
             continue
         print(f, "", end="".ljust(maxFWidth - len(f)))
-        result, diff = compare_images(image1[0], image2[0], outdir, similar_dir, args)
+        result, diff, diff_bounds = compare_images(image1[0], image2[0], outdir, similar_dir, args)
         result_dict[result].append(f)
         file_output_dict[f]["result"] = result
         file_output_dict[f]["difference"] = diff
+        if (diff_bounds):
+            file_output_dict[f]["difference_bounds"] = diff_bounds
     print("{0} similar, {1} different, {2} missing, {3} errors"
           .format(len(result_dict[ComparisonResult.SIMILAR]),
                   len(result_dict[ComparisonResult.DIFFERENT]),
