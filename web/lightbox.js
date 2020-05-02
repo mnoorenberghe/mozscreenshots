@@ -145,6 +145,9 @@ export class Lightbox {
       get description() {
         let desc = parentElement.closest("details").querySelector("summary h2").textContent +
             ` / ${description}`;
+        if (parentElement.title) {
+          desc += ` / ${parentElement.title}`;
+        }
         if (document.fullscreenEnabled) {
           desc += ` <button type="button" class="fullScreenButton" title="fullscreen (f)">
 <svg style="width:20px;height:20px" viewBox="3 3 18 18">
