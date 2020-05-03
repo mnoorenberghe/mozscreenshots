@@ -566,7 +566,8 @@ var Compare = {
         // Add zero-width space to allow breaking:
         let comboName = combo.replace(/\.png$/, "");
         let nameLink = tds[0].firstElementChild;
-        nameLink.textContent = comboName.replace(/_/g, "_​");
+        nameLink.before(comboName.replace(/_/g, "_​"));
+        nameLink.textContent = "#";
 
         let id = platform + "_" + comboName;
         nameLink.href = "#" + id;

@@ -181,7 +181,7 @@ export class Lightbox {
       href,
       // Use lazy getters to improve performance
       get title() {
-        return parentElement.parentElement.cells[0].textContent.replace(/_/g, "_<wbr>");
+        return parentElement.parentElement.cells[0].firstChild.textContent.replace(/_/g, "_<wbr>");
       },
       get description() {
         let desc = parentElement.closest("details").querySelector("summary h2").textContent +
@@ -233,7 +233,7 @@ export class Lightbox {
         let linkIndex = lightbox.getActiveSlideIndex();
         let activeLink = lightbox.elements[linkIndex].link;
         lastViewedLink = activeLink;
-        history.replaceState(null, "", "#" + activeLink.closest("tr").id);
+        //history.replaceState(null, "", "#" + activeLink.closest("tr").id);
 
         // Preload next row's image (columns are handled by GLightbox)
         // Note: Assuming single class on image links.
@@ -262,8 +262,13 @@ export class Lightbox {
       },
       onClose() {
         lightbox = null;
-        // TODO: this will happen when navigating vertically too since we close and re-open.
-        lastViewedLink.focus();
+        setTimeout(() => {
+          if (!lightbox) {
+            // Prevent moving focus and showing the browser hover tooltip when
+            // navigating vertically since we close and re-open then.
+            lastViewedLink.focus();
+          }
+        }, 0);
       },
       // No effects so jumping between separate instances is more seamless.
       closeEffect: "none",

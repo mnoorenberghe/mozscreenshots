@@ -144,8 +144,14 @@ tr:target {
 
 /* Combination name column links */
 #results tbody > tr > td:first-child > a {
-  color: inherit;
+  color: transparent;
+  padding-inline: 0.5em;
   text-decoration: none;
+}
+
+#results tbody > tr > td:first-child > a:focus,
+#results tbody > tr > td:first-child:hover > a {
+  color: inherit;
 }
 
 tr.similar > .diffCell {
@@ -250,7 +256,7 @@ tr:not(.known_inconsistency) > .diffCell .knownInconsistencyIcon,
   display: flex;
 }
 
-.cropButtonLabel {
+.gslide-desc > :first-child {
   margin-inline-start: auto;
 }
 
