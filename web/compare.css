@@ -12,6 +12,14 @@ th {
   font-weight: 500; /* semi-bold */
 }
 
+button[type="submit"] {
+  background: #0060df;
+  border-radius: 2px;
+  border: none;
+  color: white;
+  height: 24px;
+}
+
 a {
   text-decoration: none;
 }
