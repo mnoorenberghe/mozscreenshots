@@ -84,7 +84,15 @@ var Compare = {
 
   applyFragment() {
     if (window.location.hash) {
-      window.location.hash = window.location.hash;
+      if (/#(old|new|diff)_/.test(window.location.hash)) {
+        let el = document.getElementById(window.location.hash.replace(/^#/, ""));
+        if (!el || !el.click) {
+          return;
+        }
+        el.click();
+      } else {
+        window.location.hash = window.location.hash;
+      }
     }
   },
 
@@ -474,6 +482,7 @@ var Compare = {
         }
 
         row.classList.add("different");
+        diffLink.id = `diff_${platform}_${basename}`;
         diffLink.textContent = comparison.difference + "px";
         for (let [bound, val] of Object.entries(comparison.difference_bounds)) {
           diffLink.setAttribute("data-difference-bounds-" + bound, val);
@@ -579,7 +588,9 @@ var Compare = {
           }
           let type = this.resultsetsByID.get(job.result_set_id).revision.startsWith(this.oldRev)
                 ? "old" : "new";
-          rowClone.querySelector("." + type + "Image").href = url;
+          let imageLink = rowClone.querySelector("." + type + "Image");
+          imageLink.id = type + "_" + id;
+          imageLink.href = url;
         }
 
         osClone.querySelector("tbody").appendChild(rowClone);

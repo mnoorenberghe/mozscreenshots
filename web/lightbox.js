@@ -2,12 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import "https://cdn.jsdelivr.net/gh/mnoorenberghe/glightbox@patch-1/dist/js/glightbox.min.js";
+import "https://cdn.jsdelivr.net/gh/mnoorenberghe/glightbox@patch-1/dist/js/glightbox.js";
 import Cropper from "https://cdn.jsdelivr.net/gh/fengyuanchen/cropperjs@v1.5.6/dist/cropper.esm.js";
 
 const IMAGE_LINK_SELECTORS = ".oldImage[href], .newImage[href], .diffLink[href]";
 
 let lightbox = null;
+let pushedStateToShow = false;
 
 // Keep track of the last viewed <a> so we can focus it when the lightbox closes
 // so the user knows where they left off.
@@ -22,6 +23,30 @@ export class Lightbox {
     window.addEventListener("click", Lightbox.onClick);
     window.addEventListener("change", Lightbox.onChange);
     window.addEventListener("keydown", Lightbox.onKeyDown);
+    window.addEventListener("popstate", Lightbox.onPopState);
+  }
+
+  static onPopState(event) {
+    let matches = window.location.hash.match(/^#(([^_]+)_.*)$/);
+    let fragmentPrefix = matches ? matches[2] : null;
+    console.log(fragmentPrefix);
+    if (!fragmentPrefix || !["old", "new", "diff"].includes(fragmentPrefix)) {
+      if (lightbox) {
+        lightbox.close();
+      }
+      return;
+    }
+
+    let el = document.getElementById(matches[1]);
+    if (!el) {
+      return;
+    }
+    if (lightbox) {
+      // Close it if it's already open since it doesn't handle re-opening properly.
+      lightbox.close();
+    }
+    el.click();
+    console.info("restored state");
   }
 
   static onKeyDown(event) {
@@ -161,7 +186,7 @@ export class Lightbox {
       return;
     }
 
-    Lightbox.showForRow(event.target);
+    Lightbox.showForRow(event.target, event.isTrusted);
     event.preventDefault();
   }
 
@@ -213,7 +238,7 @@ export class Lightbox {
     };
   }
 
-  static showForRow(startEl) {
+  static showForRow(startEl, pushState = false) {
     let row = startEl.closest("tr");
     let rowLinks = [...row.querySelectorAll(IMAGE_LINK_SELECTORS)];
     let startAt = rowLinks.indexOf(startEl);
@@ -221,6 +246,13 @@ export class Lightbox {
       let description = link.textContent;
       return Lightbox.linkToSlide(link, description);
     });
+
+    if (pushState) {
+      // If the user clicked to open a lightbox (not .click()) push a new state.
+      window.history.pushState({}, document.title, "#" + startEl.id);
+    }
+    pushedStateToShow = pushState;
+
     Lightbox.show({
       elements,
       startAt,
@@ -233,7 +265,7 @@ export class Lightbox {
         let linkIndex = lightbox.getActiveSlideIndex();
         let activeLink = lightbox.elements[linkIndex].link;
         lastViewedLink = activeLink;
-        //history.replaceState(null, "", "#" + activeLink.closest("tr").id);
+        window.history.replaceState(null, document.title, "#" + activeLink.id);
 
         // Preload next row's image (columns are handled by GLightbox)
         // Note: Assuming single class on image links.
@@ -267,6 +299,14 @@ export class Lightbox {
             // Prevent moving focus and showing the browser hover tooltip when
             // navigating vertically since we close and re-open then.
             lastViewedLink.focus();
+            // We can't differentiate between a close from this file vs. one from the user.
+            if (pushedStateToShow) {
+              window.history.back();
+            } else {
+              let newURL = new URL(window.location.href);
+              newURL.hash = "";
+              window.history.pushState({}, document.title, newURL.toString());
+            }
           }
         }, 0);
       },
