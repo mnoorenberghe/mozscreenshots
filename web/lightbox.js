@@ -49,6 +49,17 @@ export class Lightbox {
         Lightbox.showForRow(nextVisibleOfType);
         break;
       }
+      case "c": {
+        if (!lightbox) {
+          return;
+        }
+        let activeSlide = lightbox.getActiveSlide();
+        let cropButton = activeSlide.querySelector(".cropButton");
+        if (cropButton) {
+          cropButton.click();
+        }
+        break;
+      }
       case "f": {
         if (!lightbox) {
           return;
@@ -178,23 +189,23 @@ export class Lightbox {
         if (parentElement.title) {
           desc += ` / ${parentElement.title}`;
         }
-        if (document.fullscreenEnabled) {
-          desc += ` <button type="button" class="fullScreenButton" title="fullscreen (f)">
-<svg style="width:20px;height:20px" viewBox="3 3 18 18">
-    <path fill="currentColor" d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
-</svg>
-</button>`;
-        }
         // TODO: Can only crop on server with comparison (animated PNG). Do this check better.
         if (!["Base", "New"].includes(description)) {
-          desc += `<label>
+          desc += `<label class="cropButtonLabel">
                      <input class="cropButton" type="checkbox" style="position:absolute; left: -100vh">
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"  width="20" height="20" viewBox="0 0 24 24">
-   <title>Crop Image. Double-click the cropped region to finish.</title>
+   <title>Crop Image (c). Double-click the cropped region to finish.</title>
    <path fill="currentColor" d="M7,17V1H5V5H1V7H5V17A2,2 0 0,0 7,19H17V23H19V19H23V17M17,15H19V7C19,5.89 18.1,5 17,5H9V7H17V15Z" />
 </svg>
 
                    </label>`;
+        }
+        if (document.fullscreenEnabled) {
+          desc += ` <button type="button" class="fullScreenButton" title="Fullscreen (f)">
+<svg style="width:20px;height:20px" viewBox="3 3 18 18">
+    <path fill="currentColor" d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z" />
+</svg>
+</button>`;
         }
         return desc;
       },

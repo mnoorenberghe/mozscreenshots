@@ -183,6 +183,7 @@ tr.known_inconsistency > .diffCell {
   background: lightblue;
   color: #0c0c0d;
   text-align: right;
+  white-space: nowrap;
 }
 
 tr.known_inconsistency > .diffCell a:visited {
@@ -227,14 +228,36 @@ tr:not(.known_inconsistency) > .diffCell .knownInconsistencyIcon,
   max-width: none !important;
 }
 
-.gslide-title {
-  word-break: break-word;
-}
-
 /* It's too annoying when it flickers, especially when traversing vertically
    where there isn't preloading yet. */
 .gloader {
   display: none !important;
+}
+
+.glightbox-container .gslide {
+ -webkit-user-select: auto;
+ -moz-user-select: auto;
+ -ms-user-select: auto;
+ user-select: auto;
+}
+
+.gslide-title {
+  word-break: break-word;
+}
+
+.gslide-desc {
+  align-items: end;
+  display: flex;
+}
+
+.cropButtonLabel {
+  margin-inline-start: auto;
+}
+
+.fullScreenButton,
+.cropButtonLabel {
+  /* Align icons vertically despite text node differences: */
+  line-height: 0;
 }
 
 .cropButton + svg,
@@ -242,10 +265,12 @@ tr:not(.known_inconsistency) > .diffCell .knownInconsistencyIcon,
   -moz-appearance: none;
   background: none;
   border: none;
-  float: right;
+  cursor: pointer;
   padding: 0 10px;
 }
 
+.fullScreenButton:hover,
+.cropButton + svg:hover,
 .cropButton:checked + svg {
   color: #0a84ff;
 }
