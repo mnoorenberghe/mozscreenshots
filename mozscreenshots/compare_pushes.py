@@ -89,12 +89,12 @@ def email_results(project, oldResultset, newResultset, comparison, known_inconsi
             body += "\n"
         body += "\n\n"
 
+    recent_data['last_compared_central_old'] = oldRev
+    recent_data['last_compared_central_new'] = newRev
+
     if not difference_found:
         print "\nNo differences found\n\n"
         return
-
-    recent_data['last_compared_central_old'] = oldRev
-    recent_data['last_compared_central_new'] = newRev
 
     print "====\n"
     print body
