@@ -220,8 +220,16 @@ tr:not(.known_inconsistency) > .diffCell .knownInconsistencyIcon,
 .glightbox-container .ginner-container {
   display: grid !important;
   grid-template: "slide" "desc";
-  grid-template-rows: 1fr auto;
   grid-template-columns: minmax(min-content, auto);
+}
+
+.gslide:not(.zoomed) .ginner-container {
+  grid-template-rows: minmax(0, 1fr) min-content;
+  max-height: 100vh;
+}
+
+.gslide.zoomed .ginner-container {
+  grid-template-rows: auto auto;
 }
 
 .glightbox-clean .gslide-media, .glightbox-modern .gslide-media {
@@ -232,6 +240,10 @@ tr:not(.known_inconsistency) > .diffCell .knownInconsistencyIcon,
   grid-area: desc;
   /* Don't break cropper when resizing the window. This shouldn't be necessary with the grid anyways. */
   max-width: none !important;
+}
+
+.gslide:not(.zoomed) .gslide-image img.zoomable {
+  max-height: 100% !important;
 }
 
 /* It's too annoying when it flickers, especially when traversing vertically
