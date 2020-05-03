@@ -475,6 +475,9 @@ var Compare = {
 
         row.classList.add("different");
         diffLink.textContent = comparison.difference + "px";
+        for (let [bound, val] of Object.entries(comparison.difference_bounds)) {
+          diffLink.setAttribute("data-difference-bounds-" + bound, val);
+        }
         diffLink.href = `https://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/`
           + `${this.newProject}/${this.newRev}/${platform}/${image}`;
         break;

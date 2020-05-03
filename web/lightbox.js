@@ -99,14 +99,44 @@ export class Lightbox {
       return;
     }
 
+    let linkIndex = lightbox.getActiveSlideIndex();
+    let activeLink = lightbox.elements[linkIndex].link;
+
     let cropper = new Cropper(currentSlideImg, {
-      autoCropArea: 0.1,
+      autoCrop: false,
       checkOrientation: false,
       guides: false,
       rotatable: false,
       toggleDragModeOnDblclick: false,
       viewMode: 1,
       zoomable: false,
+      ready() {
+        if (!activeLink) {
+          return;
+        }
+
+        let left = parseInt(activeLink.dataset.differenceBoundsLeft);
+        if (Number.isNaN(left)) {
+          // Old comparisons don't have bounds.
+          return;
+        }
+        let top = parseInt(activeLink.dataset.differenceBoundsTop);
+        let right = parseInt(activeLink.dataset.differenceBoundsRight);
+        let bottom = parseInt(activeLink.dataset.differenceBoundsBottom);
+
+        let padding = 50;
+        let data = {
+          x: left - padding,
+          y: top - padding,
+          width: right - left + 2 * padding,
+          height: bottom - top + 2 * padding,
+          rotate: 0,
+          scaleX: 1,
+          scaleY: 1,
+        };
+
+        this.cropper.crop().setData(data);
+      },
     });
   }
 
