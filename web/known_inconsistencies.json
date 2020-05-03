@@ -176,10 +176,10 @@
     "platformRegex": "^linux64$"
   },
   {
-    "reason": "Right side of the search engine dropdown",
+    "reason": "Bottom border of the search engine grid heading",
     "nameRegexes": ["^preferences_04_prefsSearch$"],
     "pixelRegex": "^1$",
-    "platformRegex": "^windows10-64$"
+    "platformRegex": "^(windows7-32|windows10-64)$"
   },
   {
     "reason": "Separate pixels on the bottom-border of the toolbox (Win10)",
