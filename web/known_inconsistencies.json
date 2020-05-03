@@ -1,33 +1,9 @@
 [
   {
-    "reason": "1px/2px speck under the selected tab",
-    "nameRegexes": ["permissionPrompts_"],
-    "pixelRegex": "^(1|2)$",
-    "platformRegex": "^(osx-10-10|linux32|linux64)$"
-  },
-  {
-    "reason": "1px/2px specks under the selected tab plus back button clip path",
-    "nameRegexes": ["permissionPrompts_"],
-    "pixelRegex": "^3$",
-    "platformRegex": "^linux"
-  },
-  {
     "reason": "10.10 Back button clip-path",
-    "nameRegexes": ["^preferences_.*_prefsGeneral$", "^permissionPrompts_", "^devtools_"],
+    "nameRegexes": ["^preferences_.*_prefsGeneral$"],
     "pixelRegex": "^8$",
     "platformRegex": "^osx-10-10$"
-  },
-  {
-    "reason": "Windows Back button clip-path",
-    "nameRegexes": ["^controlCenter.*_about$"],
-    "pixelRegex": "^(1|2)$",
-    "platformRegex": "^windows(7-32|10-64)$"
-  },
-  {
-    "reason": "linux Back button clip-path",
-    "nameRegexes": ["^controlCenter_"],
-    "pixelRegex": "^(1|2|3|4)$",
-    "platformRegex": "^linux"
   },
   {
     "reason": "linux preferences_16_prefsAdvanced-encryptionTab-certManager",
@@ -96,21 +72,9 @@
     "platformRegex": ""
   },
   {
-    "reason": "Bug 1414754 - Favicon intermittently not loaded",
-    "nameRegexes": ["^controlCenter_.*(_https|_httpPassword)$"],
-    "pixelRegex": "^(410|444|446|689)$",
-    "platformRegex": "^linux"
-  },
-  {
-    "reason": "Bug 1414754 - Favicon intermittently not loaded",
-    "nameRegexes": ["^controlCenter_.*(_https|_httpPassword)$"],
-    "pixelRegex": "^745$",
-    "platformRegex": "^windows10-64$"
-  },
-  {
     "reason": "Bug 1414749 - URL bar text intermittently appears cut off / below the identity block.",
     "nameRegexes": ["^controlCenter_"],
-    "pixelRegex": "^(18|591|596|810|813)$",
+    "pixelRegex": "^(591|596|810|813)$",
     "platformRegex": "^windows7-32$"
   },
   {
@@ -205,15 +169,6 @@
     ],
     "pixelRegex": "^[2-6]$",
     "platformRegex": "^linux1804-64$"
-  },
-  {
-    "reason": "Devtools side and undocked toolbox have inconsistent pane widths",
-    "nameRegexes": [
-      "_sideToolbox$",
-      "_undockedToolbox$"
-    ],
-    "pixelRegex": "",
-    "platformRegex": ""
   },
   {
     "reason": "trackingProtectionEnabled purple shield highlight",
