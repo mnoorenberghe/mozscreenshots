@@ -483,11 +483,12 @@ var Compare = {
 
         row.classList.add("different");
         diffLink.id = `diff_${platform}_${basename}`;
+        diffLink.href = `#${diffLink.id}`;
         diffLink.textContent = comparison.difference + "px";
         for (let [bound, val] of Object.entries(comparison.difference_bounds)) {
           diffLink.setAttribute("data-difference-bounds-" + bound, val);
         }
-        diffLink.href = `https://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/`
+        diffLink.dataset.img = `https://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/`
           + `${this.newProject}/${this.newRev}/${platform}/${image}`;
         break;
       case this.RESULT.MISSING_BEFORE:
@@ -590,7 +591,8 @@ var Compare = {
                 ? "old" : "new";
           let imageLink = rowClone.querySelector("." + type + "Image");
           imageLink.id = type + "_" + id;
-          imageLink.href = url;
+          imageLink.href = `#${imageLink.id}`;
+          imageLink.dataset.img = url;
         }
 
         osClone.querySelector("tbody").appendChild(rowClone);
@@ -628,6 +630,8 @@ var Compare = {
       results.appendChild(osClone);
     }
     this.applyRegexFilter();
+    // Elements that we want to use may not exist on page load since the comparison populates async
+    // so process fragments and init other state now.
     this.applyFragment();
   },
 

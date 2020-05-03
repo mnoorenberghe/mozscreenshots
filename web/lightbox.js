@@ -41,10 +41,7 @@ export class Lightbox {
     if (!el) {
       return;
     }
-    if (lightbox) {
-      // Close it if it's already open since it doesn't handle re-opening properly.
-      lightbox.close();
-    }
+
     el.click();
     console.info("restored state");
   }
@@ -186,6 +183,11 @@ export class Lightbox {
       return;
     }
 
+    if (lightbox) {
+      // Close it if it's already open since it doesn't handle re-opening properly.
+      lightbox.close();
+    }
+
     Lightbox.showForRow(event.target, event.isTrusted);
     event.preventDefault();
   }
@@ -203,7 +205,7 @@ export class Lightbox {
     let {href, parentElement} = link;
     return {
       type: "image",
-      href,
+      href: link.dataset.img,
       // Use lazy getters to improve performance
       get title() {
         return parentElement.parentElement.cells[0].firstChild.textContent.replace(/_/g, "_<wbr>");
