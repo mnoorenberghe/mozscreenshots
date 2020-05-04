@@ -298,11 +298,15 @@ var Compare = {
       // performed yet so fire off a comparison for the revs.
       if (xhrs.some((xhr) => xhr.response === null)) {
         this.updateDisplay();
+        Notification.requestPermission();
         await this.triggerComparisons();
         await this.fetchComparisons();
       }
 
       this.updateDisplay();
+      if (document.visibilityState == "hidden" && Notification.permission == "granted") {
+        new Notification("Screenshot comparison complete");
+      }
     } catch (error) {
       console.error(error);
     } finally {
