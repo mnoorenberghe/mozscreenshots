@@ -501,7 +501,7 @@ var Compare = {
         diffLink.id = `diff_${platform}_${basename}`;
         diffLink.href = `#${diffLink.id}`;
         diffLink.textContent = comparison.difference + "px";
-        for (let [bound, val] of Object.entries(comparison.difference_bounds)) {
+        for (let [bound, val] of Object.entries(comparison.difference_bounds || {})) {
           diffLink.setAttribute("data-difference-bounds-" + bound, val);
         }
         diffLink.dataset.img = `https://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/`
