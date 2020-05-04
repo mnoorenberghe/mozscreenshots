@@ -316,29 +316,31 @@ var Compare = {
       return job.platform;
     }));
     for (let platform of platforms) {
-      let p = platform;
-      promises.push(this.getJSON(`https://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/` +
-                   `${this.newProject}/${this.newRev}/${platform}/comparison.json`)
-                    .then((xhr) => {
-                      if (!xhr.response) {
-                        this.comparisonsByPlatform.set(p, xhr.response);
-                        return xhr;
-                      }
-                      let response = xhr.response;
-                      for (let comboName of Object.keys(response)) {
-                        let displayName = this.calculateCombinationDisplayName(comboName);
-                        if (comboName == displayName || (displayName in response)) {
-                          continue;
-                        }
-
-                        response[displayName] = response[comboName];
-                        delete response[comboName];
-                      }
-                      this.comparisonsByPlatform.set(p, response);
-                      return xhr;
-                    }));
+      promises.push(this.fetchComparison(platform));
     }
     return Promise.all(promises);
+  },
+
+  async fetchComparison(platform) {
+    let xhr = await this.getJSON(`https://screenshots.mattn.ca/comparisons/${this.oldProject}/${this.oldRev}/` +
+                                 `${this.newProject}/${this.newRev}/${platform}/comparison.json`);
+
+    if (!xhr.response) {
+      this.comparisonsByPlatform.set(platform, xhr.response);
+      return xhr;
+    }
+    let response = xhr.response;
+    for (let comboName of Object.keys(response)) {
+      let displayName = this.calculateCombinationDisplayName(comboName);
+      if (comboName == displayName || (displayName in response)) {
+        continue;
+      }
+
+      response[displayName] = response[comboName];
+      delete response[comboName];
+    }
+    this.comparisonsByPlatform.set(platform, response);
+    return xhr;
   },
 
   fetchResultset(project, rev) {
@@ -374,7 +376,7 @@ var Compare = {
     link.href = `https://treeherder.mozilla.org/#/jobs?repo=${response.meta.repository}&revision=${response.meta.revision}&filter-tier=1&filter-tier=2&filter-tier=3&exclusion_profile=false`;
   },
 
-  fetchJobsForResultset(resultset) {
+  async fetchJobsForResultset(resultset) {
     let jobsPromises = [];
     for (let job_type_name of this.JOB_TYPE_NAMES) {
       jobsPromises.push(this.getJSON(this.TREEHERDER_API + "/project/" + resultset.meta.repository +
@@ -383,7 +385,7 @@ var Compare = {
                                      "&exclusion_profile=false"));
     }
 
-    let handleJobsForResultset = (xhr) => {
+    let handleJobsForResultset = async (xhr) => {
       if (!xhr.response.results.length) {
         console.warn("No jobs found for resultset:", resultset.results[0]);
         return Promise.resolve("No jobs found for resultset:", resultset.results[0]);
@@ -399,13 +401,12 @@ var Compare = {
       return Promise.all(promises);
     };
 
-    return Promise.all(jobsPromises).then((xhrs) => {
-      let promises = [];
-      for (let xhr of xhrs) {
-        promises.push(handleJobsForResultset(xhr));
-      }
-      return Promise.all(promises);
-    });
+    let xhrs = await Promise.all(jobsPromises);
+    let promises = [];
+    for (let xhr of xhrs) {
+      promises.push(handleJobsForResultset(xhr));
+    }
+    return Promise.all(promises);
   },
 
   getArtifactsURL(slugID, run) {
