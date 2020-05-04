@@ -35,6 +35,7 @@ var Compare = {
     console.log("init");
     this.form = document.getElementById("chooser");
     this.form.addEventListener("submit", (event) => this.compare(event));
+    document.querySelector("#swapRevCell button").addEventListener("click", (event) => this.swapRevisions());
 
     // Load from URL params
     let params = new URLSearchParams(window.location.search.slice(1));
@@ -66,6 +67,14 @@ var Compare = {
     this.fetchKnownInconsistencies(); // TODO: do before submission
     this.populateSuggestedRevisions();
     this.populateIntro();
+  },
+
+  swapRevisions() {
+    for (let fieldSuffix of ["Project", "Rev"]) {
+      let oldValue = this.form["old" + fieldSuffix].value;
+      this.form["old" + fieldSuffix].value = this.form["new" + fieldSuffix].value;
+      this.form["new" + fieldSuffix].value = oldValue;
+    }
   },
 
   filterChanged() {
@@ -371,7 +380,7 @@ var Compare = {
     let pushDate = new Intl.DateTimeFormat(undefined, dateOptions).format(new Date(result.push_timestamp * 1000));
 
     document.getElementById(type + "Date").textContent = pushDate;
-    link.textContent = result.revisions[0].comments;
+    link.textContent = result.revisions[0].comments.replace(/\n.*/g, "");
     link.title = result.revisions[0].comments;
     link.href = `https://treeherder.mozilla.org/#/jobs?repo=${response.meta.repository}&revision=${response.meta.revision}&filter-tier=1&filter-tier=2&filter-tier=3&exclusion_profile=false`;
   },
@@ -526,6 +535,7 @@ var Compare = {
   calculateCombinationDisplayName(comboName) {
     let pushImagesMissingPrefix = (oldOrNew) => {
       let commitMessage = document.getElementById(oldOrNew + "Commit").querySelector("a").title;
+      // TODO: doesn't work with `mach try fuzzy` or others not `syntax`:
       return this[oldOrNew + "Project"] == "try" && commitMessage.includes("MOZSCREENSHOTS_SETS=");
     };
 

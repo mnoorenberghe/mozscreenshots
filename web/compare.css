@@ -12,12 +12,37 @@ th {
   font-weight: 500; /* semi-bold */
 }
 
+details {
+  /* Ensure the focus outline doesn't go under adajcent items like the sticky header. */
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+button {
+  border-radius: 2px;
+}
+
 button[type="submit"] {
   background: #0060df;
-  border-radius: 2px;
   border: none;
   color: white;
   height: 24px;
+}
+
+button[type="submit"]::-moz-focus-inner {
+  border: none;
+}
+
+button[type="submit"]:focus {
+  box-shadow: 0 0 0 1px #0a84ff inset, 0 0 0 1px #0a84ff, 0 0 0 4px rgba(10, 132, 255, 0.3)
+}
+
+button[type="submit"]:hover {
+  background-color: #003eaa;
+}
+
+button[type="submit"]:hover:active {
+  background-color: #002275
 }
 
 a {
@@ -67,6 +92,39 @@ body {
   overflow: hidden;
 }
 
+#swapRevCell {
+  padding: 0;
+}
+
+#swapRevCell > button {
+  background: none;
+  border: none;
+  color: rgba(12, 12, 13, 0.8);
+  line-height: 0;
+  padding: 2px;
+  position: relative;
+  top: calc(100% - 8px + 2px);
+  left: calc(50% - 8px);
+}
+
+#swapRevCell > button::-moz-focus-inner {
+  border: none;
+}
+
+#swapRevCell > button:focus {
+  border:none !important;
+  box-shadow: 0 0 0 1px #0a84ff inset, 0 0 0 1px #0a84ff, 0 0 0 4px rgba(10, 132, 255, 0.3);
+  outline: none;
+}
+
+#swapRevCell > button:hover {
+  background-color: rgba(12, 12, 13, 0.1)
+}
+
+#swapRevCell > button:hover:active {
+  background-color: rgba(12, 12, 13, 0.2);
+}
+
 #oldCommit, #newCommit {
   max-width: 45vw;
   overflow: hidden;
@@ -106,7 +164,7 @@ summary {
   background-color: #f9f9fa;
   cursor: pointer;
   position: sticky;
-  top: 6em;
+  top: 5.7em;
 }
 
 summary > h2 {
@@ -114,7 +172,7 @@ summary > h2 {
   font-size: 1.25em;
   font-weight: 500;
   margin-bottom: 0.5em;
-  margin-top: 0.8em;
+  margin-top: 1.2em;
 }
 
 summary > span {
@@ -133,6 +191,7 @@ summary .similar:first-child:last-child {
 
 #oldDate, #oldCommit,
 #newDate, #newCommit,
+#filtersCell,
 #results td {
   padding: 1px 5px;
 }

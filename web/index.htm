@@ -25,7 +25,7 @@
           <tr>
             <td></td>
             <th scope="col">Project</th>
-            <th scope="col">Revision</th>
+            <th scope="col" colspan="2">Revision</th>
             <th scope="col">Push Time</th>
             <th scope="col">Commit Message</th>
             <td><a href="https://github.com/mnoorenberghe/mozscreenshots" target="_blank">Source&nbsp;Code</a></td>
@@ -42,7 +42,15 @@
             <td><input name="oldRev" required size="24" list="mcRevs"
                        pattern="[ ]*[0-9a-f]{40}[ ]*"
                        placeholder="Full 40-character revision"
-                       title="Full 40 character Hexadecimal commit hash"/></td>
+                       title="Full 40 character Hexadecimal commit hash"/>
+            </td>
+            <td id="swapRevCell" rowspan="2">
+              <button type="button" title="Swap base and new revisions">
+                <svg style="width:16px; height:16px" viewBox="0 0 24 24" role="presentation">
+                  <path fill="currentColor" d="M14,8H11V14H6V8H3L8.5,2L14,8M15.5,22L21,16H18V10H13V16H10L15.5,22Z" />
+                </svg>
+              </button>
+            </td>
 
             <td id="oldDate"></td>
             <td id="oldCommit"><a></a></td>
@@ -69,11 +77,11 @@
               <button type="submit" style="width:100%">Compare Revisions</button>
               <button id="hiddenSubmit" type="submit" style="display:none"><!-- hidden for automated submissions --></button>
             </td>
-            <td>
+            <td colspan="2">
               <progress indeterminate hidden></progress>
               <span>(may take several minutes)</span>
             </td>
-            <td colspan="2">
+            <td id="filtersCell" colspan="2">
               <label>Filter: <input name="filter" type="search"
                                     size="23"
                                     placeholder="Case-Insensitive RegExp."
