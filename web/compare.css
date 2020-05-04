@@ -380,12 +380,9 @@ tr:not(.known_inconsistency) > .diffCell .knownInconsistencyIcon,
   padding: 0 10px;
 }
 
+:root:fullscreen .fullScreenButton,
 .fullScreenButton:hover,
 .cropButton + svg:hover,
 .cropButton:checked + svg {
   color: #0a84ff;
-}
-
-:root:fullscreen .fullScreenButton {
-  display: none;
 }

@@ -137,6 +137,7 @@ export class Lightbox {
 
     let cropper = new Cropper(currentSlideImg, {
       autoCrop: false,
+      checkCrossOrigin: false,
       checkOrientation: false,
       guides: false,
       rotatable: false,
@@ -175,7 +176,11 @@ export class Lightbox {
 
   static onClick(event) {
     if (event.target.closest(".fullScreenButton")) {
-      document.documentElement.requestFullscreen();
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        document.documentElement.requestFullscreen();
+      }
       return;
     }
 
