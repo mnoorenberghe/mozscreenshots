@@ -26,9 +26,9 @@
             <td></td>
             <th scope="col">Project</th>
             <th scope="col" colspan="2">Revision</th>
-            <th scope="col">Push Time</th>
-            <th scope="col">Commit Message</th>
-            <td><a href="https://github.com/mnoorenberghe/mozscreenshots" target="_blank">Source&nbsp;Code</a></td>
+            <th scope="col" id="dateHeading">Push Time</th>
+            <th scope="col" id="commitHeading">Commit Message</th>
+            <td></td>
           </tr>
         </thead>
         <tbody>
@@ -46,8 +46,8 @@
             </td>
             <td id="swapRevCell" rowspan="2">
               <button type="button" title="Swap base and new revisions">
-                <svg style="width:16px; height:16px" viewBox="0 0 24 24" role="presentation">
-                  <path fill="currentColor" d="M14,8H11V14H6V8H3L8.5,2L14,8M15.5,22L21,16H18V10H13V16H10L15.5,22Z" />
+                <svg style="width:24px;height:24px" viewBox="0 0 24 24" role="presentation">
+                  <path fill="currentColor" d="M9,3L5,7H8V14H10V7H13M16,17V10H14V17H11L15,21L19,17H16Z" />
                 </svg>
               </button>
             </td>
@@ -77,7 +77,7 @@
               <button type="submit" style="width:100%">Compare Revisions</button>
               <button id="hiddenSubmit" type="submit" style="display:none"><!-- hidden for automated submissions --></button>
             </td>
-            <td colspan="2">
+            <td colspan="2" id="progressCell">
               <progress indeterminate hidden></progress>
               <span>(may take several minutes)</span>
             </td>
@@ -133,6 +133,7 @@
       <ul>
         <li><a href="https://developer.mozilla.org/en-US/docs/Mozilla/QA/Browser_screenshots">Documentation</a>
         <li><a href="https://www.mozilla.org/en-US/about/forums/#dev-ui-alerts">Mailing list of mozilla-central changes</a></li>
+        <li><a href="https://github.com/mnoorenberghe/mozscreenshots" target="_blank">Source&nbsp;Code</a></li>
       </ul>
 
       <h2>Lightbox Keyboard Shortcuts</h2>

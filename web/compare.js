@@ -35,7 +35,6 @@ var Compare = {
     console.log("init");
     this.form = document.getElementById("chooser");
     this.form.addEventListener("submit", (event) => this.compare(event));
-    document.querySelector("#swapRevCell button").addEventListener("click", (event) => this.swapRevisions());
 
     // Load from URL params
     let params = new URLSearchParams(window.location.search.slice(1));
@@ -55,6 +54,7 @@ var Compare = {
       document.getElementById("intro").hidden = false;
     }
 
+    document.querySelector("#swapRevCell button").addEventListener("click", (event) => this.swapRevisions());
     this.filterChanged.call(this.form["hideSimilar"]);
     this.filterChanged.call(this.form["hideMissing"]);
     this.filterChanged.call(this.form["hideKnownInconsistencies"]);
@@ -261,8 +261,6 @@ var Compare = {
     this.updatePushlogLink();
 
     let isComparison = this.newProject && this.newRev;
-    document.getElementById("results").classList.toggle("comparison", isComparison);
-
     this.comparisonsByPlatform = new Map();
     this.resultsetsByID = new Map();
     this.screenshotsByJob = new Map();
@@ -281,6 +279,7 @@ var Compare = {
         let type = response.meta.revision.startsWith(this.oldRev)
             && response.meta.repository == this.oldProject ? "old" : "new";
         this.handleResultset(type, response);
+        document.documentElement.classList.toggle("comparison", isComparison);
         promises.push(this.fetchJobsForResultset(response));
       }
       await Promise.all(promises);
@@ -311,6 +310,7 @@ var Compare = {
       console.error(error);
     } finally {
       document.querySelector("progress").hidden = true;
+      document.documentElement.classList.toggle("resultsLoaded", true);
     }
   },
 
@@ -387,6 +387,8 @@ var Compare = {
     link.textContent = result.revisions[0].comments.replace(/\n.*/g, "");
     link.title = result.revisions[0].comments;
     link.href = `https://treeherder.mozilla.org/#/jobs?repo=${response.meta.repository}&revision=${response.meta.revision}&filter-tier=1&filter-tier=2&filter-tier=3&exclusion_profile=false`;
+    // Add the headings when the first commit is populated.
+    document.documentElement.classList.toggle("commitPopulated", true);
   },
 
   async fetchJobsForResultset(resultset) {

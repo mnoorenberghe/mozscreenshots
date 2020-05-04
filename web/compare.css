@@ -94,6 +94,8 @@ body {
 
 #swapRevCell {
   padding: 0;
+  /* Hard-code to prevent jumping of the Revision heading from the table growing. */
+  width: 26px;
 }
 
 #swapRevCell > button {
@@ -101,10 +103,7 @@ body {
   border: none;
   color: rgba(12, 12, 13, 0.8);
   line-height: 0;
-  padding: 2px;
-  position: relative;
-  top: calc(100% - 8px + 2px);
-  left: calc(50% - 8px);
+  padding: 0;
 }
 
 #swapRevCell > button::-moz-focus-inner {
@@ -126,13 +125,27 @@ body {
 }
 
 #oldCommit, #newCommit {
-  max-width: 45vw;
+  max-width: 50vw;
   overflow: hidden;
   text-overflow: ellipsis;
   -webkit-line-clamp: 2;
   line-clamp: 2;
+  line-height: 1.1em;
+  min-height: calc(2 * 1.1em);
   display: -webkit-inline-box;
   -webkit-box-orient: vertical;
+}
+
+#progressCell {
+  position: relative;
+}
+
+progress {
+  /* Align the progress bar with the text that replaces it. */
+  height: 1.5em;
+  /* Prevent flicker of the width from differing text and <progress> sizes. */
+  position: absolute;
+  width: 100%;
 }
 
 progress + span {
@@ -141,7 +154,17 @@ progress + span {
 }
 
 progress:not([hidden]) + span {
-  display: none;
+  visibility: hidden;
+}
+
+/* Hide headings of empty columns before submission */
+:root:not(.commitPopulated) #dateHeading,
+:root:not(.commitPopulated) #commitHeading,
+:root:not(.commitPopulated) #pushlog,
+:root:not(.resultsLoaded) #filtersCell,
+/* Hide the checkboxes when not comparing. */
+:root:not(.comparison) #filtersCell > fieldset {
+  visibility: hidden;
 }
 
 fieldset, legend {
@@ -191,6 +214,7 @@ summary .similar:first-child:last-child {
 
 #oldDate, #oldCommit,
 #newDate, #newCommit,
+#pushlog,
 #filtersCell,
 #results td {
   padding: 1px 5px;
@@ -276,8 +300,8 @@ tr.known_inconsistency > .diffCell a:visited {
 #results.hideKnownInconsistencies.hideSimilar tr.known_inconsistency.similar,
 #results.hideKnownInconsistencies tr.known_inconsistency:not(.similar),
 tr:not(.known_inconsistency) > .diffCell .knownInconsistencyIcon,
-#results:not(.comparison) .diffCell,
-#results:not(.comparison) .newColumn,
+:root:not(.comparison) .diffCell,
+:root:not(.comparison) .newColumn,
 #results:not(:empty) ~ #intro,
 #results.hideSimilar tr.similar:not(.known_inconsistency) {
   display: none;
