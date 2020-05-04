@@ -90,9 +90,9 @@
     "platformRegex": "^windows7-32$"
   },
   {
-    "reason": "top-right border-radius of new tab blue search icon on Amazon",
+    "reason": "border-radius of new tab blue search icon on Amazon",
     "nameRegexes": ["_fiveTabs_"],
-    "pixelRegex": "^5$",
+    "pixelRegex": "^5|16$",
     "platformRegex": "^windows7-32$"
   },
   {
