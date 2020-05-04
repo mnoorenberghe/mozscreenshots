@@ -118,9 +118,33 @@
     </template>
 
     <!-- Make sure this element stays empty by default for :empty -->
-    <div id="results" class="hideSimilar hideKnownInconsistencies"></div>
+    <div id="results" class="hideSimilar hideKnownInconsistencies" aria-label="Image results"></div>
 
-    <p id="intro" hidden>Browse <a id="recentImages">recent images from mozilla-central</a> or <a id="recentComparison">a recent comparison</a></p>
+    <div id="intro" hidden aria-label="Introduction">
+      <p>Browse and compare screenshots of Firefox in various UI configurations. Browse <a id="recentImages">recent images</a> or <a id="recentComparison">a recent comparison</a> from mozilla-central to try it out.</p>
+      <ul>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Mozilla/QA/Browser_screenshots">Documentation</a>
+        <li><a href="https://www.mozilla.org/en-US/about/forums/#dev-ui-alerts">Mailing list of mozilla-central changes</a></li>
+      </ul>
+
+      <h2>Lightbox Keyboard Shortcuts</h2>
+      <dl>
+        <dt>Left Arrow</dt>
+        <dd>Move to the previous image in the row.</dd>
+        <dt>Right Arrow</dt>
+        <dd>Move to the next image in the row.</dd>
+        <dt>Up Arrow</dt>
+        <dd>Move to the previous image in the column.</dd>
+        <dt>Down Arrow</dt>
+        <dd>Move to the next image in the column.</dd>
+        <dt>Escape</dt>
+        <dd>Close the lightbox.</dd>
+        <dt>C</dt>
+        <dd>Toggle crop mode. This is also useful for seeing the bounds of the area that changed.</dd>
+        <dt>F</dt>
+        <dd>Toggle full screen mode.
+      </dl>
+    </div>
 
     <script type="module" src="compare.js?v=20200502"></script>
     <script type="module" src="lightbox.js?v=20200502"></script>

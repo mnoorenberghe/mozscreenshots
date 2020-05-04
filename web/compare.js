@@ -616,7 +616,7 @@ var Compare = {
         summaryCounts.push(`<span class="${category}">${count} ${category}</span>`);
       }
       osClone.querySelector("summary").id = platform;
-      osClone.querySelector("summary").innerHTML = `<h2>${platform}</h2><span>(` + summaryCounts.join(", ") + ")</span>";
+      osClone.querySelector("summary").innerHTML = `<h2>${platform}</h2> <span>(` + summaryCounts.join(", ") + ")</span>";
       osClone.querySelector("thead > tr").classList.toggle("similar",
                                                            Object.keys(this.RESULT).every((result) => {
                                                              if (result == "SIMILAR") {

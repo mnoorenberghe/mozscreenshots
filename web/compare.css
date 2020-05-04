@@ -44,7 +44,9 @@ body {
   margin: 0;
 }
 
-#chooser, #results {
+#chooser,
+#results,
+#intro {
   padding: 8px;
 }
 
