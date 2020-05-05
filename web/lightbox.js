@@ -137,6 +137,7 @@ export class Lightbox {
 
     let cropper = new Cropper(currentSlideImg, {
       autoCrop: false,
+      background: false,
       checkCrossOrigin: false,
       checkOrientation: false,
       guides: false,
