@@ -167,7 +167,7 @@
     "nameRegexes": [
       "_twoPinnedWithOverflow_"
     ],
-    "pixelRegex": "^[2-6]$",
+    "pixelRegex": "^[1-6]$",
     "platformRegex": "^linux1804-64$"
   },
   {
