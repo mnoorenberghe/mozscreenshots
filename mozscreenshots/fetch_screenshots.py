@@ -93,7 +93,7 @@ def jobs_for_resultset(project, resultset_id, job_type_name, job_type_symbol, jo
         if not job_group_symbol:
             return True
         if job['result'] == 'testfailed':
-            log.warning('Job failed for platform: %s' % job['platform'])
+            log.warning('Job %s failed for platform: %s' % (job['id'], job['platform']))
         if job['result'] != 'success':
             return False
         return job['job_group_symbol'] == job_group_symbol
