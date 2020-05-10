@@ -281,11 +281,11 @@ export class Lightbox {
         let i = visibleOfType.indexOf(activeLink);
         let nextVisibleOfType = visibleOfType[i + 1];
         if (nextVisibleOfType) {
-          nextImg.src = nextVisibleOfType.href;
+          nextImg.src = nextVisibleOfType.dataset.img;
         }
         let prevVisibleOfType = visibleOfType[i - 1];
         if (prevVisibleOfType) {
-          prevImg.src = prevVisibleOfType.href;
+          prevImg.src = prevVisibleOfType.dataset.img;
         }
       },
       beforeSlideChange() {
