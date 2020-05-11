@@ -132,6 +132,7 @@ var Compare = {
   },
 
   updateURL(args = {}) {
+    console.debug("updateURL", args);
     try {
       let url = this.generateURL();
       let {searchParams} = url;
