@@ -141,7 +141,7 @@ var Compare = {
       if (!oldRev || !searchParams.get("oldProject")) {
         title = "Screenshot Comparison";
       } else if (searchParams.get("newRev") && searchParams.get("newProject")) {
-        title = `Comparing ${oldRev.substring(0, 8)} and ${searchParams.get("oldRev").substring(0, 8)}`;
+        title = `Comparing ${oldRev.substring(0, 8)} and ${searchParams.get("newRev").substring(0, 8)}`;
       } else {
         title = `Screenshots for ${oldRev.substring(0, 8)} on ${searchParams.get("oldProject")}`;
       }
