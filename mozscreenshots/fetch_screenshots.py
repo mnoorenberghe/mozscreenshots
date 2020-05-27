@@ -27,6 +27,7 @@ HASHED_IMAGE_PATH = 'sha512'
 TC_INDEX_API = 'https://firefox-ci-tc.services.mozilla.com/api/index/v1'
 TC_QUEUE_API = "https://firefox-ci-tc.services.mozilla.com/api/queue/v1"
 TH_API = 'https://treeherder.mozilla.org/api'
+TH_WEB = 'https://treeherder.mozilla.org'
 
 log = logging.getLogger('fetch_screenshots')
 handler = logging.StreamHandler(sys.stderr)
@@ -90,8 +91,8 @@ def jobs_for_resultset(project, resultset_id, job_type_name, job_type_symbol, jo
     log.debug('jobs_for_resultset: %s' % pprint.pformat(jobs))
 
     def filter_jobs(job):
-        if job['result'] == 'testfailed':
-            log.warning('Job %s failed for platform: %s' % (job['id'], job['platform']))
+        if job['result'] == 'testfailed' and job_group_symbol and job['job_group_symbol'] == job_group_symbol:
+            log.warning('Job %s failed for platform: %s. %s/#/jobs?repo=%s&selectedTaskRun=%s-%s' % (job['id'], job['platform'], TH_WEB, project, job['task_id'], job['retry_id']))
         if job['result'] != 'success':
             return False
         if not job_group_symbol:
