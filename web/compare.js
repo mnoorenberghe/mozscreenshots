@@ -5,10 +5,11 @@
 import * as slugid from "./vendor/slugid/slugid.js";
 
 var Compare = {
-  JOB_TYPE_NAME_AUTOCOMPLETE: "test-linux1804-64/opt-browser-screenshots-e10s",
+  JOB_TYPE_NAME_AUTOCOMPLETE: "test-linux1804-64-shippable-qr/opt-browser-screenshots-fis-e10s",
   JOB_TYPE_NAMES: [
     "Mochitest Browser Screenshots",
     "test-linux1804-64/opt-browser-screenshots-e10s",
+    "test-linux1804-64-shippable-qr/opt-browser-screenshots-fis-e10s",
     // "test-macosx1014-64-shippable/opt-browser-screenshots-e10s", // Bug 1554821
     "test-windows10-64/opt-browser-screenshots-e10s",
     "test-windows7-32/opt-browser-screenshots-e10s",
@@ -199,12 +200,10 @@ var Compare = {
 
   async fetchRecentScreenshotJobsWithScreenshots(project = "mozilla-central") {
     let date = new Date();
-    // Subtract 6 days from now
-    date.setDate(date.getDate() - 6);
-    let isoEarliestDate = date.toISOString();
     let jobs = [];
     let jobsXHR = await this.getJSON(this.TREEHERDER_API + `/project/${project}/jobs/?count=2000&exclusion_profile=false` +
-                                     `&job_type_name=${this.JOB_TYPE_NAME_AUTOCOMPLETE}&result=success&last_modified__gte=${isoEarliestDate}`);
+                                     `&job_type_name=${this.JOB_TYPE_NAME_AUTOCOMPLETE}&result=success`
+    );
     jobs = jobsXHR.response.results;
 
     let screenshotFetches = await Promise.allSettled(jobs.map(async job => {
