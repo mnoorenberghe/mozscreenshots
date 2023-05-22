@@ -13,7 +13,7 @@ deps = [
     'bleach == 3.3.0',
     'mozrunner >= 5.0',
     'pytz',
-    'requests == 2.20.0',
+    'requests == 2.31.0',
     'requests-futures == 0.9.7',
     'slugid == 2.0.0',
 ]
