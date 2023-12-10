@@ -36,7 +36,7 @@
             <th scope="row">Base</th>
             <!-- more validation -->
             <td><input name="oldProject" required list="projects" size="14"
-                       pattern="[ ]*[a-z0-9][-.a-z0-9]+[ ]*"
+                       pattern="[ ]*[a-z0-9][\-.a-z0-9]+[ ]*"
                        placeholder="Project"
                        title="Base project name (e.g. mozilla-central, try, etc.)"/></td>
             <td><input name="oldRev" required size="24" list="mcRevs"
@@ -59,7 +59,7 @@
           <tr>
             <th scope="row">New</th>
             <td><input name="newProject" list="projects" size="14"
-                       pattern="[ ]*[a-z0-9][-.a-z0-9]+[ ]*"
+                       pattern="[ ]*[a-z0-9][\-.a-z0-9]+[ ]*"
                        placeholder="(optional)"
                        title="New project name (e.g. mozilla-central, try, etc.)"/></td>
             <td><input name="newRev" size="24" list="mcRevs"
